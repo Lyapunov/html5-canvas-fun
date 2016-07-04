@@ -1,0 +1,86 @@
+<!DOCTYPE HTML>
+<html>
+   <head>
+      <style>
+         body {
+            margin : 0px;
+            padding: 0px;
+         }
+      </style>
+   </head>
+   <body>
+   	<canvas id="canvas" width="500" height="500"></canvas>
+
+      <script>
+         var mainItem     = document.getElementById('canvas');
+         var context      = mainItem.getContext('2d');
+         var screenWidth  = mainItem.width  = window.innerWidth  - 20;
+         var screenHeight = mainItem.height = window.innerHeight - 20;
+         var ANIMATION;  // ??
+
+         // test code, not very OO
+         var screenFraming = 20;
+         var boxStep = 4;
+         var boxSize = 50;
+         var boxDeltaX = boxStep;
+         var boxDeltaY = boxStep;
+
+         var boxX = screenFraming + ( screenWidth  - 2 * screenFraming ) * Math.random();
+         var boxY = screenFraming + ( screenHeight - 2 * screenFraming ) * Math.random();
+         function drawBox() {
+            context.beginPath();
+            context.rect(boxX, boxY, boxSize, boxSize);
+            context.fillStyle = 'blue';
+            context.fill();
+         }
+         function shiftBox() {
+            if ( boxX < screenFraming ) {
+               boxDeltaX = boxStep;
+            }
+            if ( boxX > screenWidth - screenFraming - boxSize ) {
+               boxDeltaX = -boxStep;
+               boxX = screenWidth - screenFraming - boxSize;
+            }
+            if ( boxY < screenFraming ) {
+               boxDeltaY = boxStep;
+            }
+            if ( boxY > screenHeight - screenFraming - boxSize ) {
+               boxDeltaY = -boxStep;
+               boxY = screenHeight - screenFraming - boxSize;
+            }
+            boxX = boxX + boxDeltaX;
+            boxY = boxY + boxDeltaY;
+         }
+
+         function drawBackground() {
+            context.fillStyle = "black";
+            context.fillRect(0,0,screenWidth,screenHeight);
+         }
+
+         // common functions 
+         function drawScene() {
+            drawBackground();
+            drawBox();
+            shiftBox();
+            ANIMATION = requestAnimationFrame(drawScene);
+         }
+
+         function initCanvas() {
+            var style = getComputedStyle(mainItem);
+            screenWidth  = mainItem.width  = window.innerWidth  - 20;
+            screenHeight = mainItem.height = window.innerHeight - 20;
+
+            // starting the engine only if it is not running
+            if ( !ANIMATION ) {
+               drawScene();
+            }
+         }
+
+         //init
+         (function() {
+            initCanvas();
+            addEventListener('resize', initCanvas, false);
+         })();
+      </script>
+   </body>
+</html>
