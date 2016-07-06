@@ -35,14 +35,13 @@
          function create3D( ax, az ) {
             return [ ax, -2 + Math.cos(ax / 2) / 2 + Math.cos(az / 2) / 2, az  ];
          }
-     
 
          function Plane(color1, color2) {
             this.color1 = color1;
             this.color2 = color2;
             this.draw  = function() {
                for (var vx = -25; vx < 25; ++vx ) {
-                  for (var vz = Math.floor(posz) - 16; vz < Math.floor(posz); ++vz ) {
+                  for (var vz = Math.floor(posz) - 25; vz < Math.floor(posz); ++vz ) {
                      var myPoints = [ to2D( create3D( vx  , vz   ) ),
                                       to2D( create3D( vx+1, vz   ) ),
                                       to2D( create3D( vx+1, vz+1 ) ),
