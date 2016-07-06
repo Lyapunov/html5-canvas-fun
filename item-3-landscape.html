@@ -18,7 +18,30 @@
          var screenHeight = mainItem.height = window.innerHeight - 20;
          var ANIMATION;  // ??
 
-         // test code, not very OO
+         var eyedist = 1.5;
+         posz = 4;
+
+         function to2D( vertex ) {
+            ratio = ( eyedist / ( vertex[2] - posz ) );
+            sx = vertex[0] * ratio; 
+            sy = vertex[1] * ratio; 
+            return [ screenWidth / 2 + screenHeight / 2 * sx , screenHeight / 2 * ( 1 + sy )];
+         }
+
+         function Plane(color) {
+            this.color = color;
+            this.draw  = function() {
+               for (var vx = -10; vx < 10; ++vx ) {
+                  for (var vz = -5; vz < 5; ++vz ) {
+                     var myPoint = to2D( [vx, -1, vz] );
+                     context.fillStyle = "green";
+                     context.fillRect(myPoint[0],myPoint[1],5,5);
+                  }
+               }
+            };
+         }
+
+         var plane = new Plane('lighgreen');
 
          function drawBackground() {
             context.fillStyle = "lightblue";
@@ -28,6 +51,7 @@
          // common functions 
          function drawScene() {
             drawBackground();
+            plane.draw();
             ANIMATION = requestAnimationFrame(drawScene);
          }
 
