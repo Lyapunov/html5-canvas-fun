@@ -28,20 +28,34 @@
             return [ screenWidth / 2 + screenHeight / 2 * sx , screenHeight / 2 * ( 1 + sy )];
          }
 
-         function Plane(color) {
-            this.color = color;
+         function Plane(color1, color2) {
+            this.color1 = color1;
+            this.color2 = color2;
             this.draw  = function() {
-               for (var vx = -10; vx < 10; ++vx ) {
-                  for (var vz = -5; vz < 5; ++vz ) {
-                     var myPoint = to2D( [vx, -1, vz] );
-                     context.fillStyle = "green";
-                     context.fillRect(myPoint[0],myPoint[1],5,5);
+               for (var vx = -15; vx < 15; ++vx ) {
+                  for (var vz = -15; vz < 5; ++vz ) {
+                     var myPoints = [ to2D( [vx  , -1, vz  ] ),
+                                      to2D( [vx+1, -1, vz  ] ),
+                                      to2D( [vx+1, -1, vz+1] ),
+                                      to2D( [vx  , -1, vz+1] ) ];
+                     context.fillStyle = ( ( vx + vz ) % 2 ) ? color1 : color2;
+                     context.beginPath();
+                     for (var j = 0; j < myPoints.length; ++j ) {
+                        myPoint = myPoints[j];
+                        if ( j == 0 ) {
+                           context.moveTo( myPoints[j][0], myPoints[j][1] );
+                        } else {
+                           context.lineTo( myPoints[j][0], myPoints[j][1] );
+                        }
+                     }
+                     context.closePath();
+                     context.fill();
                   }
                }
             };
          }
 
-         var plane = new Plane('lighgreen');
+         var plane = new Plane('green', 'lightgreen');
 
          function drawBackground() {
             context.fillStyle = "lightblue";
