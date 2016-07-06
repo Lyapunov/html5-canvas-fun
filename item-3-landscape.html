@@ -38,7 +38,7 @@
             this.color2 = color2;
             this.draw  = function() {
                for (var vx = -25; vx < 25; ++vx ) {
-                  for (var vz = posz - 16; vz < posz - 1; ++vz ) {
+                  for (var vz = Math.floor(posz) - 16; vz < Math.floor(posz) - 1; ++vz ) {
                      var myPoints = [ to2D( create3D( vx  , vz   ) ),
                                       to2D( create3D( vx+1, vz   ) ),
                                       to2D( create3D( vx+1, vz+1 ) ),
@@ -68,11 +68,18 @@
             context.fillRect(0,0,screenWidth,screenHeight);
          }
 
+         function moving() {
+            posz = posz - 0.01; 
+         }
+
          // common functions 
          function drawScene() {
-            drawBackground();
-            plane.draw();
-            ANIMATION = requestAnimationFrame(drawScene);
+            setTimeout( function() {
+               drawBackground();
+               plane.draw();
+               moving();
+               ANIMATION = requestAnimationFrame(drawScene);
+            }, 1000 / 50);
          }
 
          function initCanvas() {
