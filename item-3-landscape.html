@@ -22,7 +22,11 @@
          posz = 4;
 
          function to2D( vertex ) {
-            ratio = ( eyedist / ( vertex[2] - posz ) );
+            var dist = ( vertex[2] - posz );
+            if ( dist > -0.5 ) { 
+               dist = -0.5;
+            }
+            ratio = ( eyedist / dist );
             sx = vertex[0] * ratio; 
             sy = vertex[1] * ratio; 
             return [ screenWidth / 2 + screenHeight / 2 * sx , screenHeight / 2 * ( 1 + sy )];
@@ -38,7 +42,7 @@
             this.color2 = color2;
             this.draw  = function() {
                for (var vx = -25; vx < 25; ++vx ) {
-                  for (var vz = Math.floor(posz) - 16; vz < Math.floor(posz) - 1; ++vz ) {
+                  for (var vz = Math.floor(posz) - 16; vz < Math.floor(posz); ++vz ) {
                      var myPoints = [ to2D( create3D( vx  , vz   ) ),
                                       to2D( create3D( vx+1, vz   ) ),
                                       to2D( create3D( vx+1, vz+1 ) ),
