@@ -105,6 +105,23 @@
                   this.velocity = [ this.velocity[0] - 2 * normalvc[0], this.velocity[1] - 2 * normalvc[1] ];
                }
             }
+            this.colloideToBall = function( ball2 ) {
+               var dist = [ ball2.center[0] - this.center[0], ball2.center[1] - this.center[1] ];
+               var distl = vlen( dist );
+               var correction = 2 * ballrad - distl;
+               if ( correction > 0 ) {
+                  var veldiff = [ ball2.velocity[0] - this.velocity[0], ball2.velocity[1] - this.velocity[1] ];
+                  // do they are getting closer to each other ?
+                  var distn = [ dist[0] / distl, dist[1] / distl ];
+                  var cmp1s = -( distn[0] * veldiff[0] + distn[1] * veldiff[1] );
+                  if ( cmp1s > 0 ) {
+                     var cmp1  = [ distn[0] * cmp1s, distn[1] * cmp1s ];
+                     this.velocity  = [ this.velocity[0] - cmp1[0] ,  this.velocity[1] - cmp1[1] ];
+                     ball2.velocity = [ ball2.velocity[0] + cmp1[0],  ball2.velocity[1] + cmp1[1] ];
+                     ball2.center   = [ ball2.center[0] + correction * distn[0], ball2.center[1] + correction * distn[1] ];
+                  }
+               }
+            }
          }
 
          function BallsAndTable() {
@@ -139,10 +156,16 @@
                   for ( var i = 0; i < this.balls.length; ++i ) {
                      this.balls[i].step();
                   }
-                  // checking whether they colloide with the edges, correcting velocity and moving them into valid positions
+                  // collision detection bettween walls and edges
                   for ( var i = 0; i < this.balls.length; ++i ) {
                      for ( var j = 0; j < this.table.corners.length; ++j ) {
                         this.balls[i].colloideToWall( this.table.corners[j], this.table.normals[j] );
+                     }
+                  }
+                  // collision detection between balls
+                  for ( var i = 0; i < this.balls.length; ++i ) {
+                     for ( var j = i + 1; j < this.balls.length; ++j ) {
+                        this.balls[i].colloideToBall( this.balls[j] );
                      }
                   }
                }
