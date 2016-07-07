@@ -24,7 +24,7 @@
          var secondHitPos = [];
          var ballrad = 0.02;
          var velocity_downscale = 20;
-         var velocity_cutoff = 0.0002;
+         var velocity_cutoff = 0.0003;
          var velocity_friction = 0.98;
          var stepsWhileOneFrame = 1;
 
@@ -98,7 +98,7 @@
                var vert = [ verts * normal[0], verts * normal[1] ];
                var inside = this.radius - vlen( vert );
                if ( inside > 0 ) {
-                  this.center = [ this.center[0] + inside * normal[0], this.center[1] + inside * normal[1] ];
+                  this.center = [ this.center[0] - inside * normal[0], this.center[1] - inside * normal[1] ];
                   // mirroring speed
                   var vverts = this.velocity[0] * normal[0]+ this.velocity[1] * normal[1];
                   var normalvc = [ vverts * normal[0], vverts * normal[1] ];
