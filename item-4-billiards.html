@@ -16,11 +16,39 @@
          var context      = mainItem.getContext('2d');
          var screenWidth  = mainItem.width  = window.innerWidth  - 20;
          var screenHeight = mainItem.height = window.innerHeight - 20;
+         var metric       = Math.min( screenWidth / 2, screenHeight / 2 );
          var ANIMATION;  // ??
          var isHitOK = 1;
          var isMouseDown = 0;
          var firstHitPos  = [];
          var secondHitPos = [];
+
+         function Ball(color, radius = 0.2, centerX = 0, centerY = 0) {
+            this.color = color;
+            this.radius = radius;
+            this.centerX = centerX; 
+            this.centerY = centerY;
+            this.draw = function() {
+               context.beginPath();
+               context.fillStyle = this.color;
+               var px = screenWidth  / 2 + ( this.centerX ) * metric;
+               var py = screenHeight / 2 + ( this.centerY ) * metric;
+               context.arc( px, py, this.radius * metric, 0, 2 * Math.PI, false );
+               context.closePath();
+               context.fill();
+            };
+         }
+
+         function Balls() {
+            this.balls = [ new Ball( "red" ) ];
+            this.draw = function() {
+               for ( var i = 0; i < this.balls.length; ++i ) {
+                  this.balls[i].draw();
+               }
+            }
+         }
+
+         var myBalls = new Balls();
 
          function drawBackground() {
             context.fillStyle = "black";
@@ -43,6 +71,7 @@
          function drawScene() {
             setTimeout( function() {
                drawBackground();
+               myBalls.draw();
                drawCurrentHit();
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / 50 );
@@ -52,6 +81,7 @@
             var style = getComputedStyle(mainItem);
             screenWidth  = mainItem.width  = window.innerWidth  - 20;
             screenHeight = mainItem.height = window.innerHeight - 20;
+            metric       = Math.min( screenWidth / 2, screenHeight / 2 );
 
             // starting the engine only if it is not running
             if ( !ANIMATION ) {
