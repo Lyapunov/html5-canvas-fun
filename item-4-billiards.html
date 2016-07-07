@@ -17,17 +17,33 @@
          var screenWidth  = mainItem.width  = window.innerWidth  - 20;
          var screenHeight = mainItem.height = window.innerHeight - 20;
          var ANIMATION;  // ??
+         var isHitOK = 1;
+         var isMouseDown = 0;
+         var firstHitPos  = [];
+         var secondHitPos = [];
 
          function drawBackground() {
             context.fillStyle = "black";
             context.fillRect(0,0,screenWidth,screenHeight);
          }
 
+         function drawCurrentHit() {
+            if ( firstHitPos.length > 0 && firstHitPos.length > 0 ) {
+               context.strokeStyle = "lightblue";
+               context.beginPath();
+               context.moveTo( firstHitPos[0] , firstHitPos[1]  );
+               context.lineTo( secondHitPos[0], secondHitPos[1] );
+
+               context.closePath();
+               context.stroke();
+            }
+         }
+
          // common functions 
          function drawScene() {
             setTimeout( function() {
                drawBackground();
-               moveVertices();
+               drawCurrentHit();
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / 50 );
          }
@@ -42,6 +58,23 @@
                drawScene();
             }
          }
+
+         mainItem.onmousedown = function(event) {
+            isMouseDown = 1;
+            firstHitPos = [ event.clientX, event.clientY ];
+         };
+
+         mainItem.onmouseup = function(event) {
+            isMouseDown = 0;
+            firstHitPos = [];
+            secondHitPos = [];
+         };
+
+         mainItem.onmousemove = function(event) {
+            if ( isMouseDown ) {
+               secondHitPos = [ event.clientX, event.clientY ];
+            }
+         };
 
          //init
          (function() {
