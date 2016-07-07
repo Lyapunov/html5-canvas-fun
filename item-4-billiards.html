@@ -23,10 +23,10 @@
          var firstHitPos  = [];
          var secondHitPos = [];
          var ballrad = 0.02;
-         var velocity_downscale = 20;
+         var velocity_downscale = 40;
          var velocity_cutoff = 0.0003;
-         var velocity_friction = 0.98;
-         var stepsWhileOneFrame = 1;
+         var velocity_friction = 0.99;
+         var stepsWhileOneFrame = 2;
 
          function coordToPoint( coords ) {
             return [ screenWidth  / 2 + ( coords[0] ) * metric, screenHeight / 2 + ( coords[1] ) * metric ];
