@@ -43,7 +43,7 @@
          function Table(color) {
             this.color = color;
             this.corners = [ [ -1, -0.5 ], [ -1, +0.5 ], [ +1, +0.5 ], [ +1, -0.5 ] ];
-            this.normals = [ [ 0, +1 ],    [ -1, 0 ]   , [ 0, -1 ],    [ +1, 0 ] ];
+            this.normals = [ [ 0, +1 ],    [ +1, 0 ]   , [ 0, -1 ],    [ -1, 0 ] ];
             this.draw = function() {
                context.fillStyle = this.color;
                context.beginPath();
@@ -96,8 +96,8 @@
                var dist = [ this.center[0] - wallp[0], this.center[1] - wallp[1] ];
                var verts = dist[0] * normal[0]+ dist[1] * normal[1];
                var vert = [ verts * normal[0], verts * normal[1] ];
-               var inside = this.radius - vlen( vert );
-               if ( inside > 0 ) {
+               var inside = verts - this.radius;
+               if ( inside < 0 ) {
                   this.center = [ this.center[0] - inside * normal[0], this.center[1] - inside * normal[1] ];
                   // mirroring speed
                   var vverts = this.velocity[0] * normal[0]+ this.velocity[1] * normal[1];
