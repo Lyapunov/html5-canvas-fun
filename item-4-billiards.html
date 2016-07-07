@@ -28,6 +28,10 @@
             return [ screenWidth  / 2 + ( coords[0] ) * metric, screenHeight / 2 + ( coords[1] ) * metric ];
          }
 
+         function pointToCoord( pnts ) {
+            return [ ( pnts[0] - screenWidth  / 2 ) / metric, ( pnts[1] - screenHeight / 2 ) /  metric ];
+         }
+
          function Table(color) {
             this.color = color;
             this.corners = [ [ -0.5, -1 ], [ -0.5, +1 ], [ +0.5, +1 ], [ +0.5, -1 ] ];
@@ -102,8 +106,10 @@
             if ( firstHitPos.length > 0 && firstHitPos.length > 0 ) {
                context.strokeStyle = "lightblue";
                context.beginPath();
-               context.moveTo( firstHitPos[0] , firstHitPos[1]  );
-               context.lineTo( secondHitPos[0], secondHitPos[1] );
+               var fpp = coordToPoint( firstHitPos );
+               var spp = coordToPoint( secondHitPos );
+               context.moveTo( fpp[0], fpp[1]  );
+               context.lineTo( spp[0], spp[1] );
 
                context.closePath();
                context.stroke();
@@ -134,7 +140,7 @@
 
          mainItem.onmousedown = function(event) {
             isMouseDown = 1;
-            firstHitPos = [ event.clientX, event.clientY ];
+            firstHitPos = pointToCoord( [ event.clientX, event.clientY ] );
          };
 
          mainItem.onmouseup = function(event) {
@@ -145,7 +151,7 @@
 
          mainItem.onmousemove = function(event) {
             if ( isMouseDown ) {
-               secondHitPos = [ event.clientX, event.clientY ];
+               secondHitPos = pointToCoord( [ event.clientX, event.clientY ] );
             }
          };
 
