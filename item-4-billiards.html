@@ -22,33 +22,76 @@
          var isMouseDown = 0;
          var firstHitPos  = [];
          var secondHitPos = [];
+         var ballrad = 0.02;
 
-         function Ball(color, radius = 0.2, centerX = 0, centerY = 0) {
+         function coordToPoint( coords ) {
+            return [ screenWidth  / 2 + ( coords[0] ) * metric, screenHeight / 2 + ( coords[1] ) * metric ];
+         }
+
+         function Table(color) {
             this.color = color;
-            this.radius = radius;
+            this.corners = [ [ -0.5, -1 ], [ -0.5, +1 ], [ +0.5, +1 ], [ +0.5, -1 ] ];
+            this.draw = function() {
+               context.fillStyle = this.color;
+               context.beginPath();
+               for ( var i = 0; i < this.corners.length; ++i ) {
+                  var pxy = coordToPoint( this.corners[i] );
+                  if ( i == 0 ) {
+                     context.moveTo( pxy[0], pxy[1] );
+                  } else {
+                     context.lineTo( pxy[0], pxy[1] );
+                  }
+               }
+               context.closePath();
+               context.fill();
+            }
+         }
+
+         function Ball(color, centerX = 0, centerY = 0, role = '' ) {
+            this.color = color;
+            this.radius = ballrad;
             this.centerX = centerX; 
             this.centerY = centerY;
+            this.role = role;
             this.draw = function() {
                context.beginPath();
                context.fillStyle = this.color;
-               var px = screenWidth  / 2 + ( this.centerX ) * metric;
-               var py = screenHeight / 2 + ( this.centerY ) * metric;
-               context.arc( px, py, this.radius * metric, 0, 2 * Math.PI, false );
+               pxy = coordToPoint( [ this.centerX, this.centerY ] );
+               context.arc( pxy[0], pxy[1], this.radius * metric, 0, 2 * Math.PI, false );
                context.closePath();
                context.fill();
             };
          }
 
-         function Balls() {
-            this.balls = [ new Ball( "red" ) ];
+         function BallsAndTable() {
+            this.table = new Table( "green" );
+            this.balls = [ new Ball( "white", 0, -0.4, "main" ),
+                           new Ball( "red",                0, 0.4 ),
+                           new Ball( "yellow",    -2*ballrad, 0.4+2*ballrad ),
+                           new Ball( "purple",     2*ballrad, 0.4+2*ballrad ),
+                           new Ball( "blue",      -4*ballrad, 0.4+4*ballrad ),
+                           new Ball( "orange",             0, 0.4+4*ballrad ),
+                           new Ball( "blue",       4*ballrad, 0.4+4*ballrad ),
+                           new Ball( "red",       -6*ballrad, 0.4+6*ballrad ),
+                           new Ball( "purple",    -2*ballrad, 0.4+6*ballrad ),
+                           new Ball( "yellow",     2*ballrad, 0.4+6*ballrad ),
+                           new Ball( "red",        6*ballrad, 0.4+6*ballrad ),
+                           new Ball( "purple",    -8*ballrad, 0.4+8*ballrad ),
+                           new Ball( "orange",    -4*ballrad, 0.4+8*ballrad ),
+                           new Ball( "blue",               0, 0.4+8*ballrad ),
+                           new Ball( "orange",     4*ballrad, 0.4+8*ballrad ),
+                           new Ball( "puple",      8*ballrad, 0.4+8*ballrad )
+
+                         ];
             this.draw = function() {
+               this.table.draw();
                for ( var i = 0; i < this.balls.length; ++i ) {
                   this.balls[i].draw();
                }
             }
          }
 
-         var myBalls = new Balls();
+         var myBallsAndTable = new BallsAndTable();
 
          function drawBackground() {
             context.fillStyle = "black";
@@ -71,7 +114,7 @@
          function drawScene() {
             setTimeout( function() {
                drawBackground();
-               myBalls.draw();
+               myBallsAndTable.draw();
                drawCurrentHit();
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / 50 );
