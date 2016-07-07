@@ -23,10 +23,10 @@
          var firstHitPos  = [];
          var secondHitPos = [];
          var ballrad = 0.02;
-         var velocity_downscale = 500;
-         var velocity_cutoff = 0.0001;
-         var velocity_friction = 0.9996;
-         var stepsWhileOneFrame = 10;
+         var velocity_downscale = 20;
+         var velocity_cutoff = 0.0002;
+         var velocity_friction = 0.98;
+         var stepsWhileOneFrame = 1;
 
          function coordToPoint( coords ) {
             return [ screenWidth  / 2 + ( coords[0] ) * metric, screenHeight / 2 + ( coords[1] ) * metric ];
@@ -36,9 +36,14 @@
             return [ ( pnts[0] - screenWidth  / 2 ) / metric, ( pnts[1] - screenHeight / 2 ) /  metric ];
          }
 
+         function vlen( xy ) {
+            return Math.sqrt( Math.pow( xy[0], 2 ) + Math.pow( xy[1], 2 ) );
+         }
+
          function Table(color) {
             this.color = color;
             this.corners = [ [ -0.5, -1 ], [ -0.5, +1 ], [ +0.5, +1 ], [ +0.5, -1 ] ];
+            this.normals = [ [ 0, +1 ],    [ -1, 0 ]   , [ 0, -1 ],    [ +1, 0 ] ];
             this.draw = function() {
                context.fillStyle = this.color;
                context.beginPath();
@@ -70,7 +75,7 @@
                context.fill();
             };
             this.distance = function( coords ) {
-               return Math.sqrt( Math.pow( coords[0] - this.center[0], 2 ) + Math.pow( coords[1] - this.center[1], 2 ) );
+               return vlen( [coords[0] - this.center[0], coords[1] - this.center[1]] ) ;
             }
             this.isInside = function( coords ) {
                return this.distance( coords ) <= this.radius;
@@ -80,12 +85,25 @@
                this.center[1] = this.center[1] + this.velocity[1];
                this.velocity[0] *= velocity_friction;
                this.velocity[1] *= velocity_friction;
-               if ( Math.pow( this.velocity[0], 2 ) + Math.pow( this.velocity[1], 2 ) < velocity_cutoff * velocity_cutoff ) {
+               if ( vlen( this.velocity ) < velocity_cutoff ) {
                   this.velocity = [0, 0];
                }
             }
             this.isInMotion = function() {
                return !( ( this.velocity[0] == 0 ) && ( this.velocity[1] == 0 ) );
+            }
+            this.colloideToWall = function( wallp, normal ) {
+               var dist = [ this.center[0] - wallp[0], this.center[1] - wallp[1] ];
+               var verts = dist[0] * normal[0]+ dist[1] * normal[1];
+               var vert = [ verts * normal[0], verts * normal[1] ];
+               var inside = this.radius - vlen( vert );
+               if ( inside > 0 ) {
+                  this.center = [ this.center[0] + inside * normal[0], this.center[1] + inside * normal[1] ];
+                  // mirroring speed
+                  var vverts = this.velocity[0] * normal[0]+ this.velocity[1] * normal[1];
+                  var normalvc = [ vverts * normal[0], vverts * normal[1] ];
+                  this.velocity = [ this.velocity[0] - 2 * normalvc[0], this.velocity[1] - 2 * normalvc[1] ];
+               }
             }
          }
 
@@ -117,8 +135,15 @@
             };
             this.move = function() {
                for ( var j = 0; j < stepsWhileOneFrame; ++j ) {
+                  // moving the balls first
                   for ( var i = 0; i < this.balls.length; ++i ) {
                      this.balls[i].step();
+                  }
+                  // checking whether they colloide with the edges, correcting velocity and moving them into valid positions
+                  for ( var i = 0; i < this.balls.length; ++i ) {
+                     for ( var j = 0; j < this.table.corners.length; ++j ) {
+                        this.balls[i].colloideToWall( this.table.corners[j], this.table.normals[j] );
+                     }
                   }
                }
             };
