@@ -23,9 +23,10 @@
          var firstHitPos  = [];
          var secondHitPos = [];
          var ballrad = 0.02;
-         var velocity_downscale = 50;
-         var velocity_cutoff = 0.001;
-         var velocity_friction = 0.996;
+         var velocity_downscale = 500;
+         var velocity_cutoff = 0.0001;
+         var velocity_friction = 0.9996;
+         var stepsWhileOneFrame = 10;
 
          function coordToPoint( coords ) {
             return [ screenWidth  / 2 + ( coords[0] ) * metric, screenHeight / 2 + ( coords[1] ) * metric ];
@@ -74,7 +75,7 @@
             this.isInside = function( coords ) {
                return this.distance( coords ) <= this.radius;
             }
-            this.move = function() {
+            this.step = function() {
                this.center[0] = this.center[0] + this.velocity[0];
                this.center[1] = this.center[1] + this.velocity[1];
                this.velocity[0] *= velocity_friction;
@@ -115,8 +116,10 @@
                }
             };
             this.move = function() {
-               for ( var i = 0; i < this.balls.length; ++i ) {
-                  this.balls[i].move();
+               for ( var j = 0; j < stepsWhileOneFrame; ++j ) {
+                  for ( var i = 0; i < this.balls.length; ++i ) {
+                     this.balls[i].step();
+                  }
                }
             };
             this.isSomethingInMotion = function() {
