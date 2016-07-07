@@ -92,7 +92,7 @@
             this.isInMotion = function() {
                return !( ( this.velocity[0] == 0 ) && ( this.velocity[1] == 0 ) );
             }
-            this.colloideToWall = function( wallp, normal ) {
+            this.collisionToWall = function( wallp, normal ) {
                var dist = [ this.center[0] - wallp[0], this.center[1] - wallp[1] ];
                var verts = dist[0] * normal[0]+ dist[1] * normal[1];
                var vert = [ verts * normal[0], verts * normal[1] ];
@@ -105,7 +105,7 @@
                   this.velocity = [ this.velocity[0] - 2 * normalvc[0], this.velocity[1] - 2 * normalvc[1] ];
                }
             }
-            this.colloideToBall = function( ball2 ) {
+            this.collisionBetweenBalls = function( ball2 ) {
                var dist = [ ball2.center[0] - this.center[0], ball2.center[1] - this.center[1] ];
                var distl = vlen( dist );
                var correction = 2 * ballrad - distl;
@@ -159,13 +159,13 @@
                   // collision detection bettween walls and edges
                   for ( var i = 0; i < this.balls.length; ++i ) {
                      for ( var j = 0; j < this.table.corners.length; ++j ) {
-                        this.balls[i].colloideToWall( this.table.corners[j], this.table.normals[j] );
+                        this.balls[i].collisionToWall( this.table.corners[j], this.table.normals[j] );
                      }
                   }
                   // collision detection between balls
                   for ( var i = 0; i < this.balls.length; ++i ) {
                      for ( var j = i + 1; j < this.balls.length; ++j ) {
-                        this.balls[i].colloideToBall( this.balls[j] );
+                        this.balls[i].collisionBetweenBalls( this.balls[j] );
                      }
                   }
                }
