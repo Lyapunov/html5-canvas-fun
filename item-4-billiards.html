@@ -23,6 +23,7 @@
          var firstHitPos  = [];
          var secondHitPos = [];
          var ballrad = 0.02;
+         var holerad = 0.05;
          var velocity_downscale = 40;
          var velocity_cutoff = 0.0003;
          var velocity_friction = 0.99;
@@ -60,12 +61,10 @@
             }
          }
 
-         function Ball(color, centerX = 0, centerY = 0, role = '' ) {
-            this.color = color;
-            this.radius = ballrad;
+         function Hole(centerX = 0, centerY = 0 ) {
+            this.color = 'black';
+            this.radius = holerad;
             this.center = [ centerX, centerY ]; 
-            this.velocity = [ 0, 0 ]; 
-            this.role = role;
             this.draw = function() {
                context.beginPath();
                context.fillStyle = this.color;
@@ -80,7 +79,42 @@
             this.isInside = function( coords ) {
                return this.distance( coords ) <= this.radius;
             }
+         }
+
+         function NoBall() {
+         }
+
+         function Ball(color, centerX = 0, centerY = 0, role = '' ) {
+            this.color = color;
+            this.radius = ballrad;
+            this.center = [ centerX, centerY ]; 
+            this.velocity = [ 0, 0 ]; 
+            this.role = role;
+            this.isOut = 0;
+            this.draw = function() {
+               if ( this.isOut ) {
+                  return 0;
+               }
+               context.beginPath();
+               context.fillStyle = this.color;
+               pxy = coordToPoint( this.center );
+               context.arc( pxy[0], pxy[1], this.radius * metric, 0, 2 * Math.PI, false );
+               context.closePath();
+               context.fill();
+            };
+            this.distance = function( coords ) {
+               return vlen( [coords[0] - this.center[0], coords[1] - this.center[1]] ) ;
+            }
+            this.isInside = function( coords ) {
+               if ( this.isOut ) {
+                  return 0;
+               }
+               return this.distance( coords ) <= this.radius;
+            }
             this.step = function() {
+               if ( this.isOut ) {
+                  return 0;
+               }
                this.center[0] = this.center[0] + this.velocity[0];
                this.center[1] = this.center[1] + this.velocity[1];
                this.velocity[0] *= velocity_friction;
@@ -90,9 +124,15 @@
                }
             }
             this.isInMotion = function() {
+               if ( this.isOut ) {
+                  return 0;
+               }
                return !( ( this.velocity[0] == 0 ) && ( this.velocity[1] == 0 ) );
             }
             this.collisionToWall = function( wallp, normal ) {
+               if ( this.isOut ) {
+                  return 0;
+               }
                var dist = [ this.center[0] - wallp[0], this.center[1] - wallp[1] ];
                var verts = dist[0] * normal[0]+ dist[1] * normal[1];
                var vert = [ verts * normal[0], verts * normal[1] ];
@@ -106,6 +146,12 @@
                }
             }
             this.collisionBetweenBalls = function( ball2 ) {
+               if ( this.isOut ) {
+                  return 0;
+               }
+               if ( ball2.isOut ) {
+                  return 0;
+               }
                var dist = [ ball2.center[0] - this.center[0], ball2.center[1] - this.center[1] ];
                var distl = vlen( dist );
                var correction = 2 * ballrad - distl;
@@ -144,8 +190,17 @@
                            new Ball( "puple",   0.4+8*ballrad,  8*ballrad )
 
                          ];
+            this.holes = [ new Hole( -1, -0.5 ),
+                           new Hole( -1,  0.5 ),
+                           new Hole(  0,  0.5 ),
+                           new Hole( +1,  0.5 ),
+                           new Hole( +1, -0.5 ),
+                           new Hole(  0, -0.5 ) ];
             this.draw = function() {
                this.table.draw();
+               for ( var i = 0; i < this.holes.length; ++i ) {
+                  this.holes[i].draw();
+               }
                for ( var i = 0; i < this.balls.length; ++i ) {
                   this.balls[i].draw();
                }
@@ -166,6 +221,15 @@
                   for ( var i = 0; i < this.balls.length; ++i ) {
                      for ( var j = i + 1; j < this.balls.length; ++j ) {
                         this.balls[i].collisionBetweenBalls( this.balls[j] );
+                     }
+                  }
+
+                  // Is a ball in hole?
+                  for ( var i = 0; i < this.holes.length; ++i ) {
+                     for ( var j = 0; j < this.balls.length; ++j ) {
+                        if ( this.holes[i].isInside( this.balls[j].center ) ) {
+                           this.balls[j].isOut = 1;
+                        }
                      }
                   }
                }
