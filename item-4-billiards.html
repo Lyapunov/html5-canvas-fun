@@ -54,17 +54,22 @@
          function Ball(color, centerX = 0, centerY = 0, role = '' ) {
             this.color = color;
             this.radius = ballrad;
-            this.centerX = centerX; 
-            this.centerY = centerY;
+            this.center = [ centerX, centerY ]; 
             this.role = role;
             this.draw = function() {
                context.beginPath();
                context.fillStyle = this.color;
-               pxy = coordToPoint( [ this.centerX, this.centerY ] );
+               pxy = coordToPoint( this.center );
                context.arc( pxy[0], pxy[1], this.radius * metric, 0, 2 * Math.PI, false );
                context.closePath();
                context.fill();
             };
+            this.distance = function( coords ) {
+               return Math.sqrt( Math.pow( coords[0] - this.center[0], 2 ) + Math.pow( coords[1] - this.center[1], 2 ) );
+            }
+            this.isInside = function( coords ) {
+               return this.distance( coords ) <= this.radius;
+            }
          }
 
          function BallsAndTable() {
@@ -92,7 +97,19 @@
                for ( var i = 0; i < this.balls.length; ++i ) {
                   this.balls[i].draw();
                }
-            }
+            };
+            this.hit = function( coordA, coordB ) {
+               //Coord A must be inside the white ball
+               for ( var i = 0; i < this.balls.length; ++i ) {
+                  if ( this.balls[i].role == 'main' ) {
+                     if ( this.balls[i].isInside( coordA ) ) {
+                        alert( 'hello' );
+                        return 1;
+                     }
+                  }
+               }
+               return 0;
+            };
          }
 
          var myBallsAndTable = new BallsAndTable();
@@ -108,7 +125,7 @@
                context.beginPath();
                var fpp = coordToPoint( firstHitPos );
                var spp = coordToPoint( secondHitPos );
-               context.moveTo( fpp[0], fpp[1]  );
+               context.moveTo( fpp[0], fpp[1] );
                context.lineTo( spp[0], spp[1] );
 
                context.closePath();
@@ -145,6 +162,10 @@
 
          mainItem.onmouseup = function(event) {
             isMouseDown = 0;
+            if ( !myBallsAndTable.hit( firstHitPos, secondHitPos ) ) {
+               // more user friendly
+               myBallsAndTable.hit( secondHitPos, firstHitPos );
+            }
             firstHitPos = [];
             secondHitPos = [];
          };
