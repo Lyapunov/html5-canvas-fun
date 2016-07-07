@@ -23,6 +23,9 @@
          var firstHitPos  = [];
          var secondHitPos = [];
          var ballrad = 0.02;
+         var velocity_downscale = 50;
+         var velocity_cutoff = 0.001;
+         var velocity_friction = 0.996;
 
          function coordToPoint( coords ) {
             return [ screenWidth  / 2 + ( coords[0] ) * metric, screenHeight / 2 + ( coords[1] ) * metric ];
@@ -55,6 +58,7 @@
             this.color = color;
             this.radius = ballrad;
             this.center = [ centerX, centerY ]; 
+            this.velocity = [ 0, 0 ]; 
             this.role = role;
             this.draw = function() {
                context.beginPath();
@@ -69,6 +73,15 @@
             }
             this.isInside = function( coords ) {
                return this.distance( coords ) <= this.radius;
+            }
+            this.move = function() {
+               this.center[0] = this.center[0] + this.velocity[0];
+               this.center[1] = this.center[1] + this.velocity[1];
+               this.velocity[0] *= velocity_friction;
+               this.velocity[1] *= velocity_friction;
+               if ( Math.pow( this.velocity[0], 2 ) + Math.pow( this.velocity[1], 2 ) < velocity_cutoff * velocity_cutoff ) {
+                  this.velocity = [0, 0];
+               }
             }
          }
 
@@ -98,12 +111,17 @@
                   this.balls[i].draw();
                }
             };
+            this.move = function() {
+               for ( var i = 0; i < this.balls.length; ++i ) {
+                  this.balls[i].move();
+               }
+            };
             this.hit = function( coordA, coordB ) {
                //Coord A must be inside the white ball
                for ( var i = 0; i < this.balls.length; ++i ) {
                   if ( this.balls[i].role == 'main' ) {
                      if ( this.balls[i].isInside( coordA ) ) {
-                        alert( 'hello' );
+                        this.balls[i].velocity = [ ( coordA[0] - coordB[0] ) / velocity_downscale, ( coordA[1] - coordB[1] ) / velocity_downscale ];
                         return 1;
                      }
                   }
@@ -139,6 +157,7 @@
                drawBackground();
                myBallsAndTable.draw();
                drawCurrentHit();
+               myBallsAndTable.move();
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / 50 );
          }
