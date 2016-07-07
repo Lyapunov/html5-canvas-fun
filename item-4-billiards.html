@@ -42,7 +42,7 @@
 
          function Table(color) {
             this.color = color;
-            this.corners = [ [ -0.5, -1 ], [ -0.5, +1 ], [ +0.5, +1 ], [ +0.5, -1 ] ];
+            this.corners = [ [ -1, -0.5 ], [ -1, +0.5 ], [ +1, +0.5 ], [ +1, -0.5 ] ];
             this.normals = [ [ 0, +1 ],    [ -1, 0 ]   , [ 0, -1 ],    [ +1, 0 ] ];
             this.draw = function() {
                context.fillStyle = this.color;
@@ -126,22 +126,22 @@
 
          function BallsAndTable() {
             this.table = new Table( "green" );
-            this.balls = [ new Ball( "white", 0, -0.4, "main" ),
-                           new Ball( "red",                0, 0.4 ),
-                           new Ball( "yellow",    -2*ballrad, 0.4+2*ballrad ),
-                           new Ball( "purple",     2*ballrad, 0.4+2*ballrad ),
-                           new Ball( "blue",      -4*ballrad, 0.4+4*ballrad ),
-                           new Ball( "orange",             0, 0.4+4*ballrad ),
-                           new Ball( "blue",       4*ballrad, 0.4+4*ballrad ),
-                           new Ball( "red",       -6*ballrad, 0.4+6*ballrad ),
-                           new Ball( "purple",    -2*ballrad, 0.4+6*ballrad ),
-                           new Ball( "yellow",     2*ballrad, 0.4+6*ballrad ),
-                           new Ball( "red",        6*ballrad, 0.4+6*ballrad ),
-                           new Ball( "purple",    -8*ballrad, 0.4+8*ballrad ),
-                           new Ball( "orange",    -4*ballrad, 0.4+8*ballrad ),
-                           new Ball( "blue",               0, 0.4+8*ballrad ),
-                           new Ball( "orange",     4*ballrad, 0.4+8*ballrad ),
-                           new Ball( "puple",      8*ballrad, 0.4+8*ballrad )
+            this.balls = [ new Ball( "white", -0.4, 0, "main" ),
+                           new Ball( "red",               0.4, 0 ),
+                           new Ball( "yellow",  0.4+2*ballrad, -2*ballrad ),
+                           new Ball( "purple",  0.4+2*ballrad,  2*ballrad ),
+                           new Ball( "blue",    0.4+4*ballrad, -4*ballrad ),
+                           new Ball( "orange",  0.4+4*ballrad,          0 ),
+                           new Ball( "blue",    0.4+4*ballrad,  4*ballrad ),
+                           new Ball( "red",     0.4+6*ballrad, -6*ballrad ),
+                           new Ball( "purple",  0.4+6*ballrad, -2*ballrad ),
+                           new Ball( "yellow",  0.4+6*ballrad,  2*ballrad ),
+                           new Ball( "red",     0.4+6*ballrad,  6*ballrad ),
+                           new Ball( "purple",  0.4+8*ballrad, -8*ballrad ),
+                           new Ball( "orange",  0.4+8*ballrad, -4*ballrad ),
+                           new Ball( "blue",    0.4+8*ballrad,          0 ),
+                           new Ball( "orange",  0.4+8*ballrad,  4*ballrad ),
+                           new Ball( "puple",   0.4+8*ballrad,  8*ballrad )
 
                          ];
             this.draw = function() {
