@@ -83,6 +83,9 @@
                   this.velocity = [0, 0];
                }
             }
+            this.isInMotion = function() {
+               return !( ( this.velocity[0] == 0 ) && ( this.velocity[1] == 0 ) );
+            }
          }
 
          function BallsAndTable() {
@@ -116,6 +119,14 @@
                   this.balls[i].move();
                }
             };
+            this.isSomethingInMotion = function() {
+               for ( var i = 0; i < this.balls.length; ++i ) {
+                  if ( this.balls[i].isInMotion() ) {
+                     return 1;
+                  }
+               }
+               return 0;
+            }
             this.hit = function( coordA, coordB ) {
                //Coord A must be inside the white ball
                for ( var i = 0; i < this.balls.length; ++i ) {
@@ -176,14 +187,18 @@
 
          mainItem.onmousedown = function(event) {
             isMouseDown = 1;
-            firstHitPos = pointToCoord( [ event.clientX, event.clientY ] );
+            if ( !myBallsAndTable.isSomethingInMotion() ) {
+               firstHitPos = pointToCoord( [ event.clientX, event.clientY ] );
+            }
          };
 
          mainItem.onmouseup = function(event) {
             isMouseDown = 0;
-            if ( !myBallsAndTable.hit( firstHitPos, secondHitPos ) ) {
-               // more user friendly
-               myBallsAndTable.hit( secondHitPos, firstHitPos );
+            if ( firstHitPos.length > 0 ) {
+               if ( !myBallsAndTable.hit( firstHitPos, secondHitPos ) ) {
+                  // more user friendly
+                  myBallsAndTable.hit( secondHitPos, firstHitPos );
+               }
             }
             firstHitPos = [];
             secondHitPos = [];
@@ -191,7 +206,9 @@
 
          mainItem.onmousemove = function(event) {
             if ( isMouseDown ) {
-               secondHitPos = pointToCoord( [ event.clientX, event.clientY ] );
+               if ( firstHitPos.length > 0 ) {
+                  secondHitPos = pointToCoord( [ event.clientX, event.clientY ] );
+               }
             }
          };
 
