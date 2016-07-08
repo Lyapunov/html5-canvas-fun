@@ -45,9 +45,9 @@
             context.fill();
          }
 
-         function recursivePenroseDraw( vertices, colorSelector, level ) {
+         function recursivePenroseDraw( vertices, rectangleType, level ) {
             if ( level == 0 ) {
-               drawPoly( vertices, mainColors[ colorSelector ] );
+               drawPoly( vertices, mainColors[ rectangleType ] );
             }
          }
 
