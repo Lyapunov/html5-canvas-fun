@@ -25,7 +25,7 @@
          var littleCounter = 0;
          var levelCounter = 0;
          var dir = 1;
-         var maxLevel = 10;
+         var maxLevel = 8;
 
          function getPixel( coords ) {
             return [ screenWidth / 2 + coords[0] * screenScale, screenHeight / 2 + coords[1] * screenScale ];
@@ -61,13 +61,13 @@
 
                   var newVertex1 = [ vertices[2][0] * magicA + vertices[0][0] * magicB,
                                     vertices[2][1] * magicA + vertices[0][1] * magicB ];
-                  recursivePenroseDraw( [ vertices[0], newVertex0, newVertex1 ], 0, level - 1 );
-                  recursivePenroseDraw( [ vertices[1], vertices[2], newVertex1 ], 0, level - 1 );
+                  recursivePenroseDraw( [ vertices[0], newVertex1, newVertex0 ], 0, level - 1 );
+                  recursivePenroseDraw( [ vertices[1], newVertex1, vertices[2] ], 0, level - 1 );
                   recursivePenroseDraw( [ newVertex0, vertices[1], newVertex1 ], 1, level - 1 );
                } else {
                   var newVertex2 = [ vertices[1][0] * magicB + vertices[2][0] * magicA,
                                      vertices[1][1] * magicB + vertices[2][1] * magicA ];
-                  recursivePenroseDraw( [ vertices[1], newVertex2, vertices[0] ], 0, level - 1 );
+                  recursivePenroseDraw( [ vertices[1], vertices[0], newVertex2 ], 0, level - 1 );
                   recursivePenroseDraw( [ newVertex2, vertices[2], vertices[0] ], 1, level - 1 );
                }
             }
