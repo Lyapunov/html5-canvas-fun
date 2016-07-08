@@ -22,6 +22,10 @@
          var mainColors   = [ 'yellow', 'purple' ];
          var magicA = ( Math.sqrt( 5 ) - 1 ) / 2;
          var magicB = ( 3 - Math.sqrt( 5 ) ) / 2;
+         var littleCounter = 0;
+         var levelCounter = 0;
+         var dir = 1;
+         var maxLevel = 10;
 
          function getPixel( coords ) {
             return [ screenWidth / 2 + coords[0] * screenScale, screenHeight / 2 + coords[1] * screenScale ];
@@ -68,8 +72,18 @@
          // common functions 
          function drawScene() {
             setTimeout( function() {
+               ++littleCounter;
+               if ( ( littleCounter % 50 ) == 0 ) {
+                  if ( levelCounter == 0 ) {
+                     dir = +1;
+                  }
+                  if ( levelCounter == maxLevel ) {
+                     dir = -1;
+                  }
+                  levelCounter = levelCounter + dir;
+               }
                drawBackground();
-               recursivePenroseDraw( mainTriangle, 0, 0 );
+               recursivePenroseDraw( mainTriangle, 0, levelCounter );
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / 50);
          }
