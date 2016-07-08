@@ -20,6 +20,8 @@
          var ANIMATION;  // ??
          var mainTriangle = [ [ 0, -0.5 * 3/2 ], [-0.3249196962329064 * 3/2, +0.5 * 3/2], [+0.3249196962329064* 3/2, +0.5 * 3/2] ];
          var mainColors   = [ 'yellow', 'purple' ];
+         var magicA = ( Math.sqrt( 5 ) - 1 ) / 2;
+         var magicB = ( 3 - Math.sqrt( 5 ) ) / 2;
 
          function getPixel( coords ) {
             return [ screenWidth / 2 + coords[0] * screenScale, screenHeight / 2 + coords[1] * screenScale ];
@@ -48,6 +50,18 @@
          function recursivePenroseDraw( vertices, rectangleType, level ) {
             if ( level == 0 ) {
                drawPoly( vertices, mainColors[ rectangleType ] );
+            } else {
+               if ( rectangleType == 0 ) {
+                  var newVertex = [ vertices[2][0] * magicA + vertices[0][0] * magicB,
+                                    vertices[2][1] * magicA + vertices[0][1] * magicB ];
+                  recursivePenroseDraw( [ vertices[1], newVertex, vertices[2] ], 0, level - 1 );
+                  recursivePenroseDraw( [ newVertex, vertices[0], vertices[1] ], 1, level - 1 );
+               } else {
+                  var newVertex = [ vertices[1][0] * magicA + vertices[2][0] * magicB,
+                                    vertices[1][1] * magicA + vertices[2][1] * magicB ];
+                  recursivePenroseDraw( [ vertices[1], newVertex, vertices[0] ], 0, level - 1 );
+                  recursivePenroseDraw( [ newVertex, vertices[2], vertices[0] ], 1, level - 1 );
+               }
             }
          }
 
