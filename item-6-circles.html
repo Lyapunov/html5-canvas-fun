@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html>
+   <head>
+      <style>
+         body {
+            margin : 0px;
+            padding: 0px;
+         }
+      </style>
+   </head>
+   <body>
+   	<canvas id="canvas" width="500" height="500"></canvas>
+
+      <script>
+         var mainItem     = document.getElementById('canvas');
+         var context      = mainItem.getContext('2d');
+         var screenWidth  = mainItem.width  = window.innerWidth  - 20;
+         var screenHeight = mainItem.height = window.innerHeight - 20;
+         var screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+         var ANIMATION;  // ??
+
+         function getPixel( coords ) {
+            return [ screenWidth / 2 + coords[0] * screenScale, screenHeight / 2 + coords[1] * screenScale ];
+         }
+
+         function drawBackground() {
+            context.fillStyle = "black";
+            context.fillRect(0,0,screenWidth,screenHeight);
+         }
+
+         function drawPoly( vertices, color ) {
+            context.fillStyle = color;
+            context.beginPath();
+            for (var j = 0; j < vertices.length; ++j ) {
+               myPixel = getPixel( vertices[j] );
+               if ( j == 0 ) {
+                  context.moveTo( myPixel[0], myPixel[1] );
+               } else {
+                  context.lineTo( myPixel[0], myPixel[1] );
+               }
+            }
+            context.closePath();
+            context.fill();
+         }
+
+         // common functions 
+         function drawScene() {
+            setTimeout( function() {
+               drawBackground();
+               ANIMATION = requestAnimationFrame(drawScene);
+            }, 1000 / 50);
+         }
+
+         function initCanvas() {
+            screenWidth  = mainItem.width  = window.innerWidth  - 20;
+            screenHeight = mainItem.height = window.innerHeight - 20;
+            screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+
+            // starting the engine only if it is not running
+            if ( !ANIMATION ) {
+               drawScene();
+            }
+         }
+
+         //init
+         (function() {
+            initCanvas();
+            addEventListener('resize', initCanvas, false);
+         })();
+      </script>
+   </body>
+</html>
