@@ -17,10 +17,34 @@
          var screenWidth  = mainItem.width  = window.innerWidth  - 20;
          var screenHeight = mainItem.height = window.innerHeight - 20;
          var screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+         var maxRad       = Math.max( screenWidth, screenHeight ) / 2;
          var ANIMATION;  // ??
+         var phase = 0;
+         var Resolution   = 5;
 
          function getPixel( coords ) {
             return [ screenWidth / 2 + coords[0] * screenScale, screenHeight / 2 + coords[1] * screenScale ];
+         }
+
+         function getColor( rgb ) {
+            return "#"+( rgb[0] ).toString(16) + ( rgb[1] ).toString(16) + ( rgb[2] ).toString(16);
+         }
+
+         function drawCircle( center, radius, rgb ) {
+            pxy = getPixel( center );
+            context.strokeStyle = getColor( rgb );
+            context.beginPath();
+            context.arc( pxy[0], pxy[1], radius, 0, 2 * Math.PI, false );
+            context.closePath();
+
+            context.lineWidth = Resolution + 2;
+            context.stroke();
+         }
+
+         function drawCircles() {
+            for ( var i = Math.round( maxRad / Resolution ); i > 0; --i ) {
+               drawCircle( [0,0], i * Resolution, [ ( i + phase ) % 16, 0, 0] ); 
+            }
          }
 
          function drawBackground() {
@@ -28,33 +52,23 @@
             context.fillRect(0,0,screenWidth,screenHeight);
          }
 
-         function drawPoly( vertices, color ) {
-            context.fillStyle = color;
-            context.beginPath();
-            for (var j = 0; j < vertices.length; ++j ) {
-               myPixel = getPixel( vertices[j] );
-               if ( j == 0 ) {
-                  context.moveTo( myPixel[0], myPixel[1] );
-               } else {
-                  context.lineTo( myPixel[0], myPixel[1] );
-               }
-            }
-            context.closePath();
-            context.fill();
-         }
-
          // common functions 
          function drawScene() {
             setTimeout( function() {
-               drawBackground();
+               ++phase;
+               drawCircles();
                ANIMATION = requestAnimationFrame(drawScene);
-            }, 1000 / 50);
+            }, 1000 / 8 );
          }
 
          function initCanvas() {
             screenWidth  = mainItem.width  = window.innerWidth  - 20;
             screenHeight = mainItem.height = window.innerHeight - 20;
             screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+            maxRad       = Math.sqrt( screenWidth * screenWidth + screenHeight * screenHeight ) / 2;
+
+            // an empty black canvas only one time
+            drawBackground();
 
             // starting the engine only if it is not running
             if ( !ANIMATION ) {
