@@ -24,7 +24,7 @@
 
          var phase = phaseStart;
          var Resolution   = 5;
-         var psychedric = 0;
+         var psychedelic = 0;
 
          function getPixel( coords ) {
             return [ screenWidth / 2 + coords[0] * screenScale, screenHeight / 2 + coords[1] * screenScale ];
@@ -51,7 +51,7 @@
                if ( Math.round( ( i + phase ) / 16 + 0.5 ) % 2 ) {
                   currentValue = 15 - currentValue;
                }
-               if ( psychedric ) {
+               if ( psychedelic ) {
                   drawCircle( [0,0], i * Resolution, [ 15, 15 - currentValue, currentValue ] ); 
                } else {
                   drawCircle( [0,0], i * Resolution, [ 0, currentValue, 0 ] ); 
