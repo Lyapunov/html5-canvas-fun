@@ -19,8 +19,12 @@
          var screenScale  = Math.min( screenWidth, screenHeight ) / 2;
          var maxRad       = Math.max( screenWidth, screenHeight ) / 2;
          var ANIMATION;  // ??
-         var phase = 0;
+         var phaseStart = 17000;
+         var phaseLimit = 1000;
+
+         var phase = phaseStart;
          var Resolution   = 5;
+         var psychedric = 0;
 
          function getPixel( coords ) {
             return [ screenWidth / 2 + coords[0] * screenScale, screenHeight / 2 + coords[1] * screenScale ];
@@ -43,7 +47,15 @@
 
          function drawCircles() {
             for ( var i = Math.round( maxRad / Resolution ); i > 0; --i ) {
-               drawCircle( [0,0], i * Resolution, [ ( i + phase ) % 16, 0, 0] ); 
+               var currentValue = ( i + phase ) % 16;
+               if ( Math.round( ( i + phase ) / 16 + 0.5 ) % 2 ) {
+                  currentValue = 15 - currentValue;
+               }
+               if ( psychedric ) {
+                  drawCircle( [0,0], i * Resolution, [ 15, 15 - currentValue, currentValue ] ); 
+               } else {
+                  drawCircle( [0,0], i * Resolution, [ 0, currentValue, 0 ] ); 
+               }
             }
          }
 
@@ -55,7 +67,10 @@
          // common functions 
          function drawScene() {
             setTimeout( function() {
-               ++phase;
+               --phase;
+               if ( phaseLimit == phase ) {
+                  phase = phaseStart;
+               }
                drawCircles();
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / 8 );
