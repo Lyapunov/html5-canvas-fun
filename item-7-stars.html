@@ -65,16 +65,6 @@
             }
          }
 
-         function moveStars() {
-            for ( var i = 0; i < stars.length; ++i ) {
-               stars[i][2] = stars[i][2] - speed;
-               if ( stars[i][2] < viewZ + 5 * speed ) {
-                  stars[i] = myRandomXYZ();
-                  stars[i][2] = starMaxZDist + viewZ;
-               }
-            }
-         }
-
          function projection( xyz ) {
             var dz = xyz[2] - viewZ; 
             var sx = xyz[0] / dz;
@@ -84,6 +74,19 @@
                color = 15 - Math.floor( 15 * ( xyz[2] - starZDistOfFading ) / ( starMaxZDist - starZDistOfFading ) );
             }
             return [ sx * screenScale + screenWidth / 2, sy * screenScale + screenHeight / 2, color ];
+         }
+
+         function moveStars() {
+            for ( var i = 0; i < stars.length; ++i ) {
+               stars[i][2] = stars[i][2] - speed;
+               var isTooFar = ( stars[i][2] < viewZ + 5 * speed );
+               var xyc = projection( stars[i] );
+               var isNotVisible = ( xyc[0] < 0 || xyc[0] > screenWidth || xyc[1] < 0 || xyc[1] > screenHeight );
+               if ( isTooFar || isNotVisible ) {
+                  stars[i] = myRandomXYZ();
+                  stars[i][2] = starMaxZDist + viewZ;
+               }
+            }
          }
 
          function getColor( rgb ) {
@@ -102,8 +105,6 @@
 
          function drawColoredPixel( xyc ) {
             context.fillStyle = getColor( [ xyc[2],xyc[2], xyc[2] ] );
-
-//            context.fillStyle = getColor( [ 5,5,5 ] );
             context.fillRect( xyc[0], xyc[1], pixelSize, pixelSize );
          }
 
