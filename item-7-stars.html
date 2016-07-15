@@ -44,10 +44,12 @@
 
          function myRandomXYZ() {
             var first = myRandom();
-            var secs = myRandom();
-            var x = starMinX + ( first % 255 ) * ( starMaxX - starMinX ) / 255.0;
-            var y = starMinY + ( first / 255 ) * ( starMaxY - starMinY ) / 255.0;
-            var z = viewZ + starMaxZDist * ( secs % 255 ) / 255.0;
+            var firstA = first % 255;
+            var firstB = first / 255;
+            var secs = myRandom() % 255;
+            var x = starMinX + ( firstA ) * ( starMaxX - starMinX ) / 255.0;
+            var y = starMinY + ( firstB ) * ( starMaxY - starMinY ) / 255.0;
+            var z = viewZ + starMaxZDist * ( secs ) / 255.0;
             return [x, y, z];
          }
 
