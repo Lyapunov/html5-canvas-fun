@@ -19,20 +19,21 @@
          var screenHeight = mainItem.height = window.innerHeight - 20;
          var screenScale  = Math.min( screenWidth, screenHeight ) / 2;
 
-         var fps = 25;
+         var fps = 20;
          var ANIMATION;
 
          var viewZ = -4;
          var pixelSize = 3;
 
          var stars = [];
-         var starMinX = -6;
-         var starMaxX = +6;
-         var starMinY = -6;
-         var starMaxY = +6;
+         var starMinX = -30;
+         var starMaxX = +30;
+         var starMinY = -30;
+         var starMaxY = +30;
          var starZDistOfFading = 0;
-         var starMaxZDist = 12;
+         var starMaxZDist = 30;
          var starsNumber = 200;
+         var speed = 0.1;
 
          // Just for fun, using the 'pseudo' random number generator of Sinclair ZX81
          var seed = 131;
@@ -56,6 +57,16 @@
          function initStars() {
             while ( stars.length < starsNumber ) {
                stars.push( myRandomXYZ() );
+            }
+         }
+
+         function moveStars() {
+            for ( var i = 0; i < stars.length; ++i ) {
+               stars[i][2] = stars[i][2] - speed;
+               if ( stars[i][2] < viewZ + 5 * speed ) {
+                  stars[i] = myRandomXYZ();
+                  stars[i][2] = starMaxZDist;
+               }
             }
          }
 
@@ -101,6 +112,7 @@
             setTimeout( function() {
                drawBackground();
                drawStars();
+               moveStars();
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / fps );
          }
