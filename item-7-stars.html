@@ -24,6 +24,7 @@
 
          var viewZ = -4;
          var pixelSize = 3;
+         var eraseGap = 2;
 
          var stars = [];
          var starMinX = -30;
@@ -90,6 +91,11 @@
             context.fillRect( xy[0], xy[1], pixelSize, pixelSize );
          }
 
+         function removePixel( xy ) {
+            context.fillStyle = "black";
+            context.fillRect( xy[0] - eraseGap, xy[1] - eraseGap, pixelSize + eraseGap * 2, pixelSize + eraseGap * 2 );
+         }
+
          function drawColoredPixel( xyc ) {
             context.fillStyle = getColor( [ xyc[2],xyc[2], xyc[2] ] );
             context.fillRect( xyc[0], xyc[1], pixelSize, pixelSize );
@@ -107,12 +113,19 @@
                } );
          }
 
+         function removeStars() {
+            stars.forEach(
+               function( xyz ) {
+                  removePixel( projection( xyz ) );
+               } );
+         }
+
          // common functions 
          function drawScene() {
             setTimeout( function() {
-               drawBackground();
-               drawStars();
+               removeStars();
                moveStars();
+               drawStars();
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / fps );
          }
@@ -121,6 +134,8 @@
             screenWidth  = mainItem.width  = window.innerWidth  - 20;
             screenHeight = mainItem.height = window.innerHeight - 20;
             screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+
+            drawBackground();
 
             // starting the engine only if it is not running
             if ( !ANIMATION ) {
