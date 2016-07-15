@@ -44,7 +44,7 @@
             return next;
          }
 
-         function myRandomXYZ() {
+         function myRandomXYZ( back = 0 ) {
             var first = myRandom();
             var firstA = first % 255;
             var firstB = first / 255;
@@ -52,6 +52,9 @@
             var x = starMinX + ( firstA ) * ( starMaxX - starMinX ) / 255.0;
             var y = starMinY + ( firstB ) * ( starMaxY - starMinY ) / 255.0;
             var z = viewZ + starMaxZDist * ( secs ) / 255.0;
+            if ( back ) {
+               z = viewZ + starMaxZDist * ( 0.9 + 0.1 * ( secs  ) / 255.0 );
+            }
             return [x, y, z];
          }
 
@@ -83,8 +86,7 @@
                var xyc = projection( stars[i] );
                var isNotVisible = ( xyc[0] < 0 || xyc[0] > screenWidth || xyc[1] < 0 || xyc[1] > screenHeight );
                if ( isTooFar || isNotVisible ) {
-                  stars[i] = myRandomXYZ();
-                  stars[i][2] = starMaxZDist + viewZ;
+                  stars[i] = myRandomXYZ( 1 );
                }
             }
          }
