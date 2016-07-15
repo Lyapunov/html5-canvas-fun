@@ -25,12 +25,35 @@
          var viewZ = -4;
          var pixelSize = 3;
 
+         var stars = [];
+         var starMinX = -6;
+         var starMaxX = +6;
+         var starMinY = -6;
+         var starMaxY = +6;
+         var starMaxZDist = 12;
+         var starsNumber = 200;
+
          // Just for fun, using the 'pseudo' random number generator of Sinclair ZX81
          var seed = 131;
          function myRandom() {
             var next = ( 75 * seed ) % 65537;
             seed = next;
             return next;
+         }
+
+         function myRandomXYZ() {
+            var first = myRandom();
+            var second = myRandom();
+            var x = starMinX + ( first % 255 ) * ( starMaxX - starMinX ) / 255.0;
+            var y = starMinY + ( first / 255 ) * ( starMaxY - starMinY ) / 255.0;
+            var z = viewZ + starMaxZDist * ( second % 255 ) / 255.0;
+            return [x, y, z];
+         }
+
+         function initStars() {
+            while ( stars.length < starsNumber ) {
+               stars.push( myRandomXYZ() );
+            }
          }
 
          function projection( xyz ) {
@@ -45,23 +68,23 @@
             context.fillRect( xy[0], xy[1], pixelSize, pixelSize );
          }
 
-
          function drawBackground() {
             context.fillStyle = "black";
             context.fillRect(0,0,screenWidth,screenHeight);
+         }
+
+         function drawStars() {
+            stars.forEach(
+               function( xyz ) {
+                  drawPixel( projection( xyz ) );
+               } );
          }
 
          // common functions 
          function drawScene() {
             setTimeout( function() {
                drawBackground();
-               for ( var i = -1; i <= 1; ++i ) {
-                  for ( var j = -1; j <= 1; ++j ) {
-                     for ( var k = -1; k <= 1; ++k ) {
-                        drawPixel( projection( [i, j, k] ) );
-                     }
-                  }
-               }
+               drawStars();
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / fps );
          }
@@ -79,6 +102,7 @@
 
          //init
          (function() {
+            initStars();
             initCanvas();
             addEventListener('resize', initCanvas, false);
          })();
