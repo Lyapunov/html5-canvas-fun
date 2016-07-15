@@ -30,6 +30,7 @@
          var starMaxX = +6;
          var starMinY = -6;
          var starMaxY = +6;
+         var starZDistOfFading = 0;
          var starMaxZDist = 12;
          var starsNumber = 200;
 
@@ -60,7 +61,12 @@
             var dz = xyz[2] - viewZ; 
             var sx = xyz[0] / dz;
             var sy = xyz[1] / dz;
-            return [ sx * screenScale + screenWidth / 2, sy * screenScale + screenHeight / 2 ];
+            var color = 15;
+            if ( xyz[2] > starZDistOfFading ) {
+               color = color - 15 * ( xyz[2] - starZDistOfFading ) / ( starMaxZDist - starZDistOfFading )
+               
+            }
+            return [ sx * screenScale + screenWidth / 2, sy * screenScale + screenHeight / 2, color ];
          }
 
          function getColor( rgb ) {
