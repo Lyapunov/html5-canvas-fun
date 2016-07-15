@@ -44,10 +44,10 @@
 
          function myRandomXYZ() {
             var first = myRandom();
-            var second = myRandom();
+            var secs = myRandom();
             var x = starMinX + ( first % 255 ) * ( starMaxX - starMinX ) / 255.0;
             var y = starMinY + ( first / 255 ) * ( starMaxY - starMinY ) / 255.0;
-            var z = viewZ + starMaxZDist * ( second % 255 ) / 255.0;
+            var z = viewZ + starMaxZDist * ( secs % 255 ) / 255.0;
             return [x, y, z];
          }
 
@@ -77,6 +77,11 @@
             context.fillRect( xy[0], xy[1], pixelSize, pixelSize );
          }
 
+         function drawColoredPixel( xyc ) {
+            context.fillStyle = getColor( [ xyc[2],xyc[2], xyc[2] ] );
+            context.fillRect( xyc[0], xyc[1], pixelSize, pixelSize );
+         }
+
          function drawBackground() {
             context.fillStyle = "black";
             context.fillRect(0,0,screenWidth,screenHeight);
@@ -85,7 +90,7 @@
          function drawStars() {
             stars.forEach(
                function( xyz ) {
-                  drawPixel( projection( xyz ) );
+                  drawColoredPixel( projection( xyz ) );
                } );
          }
 
