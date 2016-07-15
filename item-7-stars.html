@@ -63,6 +63,10 @@
             return [ sx * screenScale + screenWidth / 2, sy * screenScale + screenHeight / 2 ];
          }
 
+         function getColor( rgb ) {
+            return "#"+( rgb[0] ).toString(16) + ( rgb[1] ).toString(16) + ( rgb[2] ).toString(16);
+         }
+
          function drawPixel( xy ) {
             context.fillStyle = "white";
             context.fillRect( xy[0], xy[1], pixelSize, pixelSize );
