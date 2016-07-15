@@ -64,7 +64,6 @@
             var color = 15;
             if ( xyz[2] > starZDistOfFading ) {
                color = color - 15 * ( xyz[2] - starZDistOfFading ) / ( starMaxZDist - starZDistOfFading )
-               
             }
             return [ sx * screenScale + screenWidth / 2, sy * screenScale + screenHeight / 2, color ];
          }
