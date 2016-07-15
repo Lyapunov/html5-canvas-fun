@@ -25,6 +25,14 @@
          var viewZ = -4;
          var pixelSize = 3;
 
+         // Just for fun, using the 'pseudo' random number generator of Sinclair ZX81
+         var seed = 131;
+         function myRandom() {
+            var next = ( 75 * seed ) % 65537;
+            seed = next;
+            return next;
+         }
+
          function projection( xyz ) {
             var dz = xyz[2] - viewZ; 
             var sx = xyz[0] / dz;
