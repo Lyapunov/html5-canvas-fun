@@ -59,7 +59,7 @@
          }
 
          function sortStars() {
-            stars.sort( function(a,b) { a[3] > b[3]; } ); // ??? I don't know ascending or descending is better
+            stars.sort( function(a,b) { return a[2] < b[2]; } ); // correct, > is wrong (in the expected way)
          }
 
          function initStars() {
