@@ -6,6 +6,6 @@ When I'm getting bored, I entertain myself with coding raw, simple and nostalgic
 
 The topics of the stuffs in this repo are originating from '90s. They were popular at that time, and I found them in various sources. E.g. see item 7, it is the starfield screen saver of Windows 3.1. Or see the rotating cube. It seemed everyone was writing rotating cube. ( And rotating pyramids, rotating cylinders, rotating hexagonal prisms. No, I am not kidding. )
 
-I coded all of these once in Turbo Pascal and Asm. But hey, today I don't really need to pet a dinosaur to write a rotating cube. A web browser and a text editor do a much better job together. Using Html 5 Canvas + Javascript is just like mixing the good parts of everything I saw before. The basics are lightweight, getting to see the first primitives takes only 60 lines or so. Neato!
+I coded all of these once in Turbo Pascal and Asm. But hey, today I don't really need to pet a dinosaur to write a rotating cube. A web browser and a text editor do a much better job together. Using Html 5 Canvas + Javascript is just like mixing the good parts of everything I saw before. The basics are lightweight, getting to see the first primitives takes only 60 lines or so.
 
-If coding is not fun, then you do it in the wrong way.
+Neato!
