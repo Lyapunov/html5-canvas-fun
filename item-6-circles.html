@@ -81,6 +81,7 @@
             screenHeight = mainItem.height = window.innerHeight - 20;
             screenScale  = Math.min( screenWidth, screenHeight ) / 2;
             maxRad       = Math.sqrt( screenWidth * screenWidth + screenHeight * screenHeight ) / 2;
+            Resolution   = Math.max( Math.floor( maxRad / 140 ), 1 );
 
             // an empty black canvas only one time
             drawBackground();
