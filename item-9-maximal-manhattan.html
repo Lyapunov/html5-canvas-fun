@@ -20,11 +20,12 @@
          var screenHeight = mainItem.height = window.innerHeight - 20;
          var screenScale  = Math.min( screenWidth, screenHeight ) / 2;
 
-         var fps = 250;
+         var fps = 50;
          var ANIMATION;
 
          var vertices = [];
          var optimal = [];
+         var counter = 0;
          var pixelSize = 2;
          var numVertices = 200;
 
@@ -98,6 +99,12 @@
 
          // common functions 
          function drawScene() {
+            drawBackground( "black" );
+
+            if ( optimal.length > 0 ) {
+               draw_manhattan( vertices, optimal );
+            }
+
             vertices.forEach( function ( xy ) {
                context.fillStyle = "yellow";
                var sx = ( 1.6 * xy[0] - 0.8 ) * screenScale + screenWidth / 2;
@@ -110,7 +117,13 @@
             } else {
                if ( optimal.length <= 0 ) {
                   optimal = maximal_manhattan( vertices );
-                  draw_manhattan( vertices, optimal );
+                  counter = 250;
+               } else {
+                  --counter;
+                  if ( counter == 0 ) {
+                     vertices = [];
+                     optimal = [];
+                  }
                }
             }
 
@@ -123,8 +136,6 @@
             screenWidth  = mainItem.width  = window.innerWidth  - 20;
             screenHeight = mainItem.height = window.innerHeight - 20;
             screenScale  = Math.min( screenWidth, screenHeight ) / 2;
-
-            drawBackground( "black" );
 
             // starting the engine only if it is not running
             if ( !ANIMATION ) {
