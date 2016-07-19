@@ -20,16 +20,80 @@
          var screenHeight = mainItem.height = window.innerHeight - 20;
          var screenScale  = Math.min( screenWidth, screenHeight ) / 2;
 
-         var fps = 25;
+         var fps = 250;
          var ANIMATION;
 
          var vertices = [];
-         var pixelSize = 3;
+         var optimal = [];
+         var pixelSize = 2;
          var numVertices = 200;
 
          function drawBackground( color ) {
             context.fillStyle = color;
             context.fillRect(0,0,screenWidth,screenHeight);
+         }
+
+         function dist( pxy1, pxy2 ) {
+            return Math.abs( pxy1[0] - pxy2[0] ) + Math.abs( pxy1[0] - pxy2[0] );
+         }
+
+         function psum( points, pos ) {
+            return points[pos][0] + points[pos][1];
+         }
+
+         function nsum( points, pos ) {
+            return points[pos][0] - points[pos][1];
+         }
+
+         function search_min_max_on_set_with_function( points, func ) {
+            var p_min_pos = 0;
+            var p_max_pos = points.length - 1; // to make sure these two are not the same
+            for ( var i = 1; i < points.length; ++i ) {
+               var j = points.length - 1 - i;
+               if ( func( points, i ) < func( points, p_min_pos ) ) {
+                  p_min_pos = i;
+               }
+               if ( func( points, j ) > func( points, p_max_pos ) ) {
+                  p_max_pos = j;
+               }
+            }
+            return [ p_min_pos, p_max_pos ];
+         }
+
+         function maximal_manhattan( points ) {
+            if ( points.length < 2 ) {
+               return [];
+            }
+
+            var pair1 = search_min_max_on_set_with_function( points, psum );
+            var pair2 = search_min_max_on_set_with_function( points, nsum );
+            var dist1 = dist( points[pair1[0]], points[pair1[1]] );
+            var dist2 = dist( points[pair2[0]], points[pair2[1]] );
+
+            if ( dist1 < dist2 ) {
+               return pair1;
+            } else {
+               return pair2;
+            }
+         }
+
+         function draw_manhattan( points, pair ) {
+            var start = 0;
+            if ( points[pair[0]][0] > points[pair[1]][0] ) {
+               start = 1;
+            }
+
+            var sx1 = ( 1.6 * points[pair[0]][0] - 0.8 ) * screenScale + screenWidth / 2;
+            var sy1 = ( 1.6 * points[pair[0]][1] - 0.8 ) * screenScale + screenHeight / 2;
+            var sx2 = ( 1.6 * points[pair[1]][0] - 0.8 ) * screenScale + screenWidth / 2;
+            var sy2 = ( 1.6 * points[pair[1]][1] - 0.8 ) * screenScale + screenHeight / 2;
+
+            context.fillStyle = "green";
+            context.fillRect( sx1, sy1, Math.abs( sx2 - sx1 ) + pixelSize, pixelSize );
+            context.fillRect( sx2, Math.min( sy1, sy2 ), pixelSize, Math.abs( sy1 - sy2 ) + pixelSize );
+         }
+
+         function drawVertices() {
          }
 
          // common functions 
@@ -43,6 +107,11 @@
 
             if ( vertices.length < numVertices ) {
                vertices.push( [ Math.random(), Math.random()] );
+            } else {
+               if ( optimal.length <= 0 ) {
+                  optimal = maximal_manhattan( vertices );
+                  draw_manhattan( vertices, optimal );
+               }
             }
 
             setTimeout( function() {
