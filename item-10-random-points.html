@@ -18,9 +18,9 @@
 
          var screenWidth  = mainItem.width  = window.innerWidth  - 20;
          var screenHeight = mainItem.height = window.innerHeight - 20;
-         var screenScale  = Math.min( screenWidth, screenHeight ) / 2;
 
-         var fps = 25;
+         var fps = 30;
+         var speed = screenWidth * screenHeight / ( 20 * fps );
          var ANIMATION;
 
          // http://stackoverflow.com/questions/1484506/random-color-generator-in-javascript
@@ -36,20 +36,22 @@
          // common functions 
          function drawScene() {
             // putting a point at a random point, with a random color
-            for ( var i = 0; i < 500; ++i ) {
+            for ( var i = 0; i < speed; ++i ) {
                context.fillStyle = getRandomColor();
-               var px = Math.floor( Math.random() * screenWidth );
+               var px = Math.floor( Math.random() * screenWidth  );
                var py = Math.floor( Math.random() * screenHeight );
-               context.fillRect(px,py,3,3);
+               context.fillRect( px, py, 3, 3 );
             }
 
-            ANIMATION = requestAnimationFrame(drawScene);
+            setTimeout( function() {
+               ANIMATION = requestAnimationFrame(drawScene);
+            }, 1000 / fps );
          }
 
          function initCanvas() {
             screenWidth  = mainItem.width  = window.innerWidth  - 20;
             screenHeight = mainItem.height = window.innerHeight - 20;
-            screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+            speed = screenWidth * screenHeight / ( 20 * fps );
 
             // doing an erase
             context.fillStyle = "black";
