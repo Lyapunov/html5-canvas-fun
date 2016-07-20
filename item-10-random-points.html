@@ -23,11 +23,21 @@
          var fps = 25;
          var ANIMATION;
 
+         // http://stackoverflow.com/questions/1484506/random-color-generator-in-javascript
+         function getRandomColor() {
+            var letters = '0123456789ABCDEF'.split('');
+            var color = '#';
+            for (var i = 0; i < 6; i++ ) {
+               color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+         }
+
          // common functions 
          function drawScene() {
             // putting a point at a random point, with a random color
-            for ( var i = 0; i < 100; ++i ) {
-               context.fillStyle = "yellow";
+            for ( var i = 0; i < 500; ++i ) {
+               context.fillStyle = getRandomColor();
                var px = Math.floor( Math.random() * screenWidth );
                var py = Math.floor( Math.random() * screenHeight );
                context.fillRect(px,py,3,3);
