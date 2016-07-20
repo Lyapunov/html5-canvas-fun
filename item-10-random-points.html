@@ -23,23 +23,27 @@
          var fps = 25;
          var ANIMATION;
 
-         function drawBackground() {
-            context.fillStyle = "black";
-            context.fillRect(0,0,screenWidth,screenHeight);
-         }
-
          // common functions 
          function drawScene() {
-            setTimeout( function() {
-               drawBackground();
-               ANIMATION = requestAnimationFrame(drawScene);
-            }, 1000 / fps );
+            // putting a point at a random point, with a random color
+            for ( var i = 0; i < 100; ++i ) {
+               context.fillStyle = "yellow";
+               var px = Math.floor( Math.random() * screenWidth );
+               var py = Math.floor( Math.random() * screenHeight );
+               context.fillRect(px,py,3,3);
+            }
+
+            ANIMATION = requestAnimationFrame(drawScene);
          }
 
          function initCanvas() {
             screenWidth  = mainItem.width  = window.innerWidth  - 20;
             screenHeight = mainItem.height = window.innerHeight - 20;
             screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+
+            // doing an erase
+            context.fillStyle = "black";
+            context.fillRect(0,0,screenWidth,screenHeight);
 
             // starting the engine only if it is not running
             if ( !ANIMATION ) {
