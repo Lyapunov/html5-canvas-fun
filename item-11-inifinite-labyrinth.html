@@ -25,6 +25,14 @@
          var ANIMATION;
          var hapci = 0;
 
+         // Just for fun, using the 'pseudo' random number generator of Sinclair ZX81
+         var seed = 131;
+         function myRandom() {
+            var next = ( 75 * seed ) % 65537;
+            seed = next;
+            return ( next / 65537.0 );
+         }
+
          // combining a simple spiral structure with a simple map generator
 
          function recursiveMapFill( map, x, y, w, h ) {
@@ -33,7 +41,7 @@
             } else {
                if ( w <= h ) {
                  // horizontal
-                 var rande = Math.floor( Math.random() * Math.floor( ( w + 1 ) / 2 ) ) * 2;
+                 var rande = Math.floor( myRandom() * Math.floor( ( w + 1 ) / 2 ) ) * 2;
                  hapci = rande;
 
                  for ( var i = 0; i < w; ++i ) {
@@ -46,7 +54,7 @@
                  recursiveMapFill( map, x, y + half + 1, w, half );
                } else {
                  // vertical
-                 var rande = Math.floor( Math.random() * Math.floor( ( h + 1 ) / 2 ) ) * 2;
+                 var rande = Math.floor( myRandom() * Math.floor( ( h + 1 ) / 2 ) ) * 2;
                  for ( var i = 0; i < h; ++i ) {
                     var half  = Math.floor( ( w - 1 ) / 2 );
                     if ( i != rande ) {
@@ -59,7 +67,8 @@
             }
          }
  
-         function mapGenerator( dim ) {
+         function mapGenerator( dim, mySeed ) {
+            seed = mySeed;
             var retval = [];
             for ( var i = 0; i < dim; ++i ) {
                retval.push([]);
@@ -67,12 +76,13 @@
                   retval[i].push( 0 );
                }
             }
+
             recursiveMapFill(retval, 0 ,0, dim, dim);
             return retval;
          }
 
-         var myMapDim = 7;
-         var myMap = mapGenerator( myMapDim );
+         var myMapDim = 15;
+         var myMap = mapGenerator( myMapDim, 775 );
 
          function drawBackground() {
             context.fillStyle = "black";
