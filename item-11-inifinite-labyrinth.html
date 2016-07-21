@@ -124,7 +124,33 @@
          var coordX = 10000;
          var coordY = 10000;
          var radius = 28;
-         var myMap = generateEnvironment( coordX, coordY, radius, 133, 77, 13 );
+
+         function regenerateEnvironment() {
+            return generateEnvironment( coordX, coordY, radius, 133, 77, 13 );
+         }
+
+         var myMap = regenerateEnvironment();
+
+         function keyHandler(e) {
+           switch( e.keyCode ) {
+             case 65:
+               coordX -= 1;
+               myMap = regenerateEnvironment();
+               break;
+             case 68:
+               coordX += 1;
+               myMap = regenerateEnvironment();
+               break;
+             case 83:
+               coordY += 1;
+               myMap = regenerateEnvironment();
+               break;
+             case 87:
+               coordY -= 1;
+               myMap = regenerateEnvironment();
+               break;
+           }
+         }
 
          // common functions 
          function drawScene() {
@@ -159,6 +185,7 @@
          (function() {
             initCanvas();
             addEventListener('resize', initCanvas, false);
+            addEventListener('keydown',keyHandler,false);
          })();
       </script>
    </body>
