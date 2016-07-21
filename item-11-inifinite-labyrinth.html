@@ -1,0 +1,117 @@
+<!DOCTYPE HTML>
+<html>
+   <head>
+      <style>
+         body {
+            margin : 0px;
+            padding: 0px;
+         }
+      </style>
+   </head>
+   <body>
+   	<canvas id="canvas" width="500" height="500">
+      Your browser doesn't support html5 canvas.
+      </canvas>
+      <script>
+         var mainItem     = document.getElementById('canvas');
+         var context      = mainItem.getContext('2d');
+
+         var screenWidth  = mainItem.width  = window.innerWidth  - 20;
+         var screenHeight = mainItem.height = window.innerHeight - 20;
+         var screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+         var rectScale = 8;
+
+         var fps = 25;
+         var ANIMATION;
+         var hapci = 0;
+
+         // combining a simple spiral structure with a simple map generator
+
+         function recursiveMapFill( map, x, y, w, h ) {
+            if ( w <= 1 || h <= 1 ) {
+               return;
+            } else {
+               if ( w <= h ) {
+                 // horizontal
+                 var rande = Math.floor( Math.random() * Math.floor( ( w + 1 ) / 2 ) ) * 2;
+                 hapci = rande;
+
+                 for ( var i = 0; i < w; ++i ) {
+                    var half  = Math.floor( ( h - 1 ) / 2 );
+                    if ( i != rande ) {
+                       map[x + i][y + half] = 1;
+                    }
+                 }
+                 recursiveMapFill( map, x, y, w, half );
+                 recursiveMapFill( map, x, y + half + 1, w, half );
+               } else {
+                 // vertical
+                 var rande = Math.floor( Math.random() * Math.floor( ( h + 1 ) / 2 ) ) * 2;
+                 for ( var i = 0; i < h; ++i ) {
+                    var half  = Math.floor( ( w - 1 ) / 2 );
+                    if ( i != rande ) {
+                       map[x + half][y + i] = 1;
+                    }
+                 }
+                 recursiveMapFill( map, x, y, half, h );
+                 recursiveMapFill( map, x + half + 1, y, half, h );
+              }
+            }
+         }
+ 
+         function mapGenerator( dim ) {
+            var retval = [];
+            for ( var i = 0; i < dim; ++i ) {
+               retval.push([]);
+               for ( var j = 0; j < dim; ++j ) {
+                  retval[i].push( 0 );
+               }
+            }
+            recursiveMapFill(retval, 0 ,0, dim, dim);
+            return retval;
+         }
+
+         var myMapDim = 7;
+         var myMap = mapGenerator( myMapDim );
+
+         function drawBackground() {
+            context.fillStyle = "black";
+            context.fillRect(0,0,screenWidth,screenHeight);
+         }
+
+         // common functions 
+         function drawScene() {
+            setTimeout( function() {
+               drawBackground();
+               for ( var i = 0; i < myMapDim; ++i ) {
+                  for ( var j = 0; j < myMapDim; ++j ) {
+                     if ( myMap[i][j] ) {
+                        context.fillStyle = "yellow";
+                        var rectDim = screenScale / rectScale;
+                        context.fillRect( i * rectDim, j * rectDim, rectDim, rectDim );
+                     }                   
+                  }
+               }
+               ANIMATION = requestAnimationFrame(drawScene);
+            }, 1000 / fps );
+         }
+
+         function initCanvas() {
+            screenWidth  = mainItem.width  = window.innerWidth  - 20;
+            screenHeight = mainItem.height = window.innerHeight - 20;
+            screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+
+            // starting the engine only if it is not running
+            if ( !ANIMATION ) {
+               drawScene();
+            }
+         }
+
+         //init
+         (function() {
+            initCanvas();
+            addEventListener('resize', initCanvas, false);
+         })();
+      </script>
+   </body>
+</html>
