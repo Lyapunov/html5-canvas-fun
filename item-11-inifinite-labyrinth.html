@@ -67,7 +67,7 @@
             }
          }
  
-         function mapGenerator( dim, mySeed ) {
+         function generateOneBlock( dim, mySeed ) {
             seed = mySeed;
             var retval = [];
             for ( var i = 0; i < dim; ++i ) {
@@ -82,7 +82,7 @@
          }
 
          var myMapDim = 15;
-         var myMap = mapGenerator( myMapDim, 775 );
+         var myMap = generateOneBlock( myMapDim, 775 );
 
          function drawBackground() {
             context.fillStyle = "black";
