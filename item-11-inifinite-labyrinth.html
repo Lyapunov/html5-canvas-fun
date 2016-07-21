@@ -66,9 +66,8 @@
               }
             }
          }
- 
-         function generateOneBlock( dim, mySeed ) {
-            seed = mySeed;
+
+         function makeEmpty2dArray( dim ) {
             var retval = [];
             for ( var i = 0; i < dim; ++i ) {
                retval.push([]);
@@ -76,25 +75,64 @@
                   retval[i].push( 0 );
                }
             }
+            return retval;
+         }
+ 
+         function generateOneBlock( dim, mySeed ) {
+            seed = mySeed;
 
+            var retval = makeEmpty2dArray( dim );
             recursiveMapFill(retval, 0 ,0, dim, dim);
             return retval;
          }
 
-         var myMapDim = 15;
-         var myMap = generateOneBlock( myMapDim, 775 );
+         function generateEnvironment( x, y, vdim, seed0, seedx, seedy ) {
+            var blocks = [ [ [],[],[] ],
+                           [ [],[],[] ],
+                           [ [],[],[] ] ];
+            var blockDim = Math.floor( vdim / 2 ) + 1;
+            var cx = Math.floor( x / blockDim );
+            var cy = Math.floor( y / blockDim );
+            for ( var i = 0; i < 3; ++i ) {
+               for ( var j = 0; j < 3; ++j ) {
+                  blocks[i][j] = generateOneBlock( blockDim, seed0 + seedx * ( cx + i - 1 )  + seedy * ( cy + j - 1 ) );
+               }
+            }
+            var retval = makeEmpty2dArray( vdim );
+            for ( var i = 0; i < vdim; ++i ) {
+               for ( var j = 0; j < vdim; ++j ) {
+                  // expensive and dump way to get which position in which block
+                  var bx = x + i - Math.floor( vdim / 2 );
+                  var by = y + j - Math.floor( vdim / 2 );
+                  var bcx = Math.floor( bx / blockDim );
+                  var bcy = Math.floor( by / blockDim );
+                  var bmx = bx % blockDim;
+                  var bmy = by % blockDim;
+
+                  retval[i][j] = blocks[bcx-cx+1][bcy-cy+1][bmx][bmy];
+               }
+            }
+            return retval;
+         }
 
          function drawBackground() {
             context.fillStyle = "black";
             context.fillRect(0,0,screenWidth,screenHeight);
          }
 
+         // The window I see from the infinite map
+         var coordX = 10000;
+         var coordY = 10000;
+         var radius = 28;
+         var myMap = generateEnvironment( coordX, coordY, radius, 133, 77, 13 );
+
          // common functions 
          function drawScene() {
             setTimeout( function() {
                drawBackground();
-               for ( var i = 0; i < myMapDim; ++i ) {
-                  for ( var j = 0; j < myMapDim; ++j ) {
+
+               for ( var i = 0; i < radius; ++i ) {
+                  for ( var j = 0; j < radius; ++j ) {
                      if ( myMap[i][j] ) {
                         context.fillStyle = "yellow";
                         var rectDim = screenScale / rectScale;
