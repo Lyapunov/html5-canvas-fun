@@ -19,7 +19,7 @@
          var screenWidth  = mainItem.width  = window.innerWidth  - 20;
          var screenHeight = mainItem.height = window.innerHeight - 20;
          var screenScale  = Math.min( screenWidth, screenHeight ) / 2;
-         var rectScale = 8;
+         var rectScale = 16;
 
          var fps = 25;
          var ANIMATION;
@@ -106,8 +106,8 @@
                   var by = y + j - Math.floor( vdim / 2 );
                   var bcx = Math.floor( bx / blockDim );
                   var bcy = Math.floor( by / blockDim );
-                  var bmx = bx % blockDim;
-                  var bmy = by % blockDim;
+                  var bmx = bx % ( blockDim - 1 );
+                  var bmy = by % ( blockDim - 1 );
 
                   retval[i][j] = blocks[bcx-cx+1][bcy-cy+1][bmx][bmy];
                }
