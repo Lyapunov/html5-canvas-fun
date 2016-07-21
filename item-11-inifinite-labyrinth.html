@@ -161,8 +161,9 @@
                   for ( var j = 0; j < radius; ++j ) {
                      if ( myMap[i][j] ) {
                         context.fillStyle = "yellow";
-                        var rectDim = screenScale / rectScale;
-                        context.fillRect( i * rectDim, j * rectDim, rectDim, rectDim );
+                        var rectDim = 1.8 * screenScale / radius;
+                        var half = Math.floor( radius / 2 );
+                        context.fillRect( screenWidth / 2 + ( i - half ) * rectDim, screenHeight / 2 + ( j - half ) * rectDim, rectDim, rectDim );
                      }                   
                   }
                }
