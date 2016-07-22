@@ -43,6 +43,20 @@
          var uang = 0.4;
          var err = 0.00001;
 
+         function drawPoly( vertices, color ) {
+            context.fillStyle = color;
+            context.beginPath();
+            for ( var i = 0; i < vertices.length; ++i ) {
+               if ( i == 0 ) {
+                  context.moveTo( vertices[i][0], vertices[i][1] );
+               } else {
+                  context.lineTo( vertices[i][0], vertices[i][1] );
+               }
+            }
+            context.closePath();
+            context.fill();
+         };
+
          function generateRayCastingImage( rx, ry, rang, environment ) {
             var dim  = environment.length;
             var half = Math.floor( ( dim - 1 ) / 2 );
@@ -51,6 +65,10 @@
             var step = fieldOfView / screenWidth;
             var dirAngl  = rang - fieldOfView / 2;
             var corrAngl = - fieldOfView / 2;
+
+            var prevRay1 = [];
+            var prevRay2 = [];
+
             for ( var i = 0; i < screenWidth; ++i ) {
                corrAngl  += step; 
                dirAngl   += step; 
@@ -62,35 +80,40 @@
                var sx    = rx;
                var sy    = ry;
                var valid = 1;
-               var dist = 0;
+               var dist  = 0;
+               var arrived = 0;
 
                do {
                   var jump  = Math.min( Math.max( ( 1 - sx ) / dirX, -sx / dirX ),
                                         Math.max( ( 1 - sy ) / dirY, -sy / dirY ) );
                   dist += jump;
-                  var nx    = rx + dirX * jump;
-                  var ny    = ry + dirY * jump;
+                  var nx = rx + dirX * jump;
+                  var ny = ry + dirY * jump;
                   if ( Math.abs(nx) < err ) {
                      nx = 1;
                      cellx -= 1;
+                     arrived = 1;
                      if ( cellx < 0 ) {
                         valid = false;
                      }
                   } else if ( Math.abs(1-nx) < err ) {
                      nx = 0;
                      cellx += 1;
+                     arrived = 2;
                      if ( cellx > dim ) {
                         valid = false;
                      }
                   } else if ( Math.abs(ny) < err ) {
                      ny = 1;
                      celly -= 1;
+                     arrived = 3;
                      if ( celly < 0 ) {
                         valid = false;
                      }
                   } else if ( Math.abs(1-ny) < err ) {
                      ny = 0;
                      celly += 1;
+                     arrived = 4;
                      if ( celly > dim ) {
                         valid = false;
                      }
@@ -99,11 +122,33 @@
                   }
                } while ( valid && environment[cellx][celly] == 0 );
 
-               if ( valid ) {
-                  context.fillStyle = "yellow";
-                  var reli = screenScale * wallHeight / dist / Math.cos( corrAngl );
-                  context.fillRect(i, screenHeight / 2 - reli, 1, 2 * reli);
+               var reli = screenScale * wallHeight / dist / Math.cos( corrAngl );
+               if ( prevRay1.length > 0 ) { 
+                  if ( valid && prevRay2[0] == cellx && prevRay2[1] == celly && prevRay2[2] == arrived ) {
+                     prevRay2 = [ cellx, celly, arrived, i, reli ];
+                  } else {
+                     drawPoly( [ [ prevRay1[3],  screenHeight / 2 - prevRay1[4] ],
+                                 [ prevRay1[3],  screenHeight / 2 + prevRay1[4] ],
+                                 [ prevRay2[3],  screenHeight / 2 + prevRay2[4] ],
+                                 [ prevRay2[3],  screenHeight / 2 - prevRay2[4] ] ], 'yellow' );
+                     if ( valid ) {
+                        prevRay1 = [ cellx, celly, arrived, i, reli ];
+                        prevRay2 = [ cellx, celly, arrived, i, reli ];
+                     }
+                  }
+               } else {
+                  if ( valid ) {
+                     prevRay1 = [ cellx, celly, arrived, i, reli ];
+                     prevRay2 = [ cellx, celly, arrived, i, reli ];
+                  }
                }
+            }
+
+            if ( prevRay1.length > 0 ) { 
+               drawPoly( [ [ prevRay1[3],  screenHeight / 2 - prevRay1[4] ],
+                           [ prevRay1[3],  screenHeight / 2 + prevRay1[4] ],
+                           [ prevRay2[3],  screenHeight / 2 + prevRay2[4] ],
+                           [ prevRay2[3],  screenHeight / 2 - prevRay2[4] ] ], 'yellow' );
             }
          }
 
@@ -112,7 +157,7 @@
             setTimeout( function() {
                drawBackground();
                generateRayCastingImage( ux, uy, uang, uenvironment );
-               uang += 0.01;
+               uang += 0.3;
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / fps );
          }
