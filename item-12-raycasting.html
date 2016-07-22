@@ -62,6 +62,9 @@
             var half = Math.floor( ( dim - 1 ) / 2 );
             var cx = half;
             var cy = half;
+            if ( environment[cx][cy] != 0 ) {
+               return;
+            }
             var step = fieldOfView / screenWidth;
             var dirAngl  = rang - fieldOfView / 2;
             var corrAngl = - fieldOfView / 2;
