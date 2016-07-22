@@ -49,8 +49,10 @@
             var cx = half;
             var cy = half;
             var step = fieldOfView / screenWidth;
-            var dirAngl = rang - fieldOfView / 2;
+            var dirAngl  = rang - fieldOfView / 2;
+            var corrAngl = - fieldOfView / 2;
             for ( var i = 0; i < screenWidth; ++i ) {
+               corrAngl  += step; 
                dirAngl   += step; 
 
                var dirX  = Math.cos( dirAngl );
@@ -99,7 +101,7 @@
 
                if ( valid ) {
                   context.fillStyle = "yellow";
-                  var reli = screenScale * wallHeight / dist;
+                  var reli = screenScale * wallHeight / dist / Math.cos( corrAngl );
                   context.fillRect(i, screenHeight / 2 - reli, 1, 2 * reli);
                }
             }
@@ -109,7 +111,8 @@
          function drawScene() {
             setTimeout( function() {
                drawBackground();
-               generateRayCastingImage( ux, uy, uang, uenvironment )
+               generateRayCastingImage( ux, uy, uang, uenvironment );
+               uang += 0.01;
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / fps );
          }
