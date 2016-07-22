@@ -66,6 +66,8 @@
             var dirAngl  = rang - fieldOfView / 2;
             var corrAngl = - fieldOfView / 2;
 
+            var testColors = ['yellow', 'blue', 'green', 'red'];
+
             var prevRay1 = [];
             var prevRay2 = [];
 
@@ -130,7 +132,7 @@
                      drawPoly( [ [ prevRay1[3],  screenHeight / 2 - prevRay1[4] ],
                                  [ prevRay1[3],  screenHeight / 2 + prevRay1[4] ],
                                  [ prevRay2[3],  screenHeight / 2 + prevRay2[4] ],
-                                 [ prevRay2[3],  screenHeight / 2 - prevRay2[4] ] ], 'yellow' );
+                                 [ prevRay2[3],  screenHeight / 2 - prevRay2[4] ] ], testColors[ ( prevRay2[0] + prevRay2[1] * 2 ) % 3 ] );
                      if ( valid ) {
                         prevRay1 = [ cellx, celly, arrived, i, reli ];
                         prevRay2 = [ cellx, celly, arrived, i, reli ];
@@ -148,7 +150,7 @@
                drawPoly( [ [ prevRay1[3],  screenHeight / 2 - prevRay1[4] ],
                            [ prevRay1[3],  screenHeight / 2 + prevRay1[4] ],
                            [ prevRay2[3],  screenHeight / 2 + prevRay2[4] ],
-                           [ prevRay2[3],  screenHeight / 2 - prevRay2[4] ] ], 'yellow' );
+                           [ prevRay2[3],  screenHeight / 2 - prevRay2[4] ] ], testColors[ ( prevRay2[0] + prevRay2[1] * 2 ) % 3 ] );
             }
          }
 
@@ -157,7 +159,7 @@
             setTimeout( function() {
                drawBackground();
                generateRayCastingImage( ux, uy, uang, uenvironment );
-               uang += 0.3;
+               uang += 0.01;
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / fps );
          }
