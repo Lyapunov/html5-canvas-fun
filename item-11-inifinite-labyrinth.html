@@ -23,131 +23,160 @@
 
          var fps = 25;
          var ANIMATION;
-         var hapci = 0;
 
-         // Just for fun, using the 'pseudo' random number generator of Sinclair ZX81
-         var seed = 131;
-         function myRandom() {
-            var next = ( 75 * seed ) % 65537;
-            seed = next;
-            return ( next / 65537.0 );
-         }
+         function InfiniteMapGenerator( coordX, coordY, radius, seed0, seedx, seedy ) {
+            // The window I see from the infinite map
+            this.coordX = coordX;
+            this.coordY = coordY;
+            this.radius = radius;
 
-         // combining a simple spiral structure with a simple map generator
+            // using more seeds
+            this.seed0 = seed0;
+            this.seedx = seedx;
+            this.seedy = seedy;
 
-         function recursiveMapFill( map, x, y, w, h ) {
-            if ( w <= 1 || h <= 1 ) {
-               return;
-            } else {
-               if ( w <= h ) {
-                 // horizontal
-                 var rande = Math.floor( myRandom() * Math.floor( ( w + 1 ) / 2 ) ) * 2;
-                 hapci = rande;
+            // Just for fun, using the 'pseudo' random number generator of Sinclair ZX81
+            this.seed = seed0;
+            this.myRandom = function() {
+               var next = ( 75 * seed ) % 65537;
+               this.seed = next;
+               return ( next / 65537.0 );
+            };
 
-                 for ( var i = 0; i < w; ++i ) {
-                    var half  = Math.floor( ( h - 1 ) / 2 );
-                    if ( i != rande ) {
-                       map[x + i][y + half] = 1;
-                    }
-                 }
-                 recursiveMapFill( map, x, y, w, half );
-                 recursiveMapFill( map, x, y + half + 1, w, half );
+            this.recursiveMapFill = function ( map, x, y, w, h ) {
+               if ( w <= 1 || h <= 1 ) {
+                  return;
                } else {
-                 // vertical
-                 var rande = Math.floor( myRandom() * Math.floor( ( h + 1 ) / 2 ) ) * 2;
-                 for ( var i = 0; i < h; ++i ) {
-                    var half  = Math.floor( ( w - 1 ) / 2 );
-                    if ( i != rande ) {
-                       map[x + half][y + i] = 1;
+                  if ( w <= h ) {
+                    // horizontal
+                    var rande = Math.floor( this.myRandom() * Math.floor( ( w + 1 ) / 2 ) ) * 2;
+
+                    for ( var i = 0; i < w; ++i ) {
+                       var half  = Math.floor( ( h - 1 ) / 2 );
+                       if ( i != rande ) {
+                          map[x + i][y + half] = 1;
+                       }
                     }
+                    this.recursiveMapFill( map, x, y, w, half );
+                    this.recursiveMapFill( map, x, y + half + 1, w, half );
+                  } else {
+                    // vertical
+                    var rande = Math.floor( this.myRandom() * Math.floor( ( h + 1 ) / 2 ) ) * 2;
+                    for ( var i = 0; i < h; ++i ) {
+                       var half  = Math.floor( ( w - 1 ) / 2 );
+                       if ( i != rande ) {
+                          map[x + half][y + i] = 1;
+                       }
+                    }
+                    this.recursiveMapFill( map, x, y, half, h );
+                    this.recursiveMapFill( map, x + half + 1, y, half, h );
                  }
-                 recursiveMapFill( map, x, y, half, h );
-                 recursiveMapFill( map, x + half + 1, y, half, h );
-              }
-            }
-         }
-
-         function makeEmpty2dArray( dim ) {
-            var retval = [];
-            for ( var i = 0; i < dim; ++i ) {
-               retval.push([]);
-               for ( var j = 0; j < dim; ++j ) {
-                  retval[i].push( 0 );
                }
-            }
-            return retval;
-         }
+            };
+
+            this.makeEmpty2dArray = function( dim ) {
+               var retval = [];
+               for ( var i = 0; i < dim; ++i ) {
+                  retval.push([]);
+                  for ( var j = 0; j < dim; ++j ) {
+                     retval[i].push( 0 );
+                  }
+               }
+               return retval;
+            };
  
-         function generateOneBlock( dim, mySeed ) {
-            seed = mySeed;
+            this.generateOneBlock = function( dim, mySeed ) {
+               seed = mySeed;
 
-            var retval = makeEmpty2dArray( dim );
-            recursiveMapFill(retval, 0 ,0, dim, dim);
-            return retval;
-         }
+               var retval = this.makeEmpty2dArray( dim );
+               this.recursiveMapFill(retval, 0 ,0, dim, dim);
+               return retval;
+            };
 
-         function generateEnvironment( x, y, vdim, seed0, seedx, seedy ) {
-            var blocks = [ [ [],[],[] ],
-                           [ [],[],[] ],
-                           [ [],[],[] ] ];
-            var blockDim = Math.floor( vdim / 2 ) + 1;
-            var cx = Math.floor( x / blockDim );
-            var cy = Math.floor( y / blockDim );
-            for ( var i = 0; i < 3; ++i ) {
-               for ( var j = 0; j < 3; ++j ) {
-                  blocks[i][j] = generateOneBlock( blockDim, seed0 + seedx * ( cx + i - 1 )  + seedy * ( cy + j - 1 ) );
-               }
+            this.environmentRetval   = this.makeEmpty2dArray( this.radius );
+            this.environmentBlockDim = Math.floor( this.radius / 2 ) + 1;
+            this.environmentCoordX;
+            this.environmentCoordY;
+            this.environmentCx;
+            this.environmentCy;
+            this.environmentBlocks = [ [ [],[],[] ],
+                                       [ [],[],[] ],
+                                       [ [],[],[] ] ];
+            this.goLeft  = function() {
+               this.coordX -= 1; 
             }
-            var retval = makeEmpty2dArray( vdim );
-            for ( var i = 0; i < vdim; ++i ) {
-               for ( var j = 0; j < vdim; ++j ) {
-                  // expensive and dump way to get which position in which block
-                  var bx = x + i - Math.floor( vdim / 2 );
-                  var by = y + j - Math.floor( vdim / 2 );
-                  var bcx = Math.floor( bx / blockDim );
-                  var bcy = Math.floor( by / blockDim );
-                  var bmx = bx % ( blockDim - 1 );
-                  var bmy = by % ( blockDim - 1 );
-
-                  retval[i][j] = blocks[bcx-cx+1][bcy-cy+1][bmx][bmy];
-               }
+            this.goRight = function() {
+               this.coordX += 1; 
             }
-            return retval;
-         }
+            this.goUp    = function() {
+               this.coordY -= 1; 
+            }
+            this.goDown  = function() {
+               this.coordY += 1; 
+            }
+
+            this.getEnvironment = function() {
+               // Is it already cached?
+               if ( this.environmentCoordX != undefined &&
+                    this.environmentCoordX == this.coordX &&
+                    this.environmentCoordY == this.coordY ) {
+                  return this.environmentRetval;
+               }
+               var cx = Math.floor( this.coordX / this.environmentBlockDim );
+               var cy = Math.floor( this.coordY / this.environmentBlockDim );
+
+               if ( this.environmentCx != undefined &&
+                    this.environmentCx == cx &&
+                    this.environmentCy == cy ) {
+                  // just reusing environmentBlocks
+               } else {
+                  for ( var i = 0; i < 3; ++i ) {
+                     for ( var j = 0; j < 3; ++j ) {
+                        this.environmentBlocks[i][j] = this.generateOneBlock( this.environmentBlockDim, seed0 + seedx * ( cx + i - 1 )  + seedy * ( cy + j - 1 ) );
+                     }
+                  }
+                  this.environmentCx = cx;
+                  this.environmentCy = cy;
+               }
+               for ( var i = 0; i < this.radius; ++i ) {
+                  for ( var j = 0; j < this.radius; ++j ) {
+                     // expensive and dump way to get which position in which block
+                     var bx = this.coordX + i - Math.floor( this.radius / 2 );
+                     var by = this.coordY + j - Math.floor( this.radius / 2 );
+                     var bcx = Math.floor( bx / this.environmentBlockDim );
+                     var bcy = Math.floor( by / this.environmentBlockDim );
+                     var bmx = bx % ( this.environmentBlockDim - 1 );
+                     var bmy = by % ( this.environmentBlockDim - 1 );
+
+                     this.environmentRetval[i][j] = this.environmentBlocks[bcx-cx+1][bcy-cy+1][bmx][bmy];
+                  }
+               }
+               this.environmentCoordX = this.coordX;
+               this.environmentCoordY = this.coordY;
+               return this.environmentRetval;
+            };
+         };
 
          function drawBackground() {
             context.fillStyle = "black";
             context.fillRect(0,0,screenWidth,screenHeight);
          }
 
-         // The window I see from the infinite map
-         var coordX = 50000;
-         var coordY = 50000;
-         var radius = 28;
-
-         function regenerateEnvironment() {
-            return generateEnvironment( coordX, coordY, radius, 133, 77, 13 );
-         }
-
-         var myMap = regenerateEnvironment();
+         var myMapGenerator = new InfiniteMapGenerator( 50000, 50000, 28, 133, 77, 13 );
 
          function keyHandler(e) {
            switch( e.keyCode ) {
              case 65:
-               coordX -= 1;
-               myMap = regenerateEnvironment();
+               myMapGenerator.goLeft();
                break;
              case 68:
-               coordX += 1;
-               myMap = regenerateEnvironment();
+               myMapGenerator.goRight();
                break;
              case 83:
-               coordY += 1;
-               myMap = regenerateEnvironment();
+               myMapGenerator.goDown();
                break;
              case 87:
-               coordY -= 1;
-               myMap = regenerateEnvironment();
+               myMapGenerator.goUp();
                break;
            }
          }
@@ -157,12 +186,13 @@
             setTimeout( function() {
                drawBackground();
 
-               for ( var i = 0; i < radius; ++i ) {
-                  for ( var j = 0; j < radius; ++j ) {
+               var myMap = myMapGenerator.getEnvironment();
+               for ( var i = 0; i < myMap.length; ++i ) {
+                  for ( var j = 0; j < myMap.length; ++j ) {
                      if ( myMap[i][j] ) {
                         context.fillStyle = "yellow";
-                        var rectDim = 1.8 * screenScale / radius;
-                        var half = Math.floor( radius / 2 );
+                        var rectDim = 1.8 * screenScale / myMap.length;
+                        var half = Math.floor( myMap.length / 2 );
                         context.fillRect( screenWidth / 2 + ( i - half ) * rectDim, screenHeight / 2 + ( j - half ) * rectDim, rectDim, rectDim );
                      }                   
                   }
