@@ -1,0 +1,347 @@
+<!DOCTYPE HTML>
+<html>
+   <head>
+      <style>
+         body {
+            margin : 0px;
+            padding: 0px;
+         }
+      </style>
+   </head>
+   <body>
+   	<canvas id="canvas" width="500" height="500">
+      Your browser doesn't support html5 canvas.
+      </canvas>
+      <script>
+         // ---------- First, just adding the map generator from item 11 ----------
+
+         // From http://stackoverflow.com/questions/18618136/how-to-calculate-modulo-of-negative-integers-in-javascript
+         Number.prototype.mod = function(n) {
+            return ((this % n) + n) % n;
+         }
+
+         function InfiniteMapGenerator( coordX, coordY, radius, seed0, seedx, seedy ) {
+            // The window I see from the infinite map
+            this.coordX = coordX;
+            this.coordY = coordY;
+            this.radius = radius;
+
+            // using more seeds
+            this.seed0 = seed0;
+            this.seedx = seedx;
+            this.seedy = seedy;
+
+            // Just for fun, using the 'pseudo' random number generator of Sinclair ZX81
+            this.seed = seed0;
+            this.myRandom = function() {
+               var next = ( 75 * seed ) % 65537;
+               this.seed = next;
+               return ( next / 65537.0 );
+            };
+
+            this.recursiveMapFill = function ( map, x, y, w, h ) {
+               if ( w <= 1 || h <= 1 ) {
+                  return;
+               } else {
+                  if ( w <= h ) {
+                    // horizontal
+                    var rande = Math.floor( this.myRandom() * Math.floor( ( w + 1 ) / 2 ) ) * 2;
+
+                    for ( var i = 0; i < w; ++i ) {
+                       var half  = Math.floor( ( h - 1 ) / 2 );
+                       if ( i != rande ) {
+                          map[x + i][y + half] = 1;
+                       }
+                    }
+                    this.recursiveMapFill( map, x, y, w, half );
+                    this.recursiveMapFill( map, x, y + half + 1, w, half );
+                  } else {
+                    // vertical
+                    var rande = Math.floor( this.myRandom() * Math.floor( ( h + 1 ) / 2 ) ) * 2;
+                    for ( var i = 0; i < h; ++i ) {
+                       var half  = Math.floor( ( w - 1 ) / 2 );
+                       if ( i != rande ) {
+                          map[x + half][y + i] = 1;
+                       }
+                    }
+                    this.recursiveMapFill( map, x, y, half, h );
+                    this.recursiveMapFill( map, x + half + 1, y, half, h );
+                 }
+               }
+            };
+
+            this.makeEmpty2dArray = function( dim ) {
+               var retval = [];
+               for ( var i = 0; i < dim; ++i ) {
+                  retval.push([]);
+                  for ( var j = 0; j < dim; ++j ) {
+                     retval[i].push( 0 );
+                  }
+               }
+               return retval;
+            };
+ 
+            this.generateOneBlock = function( dim, mySeed ) {
+               seed = mySeed;
+
+               var retval = this.makeEmpty2dArray( dim );
+               this.recursiveMapFill(retval, 0 ,0, dim, dim);
+               return retval;
+            };
+
+            this.environmentRetval   = this.makeEmpty2dArray( this.radius );
+            this.environmentBlockDim = Math.floor( this.radius / 2 ) + 1;
+            this.environmentCoordX;
+            this.environmentCoordY;
+            this.environmentCx;
+            this.environmentCy;
+            this.environmentBlocks = [ [ [],[],[] ],
+                                       [ [],[],[] ],
+                                       [ [],[],[] ] ];
+            this.goLeft  = function() {
+               this.coordX -= 1; 
+            }
+            this.goRight = function() {
+               this.coordX += 1; 
+            }
+            this.goUp    = function() {
+               this.coordY -= 1; 
+            }
+            this.goDown  = function() {
+               this.coordY += 1; 
+            }
+
+            this.getEnvironment = function() {
+               // Is it already cached?
+               if ( this.environmentCoordX != undefined &&
+                    this.environmentCoordX == this.coordX &&
+                    this.environmentCoordY == this.coordY ) {
+                  return this.environmentRetval;
+               }
+               var cx = Math.floor( this.coordX / this.environmentBlockDim );
+               var cy = Math.floor( this.coordY / this.environmentBlockDim );
+
+               if ( this.environmentCx != undefined &&
+                    this.environmentCx == cx &&
+                    this.environmentCy == cy ) {
+                  // just reusing environmentBlocks
+               } else {
+                  for ( var i = 0; i < 3; ++i ) {
+                     for ( var j = 0; j < 3; ++j ) {
+                        this.environmentBlocks[i][j] = this.generateOneBlock( this.environmentBlockDim, seed0 + seedx * Math.abs( cx + i - 1 )  + seedy * Math.abs( cy + j - 1 ) );
+                     }
+                  }
+                  this.environmentCx = cx;
+                  this.environmentCy = cy;
+               }
+               for ( var i = 0; i < this.radius; ++i ) {
+                  for ( var j = 0; j < this.radius; ++j ) {
+                     // expensive and dump way to get which position in which block
+                     var bx = this.coordX + i - Math.floor( this.radius / 2 );
+                     var by = this.coordY + j - Math.floor( this.radius / 2 );
+                     var bcx = Math.floor( bx / this.environmentBlockDim );
+                     var bcy = Math.floor( by / this.environmentBlockDim );
+                     var bmx = bx.mod( this.environmentBlockDim - 1 );
+                     var bmy = by.mod( this.environmentBlockDim - 1 );
+
+                     this.environmentRetval[i][j] = this.environmentBlocks[bcx-cx+1][bcy-cy+1][bmx][bmy];
+                  }
+               }
+               this.environmentCoordX = this.coordX;
+               this.environmentCoordY = this.coordY;
+               return this.environmentRetval;
+            };
+         };
+
+         // ---------- End of mapgenerator ----------
+
+         var mainItem     = document.getElementById('canvas');
+         var context      = mainItem.getContext('2d');
+
+         var eyeDistance  = 1.5; 
+
+         var screenWidth  = mainItem.width  = window.innerWidth  - 20;
+         var screenHeight = mainItem.height = window.innerHeight - 20;
+         var screenScale  = Math.min( screenWidth, screenHeight ) / 2.0;
+         var fieldOfView = 2 * Math.atan( screenWidth / 2.0 / screenScale / eyeDistance );
+
+         var fps = 30;
+         var ANIMATION;
+
+         function drawBackground() {
+            context.fillStyle = "black";
+            context.fillRect(0,0,screenWidth,screenHeight);
+         }
+
+         var uenvironment = [ [0,0,0,1,1,1,0],
+                              [1,0,0,0,1,1,0],
+                              [1,0,0,0,0,1,0],
+                              [1,0,0,0,0,0,0],
+                              [1,0,0,0,0,0,1],
+                              [1,0,1,0,0,0,1],
+                              [1,0,0,1,1,0,1] ];
+         var wallHeight   = 1.0; 
+
+         var ux = 0.3;
+         var uy = 0.3;
+         var uang = 0.4;
+         var err = 0.00001;
+
+         function drawPoly( vertices, color ) {
+            context.fillStyle = color;
+            context.beginPath();
+            for ( var i = 0; i < vertices.length; ++i ) {
+               if ( i == 0 ) {
+                  context.moveTo( vertices[i][0], vertices[i][1] );
+               } else {
+                  context.lineTo( vertices[i][0], vertices[i][1] );
+               }
+            }
+            context.closePath();
+            context.fill();
+         };
+
+         function generateRayCastingImage( rx, ry, rang, environment ) {
+            var dim  = environment.length;
+            var half = Math.floor( ( dim - 1 ) / 2 );
+            var cx = half;
+            var cy = half;
+            var cosR = Math.cos( rang );
+            var sinR = Math.sin( rang );
+
+            var testColors = ['yellow', 'blue', 'green', 'red'];
+
+            var prevRay1 = [];
+            var prevRay2 = [];
+
+            for ( var i = 0; i < screenWidth; ++i ) {
+               var adjacent   = ( i - screenWidth / 2.0 ) / screenScale;
+               var hypotenuse = Math.sqrt( adjacent * adjacent + eyeDistance * eyeDistance );
+               var cosT  = eyeDistance / hypotenuse; 
+               var sinT  = adjacent / hypotenuse; 
+
+               var dirX  = cosR * cosT - sinR * sinT; // cos ( X + Y ) = cos X cos Y - sin X sin Y
+               var dirY  = sinR * cosT + cosR * sinT; // sin ( X + Y ) = sin X * cos Y + cos X * sin Y
+               var cellx = cx;
+               var celly = cy;
+               var sx    = rx;
+               var sy    = ry;
+               var valid = 1;
+               var dist  = 0;
+               var arrived = 0;
+               var limit = 100;
+
+               do {
+                  --limit;
+                  var jump  = Math.min( Math.max( ( 1 - sx ) / dirX, -sx / dirX ),
+                                        Math.max( ( 1 - sy ) / dirY, -sy / dirY ) );
+                  dist += jump;
+                  sx = sx + dirX * jump;
+                  sy = sy + dirY * jump;
+                  if ( Math.abs(sx) < err && dirX < 0) {
+                     sx = 1;
+                     cellx -= 1;
+                     arrived = 1;
+                     if ( cellx < 0 ) {
+                        valid = false;
+                     }
+                  } else if ( Math.abs(1-sx) < err && dirX > 0 ) {
+                     sx = 0;
+                     cellx += 1;
+                     arrived = 2;
+                     if ( cellx >= dim ) {
+                        valid = false;
+                     }
+                  }
+                  if ( Math.abs(sy) < err && dirY < 0 ) {
+                     sy = 1;
+                     celly -= 1;
+                     arrived = 3;
+                     if ( celly < 0 ) {
+                        valid = false;
+                     }
+                  } else if ( Math.abs(1-sy) < err && dirY > 0 ) {
+                     sy = 0;
+                     celly += 1;
+                     arrived = 4;
+                     if ( celly >= dim ) {
+                        valid = false;
+                     }
+                  }
+                  if ( limit < 10 ) {
+                     console.log( limit + " - " + cellx + ", " + celly + " [" + sx + ", " + sy + "] dir:" + dirX + ", " + dirY); 
+                  }
+               } while ( limit && valid && environment[cellx][celly] == 0 );
+
+               var reli = eyeDistance * screenScale / 2 * wallHeight / dist / cosT;
+               if ( prevRay1.length > 0 ) { 
+                  if ( valid && prevRay2[0] == cellx && prevRay2[1] == celly && prevRay2[2] == arrived ) {
+                     prevRay2 = [ cellx, celly, arrived, i, reli ];
+                  } else {
+                     drawPoly( [ [ prevRay1[3],  screenHeight / 2 - prevRay1[4] ],
+                                 [ prevRay1[3],  screenHeight / 2 + prevRay1[4] ],
+                                 [ prevRay2[3],  screenHeight / 2 + prevRay2[4] ],
+                                 [ prevRay2[3],  screenHeight / 2 - prevRay2[4] ] ], testColors[ ( prevRay2[0] + prevRay2[1] * 2 ) % 4 ] );
+                     if ( valid ) {
+                        prevRay1 = [ cellx, celly, arrived, i, reli ];
+                        prevRay2 = [ cellx, celly, arrived, i, reli ];
+                     }
+                  }
+               } else {
+                  if ( valid ) {
+                     prevRay1 = [ cellx, celly, arrived, i, reli ];
+                     prevRay2 = [ cellx, celly, arrived, i, reli ];
+                  }
+               }
+            }
+
+            if ( prevRay1.length > 0 ) { 
+               drawPoly( [ [ prevRay1[3],  screenHeight / 2 - prevRay1[4] ],
+                           [ prevRay1[3],  screenHeight / 2 + prevRay1[4] ],
+                           [ prevRay2[3],  screenHeight / 2 + prevRay2[4] ],
+                           [ prevRay2[3],  screenHeight / 2 - prevRay2[4] ] ], testColors[ ( prevRay2[0] + prevRay2[1] * 2 ) % 4 ] );
+            }
+         }
+
+         function keyHandler(e) {
+           switch( e.keyCode ) {
+             case 65:
+               uang -= 0.02;
+               break;
+             case 68:
+               uang += 0.02;
+               break;
+           }
+         }
+
+         // common functions 
+         function drawScene() {
+            setTimeout( function() {
+               drawBackground();
+               generateRayCastingImage( ux, uy, uang, uenvironment );
+//               uang += 0.01;
+               ANIMATION = requestAnimationFrame(drawScene);
+            }, 1000 / fps );
+         }
+
+         function initCanvas() {
+            screenWidth  = mainItem.width  = window.innerWidth  - 20;
+            screenHeight = mainItem.height = window.innerHeight - 20;
+            screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+            fieldOfView = 2 * Math.atan( screenWidth / 2.0 / screenScale / eyeDistance );
+
+            // starting the engine only if it is not running
+            if ( !ANIMATION ) {
+               drawScene();
+            }
+         }
+
+         //init
+         (function() {
+            initCanvas();
+            addEventListener('resize', initCanvas, false);
+            addEventListener('keydown',keyHandler,false);
+         })();
+      </script>
+   </body>
+</html>
