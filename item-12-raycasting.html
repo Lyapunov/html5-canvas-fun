@@ -16,9 +16,12 @@
          var mainItem     = document.getElementById('canvas');
          var context      = mainItem.getContext('2d');
 
+         var eyeDistance  = 1.5; 
+
          var screenWidth  = mainItem.width  = window.innerWidth  - 20;
          var screenHeight = mainItem.height = window.innerHeight - 20;
-         var screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+         var screenScale  = Math.min( screenWidth, screenHeight ) / 2.0;
+         var fieldOfView = 2 * Math.atan( screenWidth / 2.0 / screenScale / eyeDistance );
 
          var fps = 10;
          var ANIMATION;
@@ -35,7 +38,6 @@
                               [1,0,0,0,0,0,1],
                               [1,0,1,0,0,0,1],
                               [1,0,0,1,1,0,1] ];
-         var fieldOfView = Math.PI / 2;
          var wallHeight   = 1.0; 
 
          var ux = 0.3;
@@ -171,6 +173,7 @@
             screenWidth  = mainItem.width  = window.innerWidth  - 20;
             screenHeight = mainItem.height = window.innerHeight - 20;
             screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+            fieldOfView = 2 * Math.atan( screenWidth / 2.0 / screenScale / eyeDistance );
 
             // starting the engine only if it is not running
             if ( !ANIMATION ) {
