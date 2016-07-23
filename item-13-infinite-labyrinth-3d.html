@@ -98,17 +98,45 @@
             this.environmentBlocks = [ [ [],[],[] ],
                                        [ [],[],[] ],
                                        [ [],[],[] ] ];
+            this.allowedMove = function( dx, dy ) {
+               var envi = this.getEnvironment();
+               var dime = envi.length;
+               var half = Math.floor( ( dime - 1 ) / 2 );
+               var ex   = half + dx;
+               var ey   = half + dy;
+               return ( envi[ex][ey] == 0 );
+            }
             this.goLeft  = function() {
-               this.coordX -= 1; 
+               if ( this.allowedMove( -1, 0 ) ) {
+                  this.coordX -= 1; 
+                  return 1;
+               } else {
+                  return 0;
+               }
             }
             this.goRight = function() {
-               this.coordX += 1; 
+               if ( this.allowedMove( 1, 0 ) ) {
+                  this.coordX += 1; 
+                  return 1;
+               } else {
+                  return 0;
+               }
             }
             this.goUp    = function() {
-               this.coordY -= 1; 
+               if ( this.allowedMove( 0, -1 ) ) {
+                  this.coordY -= 1; 
+                  return 1;
+               } else {
+                  return 0;
+               }
             }
             this.goDown  = function() {
-               this.coordY += 1; 
+               if ( this.allowedMove( 0, +1 ) ) {
+                  this.coordY += 1; 
+                  return 1;
+               } else {
+                  return 0;
+               }
             }
 
             this.getEnvironment = function() {
@@ -322,20 +350,32 @@
 
          function fixUCoords() {
             if ( ux < 0 ) {
-               ux = ux + 1;
-               uMapGenerator.goLeft();
+               if ( uMapGenerator.goLeft() ) {
+                  ux = ux + 1;
+               } else {
+                  ux = ustep / 2.0;
+               }
             }
             if ( ux >= 1 ) {
-               ux = ux - 1;
-               uMapGenerator.goRight();
+               if ( uMapGenerator.goRight() ) {
+                  ux = ux - 1;
+               } else {
+                  ux = 1 - ustep / 2.0;
+               }
             }
             if ( uy < 0 ) {
-               uy = uy + 1;
-               uMapGenerator.goUp();
+               if ( uMapGenerator.goUp() ) {
+                  uy = uy + 1;
+               } else {
+                  uy = ustep / 2.0;
+               }
             }
             if ( uy >= 1 ) {
-               uy = uy - 1;
-               uMapGenerator.goDown();
+               if ( uMapGenerator.goDown() ) {
+                  uy = uy - 1;
+               } else {
+                  uy = 1 - ustep / 2.0;
+               }
             }
          }
 
