@@ -99,14 +99,14 @@
                   dist += jump;
                   sx = sx + dirX * jump;
                   sy = sy + dirY * jump;
-                  if ( Math.abs(sx) < err ) {
+                  if ( Math.abs(sx) < err && dirX < 0) {
                      sx = 1;
                      cellx -= 1;
                      arrived = 1;
                      if ( cellx < 0 ) {
                         valid = false;
                      }
-                  } else if ( Math.abs(1-sx) < err ) {
+                  } else if ( Math.abs(1-sx) < err && dirX > 0 ) {
                      sx = 0;
                      cellx += 1;
                      arrived = 2;
@@ -114,20 +114,23 @@
                         valid = false;
                      }
                   }
-                  if ( Math.abs(sy) < err ) {
+                  if ( Math.abs(sy) < err && dirY < 0 ) {
                      sy = 1;
                      celly -= 1;
                      arrived = 3;
                      if ( celly < 0 ) {
                         valid = false;
                      }
-                  } else if ( Math.abs(1-sy) < err ) {
+                  } else if ( Math.abs(1-sy) < err && dirY > 0 ) {
                      sy = 0;
                      celly += 1;
                      arrived = 4;
                      if ( celly >= dim ) {
                         valid = false;
                      }
+                  }
+                  if ( limit < 10 ) {
+                     console.log( limit + " - " + cellx + ", " + celly + " [" + sx + ", " + sy + "] dir:" + dirX + ", " + dirY); 
                   }
                } while ( limit && valid && environment[cellx][celly] == 0 );
 
