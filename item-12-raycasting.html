@@ -94,34 +94,34 @@
                   var jump  = Math.min( Math.max( ( 1 - sx ) / dirX, -sx / dirX ),
                                         Math.max( ( 1 - sy ) / dirY, -sy / dirY ) );
                   dist += jump;
-                  var nx = rx + dirX * jump;
-                  var ny = ry + dirY * jump;
-                  if ( Math.abs(nx) < err ) {
-                     nx = 1;
+                  sx = sx + dirX * jump;
+                  sy = sy + dirY * jump;
+                  if ( Math.abs(sx) < err ) {
+                     sx = 1;
                      cellx -= 1;
                      arrived = 1;
                      if ( cellx < 0 ) {
                         valid = false;
                      }
-                  } else if ( Math.abs(1-nx) < err ) {
-                     nx = 0;
+                  } else if ( Math.abs(1-sx) < err ) {
+                     sx = 0;
                      cellx += 1;
                      arrived = 2;
-                     if ( cellx > dim ) {
+                     if ( cellx >= dim ) {
                         valid = false;
                      }
-                  } else if ( Math.abs(ny) < err ) {
-                     ny = 1;
+                  } else if ( Math.abs(sy) < err ) {
+                     sy = 1;
                      celly -= 1;
                      arrived = 3;
                      if ( celly < 0 ) {
                         valid = false;
                      }
-                  } else if ( Math.abs(1-ny) < err ) {
-                     ny = 0;
+                  } else if ( Math.abs(1-sy) < err ) {
+                     sy = 0;
                      celly += 1;
                      arrived = 4;
-                     if ( celly > dim ) {
+                     if ( celly >= dim ) {
                         valid = false;
                      }
                   } else {
@@ -129,7 +129,7 @@
                   }
                } while ( valid && environment[cellx][celly] == 0 );
 
-               var reli = screenScale * wallHeight / dist / Math.cos( corrAngl );
+               var reli = eyeDistance * screenScale * wallHeight / dist / Math.cos( corrAngl );
                if ( prevRay1.length > 0 ) { 
                   if ( valid && prevRay2[0] == cellx && prevRay2[1] == celly && prevRay2[2] == arrived ) {
                      prevRay2 = [ cellx, celly, arrived, i, reli ];
