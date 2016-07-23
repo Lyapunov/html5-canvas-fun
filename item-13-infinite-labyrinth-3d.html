@@ -151,7 +151,7 @@
                this.environmentCoordY = this.coordY;
                return this.environmentRetval;
             };
-            this.testColors = ['red', 'brown', 'darkred', 'orange'];
+            this.testColors = [ [255,0,0], [165,42,42], [139,0,0], [255,69,0] ];
             this.getColor = function( ix, iy ) {
                return this.testColors[ ( ix + this.coordX + ( iy + this.coordY ) * 2 ).mod( 4 ) ]
             }
@@ -188,8 +188,17 @@
          var ustep = 0.1;
          var err = 0.00001;
 
-         function drawPoly( vertices, color ) {
-            context.fillStyle = color;
+         // http://stackoverflow.com/questions/5560248/programmatically-lighten-or-darken-a-hex-color-or-rgb-and-blend-colors
+         function shadeColor2(col, percent) {   
+            var retval = "#" + ( 0x1000000 
+                             + ( Math.floor( col[0] * percent ) * 0x10000 ) 
+                             + ( Math.floor( col[1] * percent ) * 0x100   )
+                             + ( Math.floor( col[2] * percent ) ) ).toString(16).slice(1);
+            return retval;
+         }
+
+         function drawPoly( vertices, coli, shade ) {
+            context.fillStyle = shadeColor2( coli, shade );
             context.beginPath();
             for ( var i = 0; i < vertices.length; ++i ) {
                if ( i == 0 ) {
@@ -277,10 +286,14 @@
                   if ( valid && prevRay2[0] == cellx && prevRay2[1] == celly && prevRay2[2] == arrived ) {
                      prevRay2 = [ cellx, celly, arrived, i, reli ];
                   } else {
+                     var wallBlockDist = Math.sqrt( Math.pow( prevRay2[0] - cx - rx, 2 ) + Math.pow( prevRay2[1] - cy - ry, 2 ) );
+                     var shade = Math.max( Math.min( 1.0 - Math.min( wallBlockDist, half ) / half, 1.0 ), 0.0 );
                      drawPoly( [ [ prevRay1[3],  screenHeight / 2 - prevRay1[4] ],
                                  [ prevRay1[3],  screenHeight / 2 + prevRay1[4] ],
                                  [ prevRay2[3],  screenHeight / 2 + prevRay2[4] ],
-                                 [ prevRay2[3],  screenHeight / 2 - prevRay2[4] ] ], uMapGenerator.getColor( prevRay2[0], prevRay2[1] ) );
+                                 [ prevRay2[3],  screenHeight / 2 - prevRay2[4] ] ],
+                               uMapGenerator.getColor( prevRay2[0], prevRay2[1] ),
+                               shade );
                      if ( valid ) {
                         prevRay1 = [ cellx, celly, arrived, i, reli ];
                         prevRay2 = [ cellx, celly, arrived, i, reli ];
@@ -295,10 +308,15 @@
             }
 
             if ( prevRay1.length > 0 ) { 
+               var wallBlockDist = Math.sqrt( Math.pow( prevRay2[0] - cx - rx, 2 ) + Math.pow( prevRay2[1] - cy - ry, 2 ) );
+               var shade = Math.max( Math.min( 1.0 - Math.min( wallBlockDist, half ) / half, 1.0 ), 0.0 );
+
                drawPoly( [ [ prevRay1[3],  screenHeight / 2 - prevRay1[4] ],
                            [ prevRay1[3],  screenHeight / 2 + prevRay1[4] ],
                            [ prevRay2[3],  screenHeight / 2 + prevRay2[4] ],
-                           [ prevRay2[3],  screenHeight / 2 - prevRay2[4] ] ], uMapGenerator.getColor( prevRay2[0], prevRay2[1] ) );
+                           [ prevRay2[3],  screenHeight / 2 - prevRay2[4] ] ],
+                         uMapGenerator.getColor( prevRay2[0], prevRay2[1] ),
+                         shade );
             }
          }
 
