@@ -24,6 +24,11 @@
          var fps = 25;
          var ANIMATION;
 
+         // From http://stackoverflow.com/questions/18618136/how-to-calculate-modulo-of-negative-integers-in-javascript
+         Number.prototype.mod = function(n) {
+            return ((this % n) + n) % n;
+         }
+
          function InfiniteMapGenerator( coordX, coordY, radius, seed0, seedx, seedy ) {
             // The window I see from the infinite map
             this.coordX = coordX;
@@ -145,8 +150,8 @@
                      var by = this.coordY + j - Math.floor( this.radius / 2 );
                      var bcx = Math.floor( bx / this.environmentBlockDim );
                      var bcy = Math.floor( by / this.environmentBlockDim );
-                     var bmx = bx % ( this.environmentBlockDim - 1 );
-                     var bmy = by % ( this.environmentBlockDim - 1 );
+                     var bmx = bx.mod( this.environmentBlockDim - 1 );
+                     var bmy = by.mod( this.environmentBlockDim - 1 );
 
                      this.environmentRetval[i][j] = this.environmentBlocks[bcx-cx+1][bcy-cy+1][bmx][bmy];
                   }
@@ -162,7 +167,7 @@
             context.fillRect(0,0,screenWidth,screenHeight);
          }
 
-         var myMapGenerator = new InfiniteMapGenerator( 50000, 50000, 28, 133, 77, 13 );
+         var myMapGenerator = new InfiniteMapGenerator( 0, 0, 28, 133, 77, 13 );
 
          function keyHandler(e) {
            switch( e.keyCode ) {
