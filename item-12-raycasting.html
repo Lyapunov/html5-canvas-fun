@@ -23,7 +23,7 @@
          var screenScale  = Math.min( screenWidth, screenHeight ) / 2.0;
          var fieldOfView = 2 * Math.atan( screenWidth / 2.0 / screenScale / eyeDistance );
 
-         var fps = 10;
+         var fps = 30;
          var ANIMATION;
 
          function drawBackground() {
@@ -130,7 +130,7 @@
                   }
                } while ( limit && valid && environment[cellx][celly] == 0 );
 
-               var reli = eyeDistance * screenScale * wallHeight / dist / Math.cos( corrAngl );
+               var reli = eyeDistance * screenScale / 2 * wallHeight / dist / Math.cos( corrAngl );
                if ( prevRay1.length > 0 ) { 
                   if ( valid && prevRay2[0] == cellx && prevRay2[1] == celly && prevRay2[2] == arrived ) {
                      prevRay2 = [ cellx, celly, arrived, i, reli ];
@@ -165,7 +165,7 @@
             setTimeout( function() {
                drawBackground();
                generateRayCastingImage( ux, uy, uang, uenvironment );
-               uang += 0.25;
+               uang += 0.01;
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / fps );
          }
