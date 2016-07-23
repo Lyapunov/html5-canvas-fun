@@ -153,7 +153,7 @@
             };
             this.testColors = ['yellow', 'blue', 'green', 'red'];
             this.getColor = function( ix, iy ) {
-               return this.testColors[ ( ix + iy * 2 ).mod( 4 ) ]
+               return this.testColors[ ( ix + this.coordX + ( iy + this.coordY ) * 2 ).mod( 4 ) ]
             }
          };
 
