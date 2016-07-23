@@ -151,6 +151,10 @@
                this.environmentCoordY = this.coordY;
                return this.environmentRetval;
             };
+            this.testColors = ['yellow', 'blue', 'green', 'red'];
+            this.getColor = function( ix, iy ) {
+               return this.testColors[ ( ix + iy * 2 ).mod( 4 ) ]
+            }
          };
 
          // ---------- Then adding the ray casting code from item 12 ----------
@@ -205,8 +209,6 @@
             var cy = half;
             var cosR = Math.cos( rang );
             var sinR = Math.sin( rang );
-
-            var testColors = ['yellow', 'blue', 'green', 'red'];
 
             var prevRay1 = [];
             var prevRay2 = [];
@@ -278,7 +280,7 @@
                      drawPoly( [ [ prevRay1[3],  screenHeight / 2 - prevRay1[4] ],
                                  [ prevRay1[3],  screenHeight / 2 + prevRay1[4] ],
                                  [ prevRay2[3],  screenHeight / 2 + prevRay2[4] ],
-                                 [ prevRay2[3],  screenHeight / 2 - prevRay2[4] ] ], testColors[ ( prevRay2[0] + prevRay2[1] * 2 ) % 4 ] );
+                                 [ prevRay2[3],  screenHeight / 2 - prevRay2[4] ] ], uMapGenerator.getColor( prevRay2[0], prevRay2[1] ) );
                      if ( valid ) {
                         prevRay1 = [ cellx, celly, arrived, i, reli ];
                         prevRay2 = [ cellx, celly, arrived, i, reli ];
@@ -296,7 +298,7 @@
                drawPoly( [ [ prevRay1[3],  screenHeight / 2 - prevRay1[4] ],
                            [ prevRay1[3],  screenHeight / 2 + prevRay1[4] ],
                            [ prevRay2[3],  screenHeight / 2 + prevRay2[4] ],
-                           [ prevRay2[3],  screenHeight / 2 - prevRay2[4] ] ], testColors[ ( prevRay2[0] + prevRay2[1] * 2 ) % 4 ] );
+                           [ prevRay2[3],  screenHeight / 2 - prevRay2[4] ] ], uMapGenerator.getColor( prevRay2[0], prevRay2[1] ) );
             }
          }
 
