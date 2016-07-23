@@ -300,6 +300,25 @@
             }
          }
 
+         function fixUCoords() {
+            if ( ux < 0 ) {
+               ux = ux + 1;
+               uMapGenerator.goLeft();
+            }
+            if ( ux >= 1 ) {
+               ux = ux - 1;
+               uMapGenerator.goRight();
+            }
+            if ( uy < 0 ) {
+               uy = uy + 1;
+               uMapGenerator.goUp();
+            }
+            if ( uy >= 1 ) {
+               uy = uy - 1;
+               uMapGenerator.goDown();
+            }
+         }
+
          function keyHandler(e) {
            switch( e.keyCode ) {
              case 65:
@@ -311,26 +330,12 @@
              case 83:
                ux -= ustep * Math.cos( uang );
                uy -= ustep * Math.sin( uang );
-               if ( ux < 0 ) {
-                  ux = ux + 1;
-                  uMapGenerator.goLeft();
-               }
-               if ( ux >= 1 ) {
-                  ux = ux - 1;
-                  uMapGenerator.goRight();
-               }
-               if ( uy < 0 ) {
-                  uy = uy + 1;
-                  uMapGenerator.goUp();
-               }
-               if ( uy >= 1 ) {
-                  uy = uy - 1;
-                  uMapGenerator.goDown();
-               }
+               fixUCoords();
                break;
              case 87:
                ux += ustep * Math.cos( uang );
                uy += ustep * Math.sin( uang );
+               fixUCoords();
                break;
            }
          }
