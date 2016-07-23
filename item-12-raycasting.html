@@ -160,12 +160,23 @@
             }
          }
 
+         function keyHandler(e) {
+           switch( e.keyCode ) {
+             case 65:
+               uang -= 0.02;
+               break;
+             case 68:
+               uang += 0.02;
+               break;
+           }
+         }
+
          // common functions 
          function drawScene() {
             setTimeout( function() {
                drawBackground();
                generateRayCastingImage( ux, uy, uang, uenvironment );
-               uang += 0.01;
+//               uang += 0.01;
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / fps );
          }
@@ -186,6 +197,7 @@
          (function() {
             initCanvas();
             addEventListener('resize', initCanvas, false);
+            addEventListener('keydown',keyHandler,false);
          })();
       </script>
    </body>
