@@ -175,11 +175,12 @@
 
          var wallHeight   = 1.0; 
 
-         var uMapGenerator = new InfiniteMapGenerator( 0, 0, 28, 133, 73, 1013 );
+         var uMapGenerator = new InfiniteMapGenerator( 1, 1, 28, 133, 73, 1013 );
 
-         var ux = 0.3;
-         var uy = 0.3;
-         var uang = 0.4;
+         var ux = 0.5;
+         var uy = 0.5;
+         var uang = 0;
+         var uangstep = Math.PI / 120;
          var ustep = 0.1;
          var err = 0.00001;
 
@@ -302,14 +303,30 @@
          function keyHandler(e) {
            switch( e.keyCode ) {
              case 65:
-               uang -= 0.02;
+               uang -= uangstep;
                break;
              case 68:
-               uang += 0.02;
+               uang += uangstep;
                break;
              case 83:
                ux -= ustep * Math.cos( uang );
                uy -= ustep * Math.sin( uang );
+               if ( ux < 0 ) {
+                  ux = ux + 1;
+                  uMapGenerator.goLeft();
+               }
+               if ( ux >= 1 ) {
+                  ux = ux - 1;
+                  uMapGenerator.goRight();
+               }
+               if ( uy < 0 ) {
+                  uy = uy + 1;
+                  uMapGenerator.goUp();
+               }
+               if ( uy >= 1 ) {
+                  uy = uy - 1;
+                  uMapGenerator.goDown();
+               }
                break;
              case 87:
                ux += ustep * Math.cos( uang );
