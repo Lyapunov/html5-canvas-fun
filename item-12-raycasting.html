@@ -67,9 +67,8 @@
             if ( environment[cx][cy] != 0 ) {
                return;
             }
-            var step = fieldOfView / screenWidth;
-            var dirAngl  = rang - fieldOfView / 2;
-            var corrAngl = - fieldOfView / 2;
+            var cosR = Math.cos( rang );
+            var sinR = Math.sin( rang );
 
             var testColors = ['yellow', 'blue', 'green', 'red'];
 
@@ -77,11 +76,13 @@
             var prevRay2 = [];
 
             for ( var i = 0; i < screenWidth; ++i ) {
-               corrAngl  += step; 
-               dirAngl   += step; 
+               var adjacent   = ( i - screenWidth / 2.0 ) / screenScale;
+               var hypotenuse = Math.sqrt( adjacent * adjacent + eyeDistance * eyeDistance );
+               var cosT  = eyeDistance / hypotenuse; 
+               var sinT  = adjacent / hypotenuse; 
 
-               var dirX  = Math.cos( dirAngl );
-               var dirY  = Math.sin( dirAngl );
+               var dirX  = cosR * cosT - sinR * sinT; // cos ( X + Y ) = cos X cos Y - sin X sin Y
+               var dirY  = sinR * cosT + cosR * sinT; // sin ( X + Y ) = sin X * cos Y + cos X * sin Y
                var cellx = cx;
                var celly = cy;
                var sx    = rx;
@@ -130,7 +131,7 @@
                   }
                } while ( limit && valid && environment[cellx][celly] == 0 );
 
-               var reli = eyeDistance * screenScale / 2 * wallHeight / dist / Math.cos( corrAngl );
+               var reli = eyeDistance * screenScale / 2 * wallHeight / dist / cosT;
                if ( prevRay1.length > 0 ) { 
                   if ( valid && prevRay2[0] == cellx && prevRay2[1] == celly && prevRay2[2] == arrived ) {
                      prevRay2 = [ cellx, celly, arrived, i, reli ];
