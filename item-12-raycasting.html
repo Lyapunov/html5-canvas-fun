@@ -112,7 +112,8 @@
                      if ( cellx >= dim ) {
                         valid = false;
                      }
-                  } else if ( Math.abs(sy) < err ) {
+                  }
+                  if ( Math.abs(sy) < err ) {
                      sy = 1;
                      celly -= 1;
                      arrived = 3;
@@ -126,8 +127,6 @@
                      if ( celly >= dim ) {
                         valid = false;
                      }
-                  } else {
-                     throw new Error( "Impossible branch!" );
                   }
                } while ( limit && valid && environment[cellx][celly] == 0 );
 
