@@ -89,8 +89,10 @@
                var valid = 1;
                var dist  = 0;
                var arrived = 0;
+               var limit = 20;
 
                do {
+                  --limit;
                   var jump  = Math.min( Math.max( ( 1 - sx ) / dirX, -sx / dirX ),
                                         Math.max( ( 1 - sy ) / dirY, -sy / dirY ) );
                   dist += jump;
@@ -127,7 +129,7 @@
                   } else {
                      throw new Error( "Impossible branch!" );
                   }
-               } while ( valid && environment[cellx][celly] == 0 );
+               } while ( limit && valid && environment[cellx][celly] == 0 );
 
                var reli = eyeDistance * screenScale * wallHeight / dist / Math.cos( corrAngl );
                if ( prevRay1.length > 0 ) { 
