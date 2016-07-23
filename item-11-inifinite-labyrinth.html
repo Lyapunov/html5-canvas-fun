@@ -137,7 +137,7 @@
                } else {
                   for ( var i = 0; i < 3; ++i ) {
                      for ( var j = 0; j < 3; ++j ) {
-                        this.environmentBlocks[i][j] = this.generateOneBlock( this.environmentBlockDim, seed0 + seedx * ( cx + i - 1 )  + seedy * ( cy + j - 1 ) );
+                        this.environmentBlocks[i][j] = this.generateOneBlock( this.environmentBlockDim, seed0 + seedx * Math.abs( cx + i - 1 )  + seedy * Math.abs( cy + j - 1 ) );
                      }
                   }
                   this.environmentCx = cx;
@@ -167,7 +167,7 @@
             context.fillRect(0,0,screenWidth,screenHeight);
          }
 
-         var myMapGenerator = new InfiniteMapGenerator( 0, 0, 28, 133, 77, 13 );
+         var myMapGenerator = new InfiniteMapGenerator( 0, 0, 28, 133, 73, 1013 );
 
          function keyHandler(e) {
            switch( e.keyCode ) {
