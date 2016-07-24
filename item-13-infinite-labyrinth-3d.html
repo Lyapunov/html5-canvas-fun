@@ -380,12 +380,23 @@
          }
 
          function keyHandler(e) {
+           console.log( e.keyCode );
            switch( e.keyCode ) {
              case 65:
                uang -= uangstep;
                break;
              case 68:
                uang += uangstep;
+               break;
+             case 69:
+               ux -= ustep * Math.sin( uang );
+               uy += ustep * Math.cos( uang );
+               fixUCoords();
+               break;
+             case 81:
+               ux += ustep * Math.sin( uang );
+               uy -= ustep * Math.cos( uang );
+               fixUCoords();
                break;
              case 83:
                ux -= ustep * Math.cos( uang );
