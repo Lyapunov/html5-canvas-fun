@@ -23,6 +23,42 @@
          var fps = 25;
          var ANIMATION;
 
+         var sphereResolution = 20;
+         var sphereRad = 1.;
+         var eyeDist = 1.5;
+         var baseY = 0;
+         var eyeY = -3;
+
+         function calculateSphericDeviationFromPoint( xz, alpha, beta, radius ) {
+            var dx = Math.sin( alpha ) * Math.cos( beta ) * radius;
+            var dy = Math.cos( alpha ) * Math.cos( beta ) * radius;
+            var dz = Math.sin( beta )  * radius;
+
+            var px = xz[0] * eyeDist / (baseY - eyeY);
+            var py = xz[1] * eyeDist / (baseY - eyeY);
+
+            var ptx = ( xz[0] + dx ) * eyeDist / ( baseY - eyeY - dy );
+            var pty = ( xz[1] + dz ) * eyeDist / ( baseY - eyeY - dy );
+
+            return [ptx - px, pty - py];
+         }
+
+         function drawSphere() {
+            var angStep = Math.PI / sphereResolution;
+            
+            for ( var i = -Math.floor( sphereResolution / 2 ); i < sphereResolution -Math.floor( sphereResolution / 2 ); ++i ) {
+               for ( var j = -Math.floor( sphereResolution / 2 ); j < sphereResolution -Math.floor( sphereResolution / 2 ); ++j ) {
+                  var alpha = i * angStep;
+                  var beta  = j * angStep;
+                  var dxy = calculateSphericDeviationFromPoint( [0,0], alpha, beta, sphereRad );
+                  context.fillStyle = "yellow";
+                  var sx = screenWidth / 2  + screenScale * dxy[0];
+                  var sy = screenHeight / 2 + screenScale * dxy[1];
+                  context.fillRect(sx, sy, 3, 3);
+               }
+            }
+         }
+
          function drawBackground() {
             context.fillStyle = "black";
             context.fillRect(0,0,screenWidth,screenHeight);
@@ -32,6 +68,7 @@
          function drawScene() {
             setTimeout( function() {
                drawBackground();
+               drawSphere();
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / fps );
          }
