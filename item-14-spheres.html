@@ -100,7 +100,7 @@
                   var col = getColor( 
                                cxy[0] + i * backgroundResolution,
                                cxy[1] + j * backgroundResolution,
-                               i + j );
+                               Math.floor( cxy[0] / backgroundResolution ) + Math.floor( cxy[1] / backgroundResolution ) + i + j );
                   drawPoly( col, vertices );
                }
             }
