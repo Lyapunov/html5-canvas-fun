@@ -99,8 +99,8 @@
                                                       ( ( j + 1 ) * backgroundResolution ) - ( Math.floor ( limitY / 2 ) * backgroundResolution ) ] );
 
                   // selecting colorset
-                  var ri = ( ( i + 1 ) * backgroundResolution ) > ( Math.floor ( limitX / 2 ) * backgroundResolution );
-                  var up = ( ( j + 1 ) * backgroundResolution ) > ( Math.floor ( limitY / 2 ) * backgroundResolution );
+                  var ri = ( ( i + 1 ) * backgroundResolution ) - ( Math.floor ( limitX / 2 ) * backgroundResolution ) > 0;
+                  var up = ( ( j + 1 ) * backgroundResolution ) - ( Math.floor ( limitY / 2 ) * backgroundResolution ) > 0;
                   var colset = [ ["yellow", "red"],
                                  ["green" , "blue"],
                                  ["white" , "black"],
