@@ -32,6 +32,7 @@
          var eyeY = -3;
 
          var backgroundResolution = 0.05;
+         var spherePos = [0, 0];
 
          function calculateSphericDeviationFromPoint( xz, alpha, beta, radius ) {
             var dx = Math.sin( alpha ) * Math.cos( beta ) * radius;
@@ -67,13 +68,16 @@
 
          function drawSphere( cxy  ) {
             var angStep = Math.PI / sphereResolution;
+
+            var angDx = -( cxy[0] - Math.floor( cxy[0] / backgroundResolution ) * backgroundResolution ) * angStep / backgroundResolution ;
+            var angDy = -( cxy[1] - Math.floor( cxy[1] / backgroundResolution ) * backgroundResolution ) * angStep / backgroundResolution ;
             
             for ( var i = -Math.floor( sphereResolution / 2 ) - 1; i < sphereResolution -Math.floor( sphereResolution / 2 ); ++i ) {
                for ( var j = -Math.floor( sphereResolution / 2 ) - 1; j < sphereResolution -Math.floor( sphereResolution / 2 ); ++j ) {
-                  var vertices = [ convertCoordsToPoint( calculateSphericDeviationFromPoint( cxy, (i  ) * angStep, (j  ) * angStep, sphereRad ) ),
-                                   convertCoordsToPoint( calculateSphericDeviationFromPoint( cxy, (i+1) * angStep, (j  ) * angStep, sphereRad ) ),
-                                   convertCoordsToPoint( calculateSphericDeviationFromPoint( cxy, (i+1) * angStep, (j+1) * angStep, sphereRad ) ),
-                                   convertCoordsToPoint( calculateSphericDeviationFromPoint( cxy, (i  ) * angStep, (j+1) * angStep, sphereRad ) ) ];
+                  var vertices = [ convertCoordsToPoint( calculateSphericDeviationFromPoint( cxy, (i  ) * angStep + angDx, (j  ) * angStep + angDy, sphereRad ) ),
+                                   convertCoordsToPoint( calculateSphericDeviationFromPoint( cxy, (i+1) * angStep + angDx, (j  ) * angStep + angDy, sphereRad ) ),
+                                   convertCoordsToPoint( calculateSphericDeviationFromPoint( cxy, (i+1) * angStep + angDx, (j+1) * angStep + angDy, sphereRad ) ),
+                                   convertCoordsToPoint( calculateSphericDeviationFromPoint( cxy, (i  ) * angStep + angDx, (j+1) * angStep + angDy, sphereRad ) ) ];
 
                   var col = ( ( i + j + 10000 ) % 2 ) ? "yellow" : "red";
                   drawPoly( col, vertices );
@@ -113,8 +117,10 @@
          function drawScene() {
             setTimeout( function() {
                drawBackground();
-               drawSphere( [0, 0] );
+               drawSphere( spherePos );
                ANIMATION = requestAnimationFrame(drawScene);
+               spherePos[0] += 0.001;
+               spherePos[1] += 0.001;
             }, 1000 / fps );
          }
 
