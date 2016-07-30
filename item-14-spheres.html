@@ -91,10 +91,13 @@
             var limitY = Math.floor( screenHeightInScale / backgroundResolution ) + 1;
             for ( var i = 0; i < limitX; ++i ) {
                for ( var j = 0; j < limitY; ++j ) {
-                  var sxy = convertCoordsToPoint(  [ ( i * backgroundResolution ) - ( Math.floor ( limitX / 2 ) * backgroundResolution ),
-                                                     ( j * backgroundResolution ) - ( Math.floor ( limitY / 2 ) * backgroundResolution ) ] );
-                  context.fillStyle = "blue";
-                  context.fillRect(sxy[0], sxy[1], 3, 3);
+                  var sxy  = convertCoordsToPoint(  [ ( i * backgroundResolution ) - ( Math.floor ( limitX / 2 ) * backgroundResolution ),
+                                                      ( j * backgroundResolution ) - ( Math.floor ( limitY / 2 ) * backgroundResolution ) ] );
+                  var sxy2 = convertCoordsToPoint(  [ ( ( i + 1 ) * backgroundResolution ) - ( Math.floor ( limitX / 2 ) * backgroundResolution ),
+                                                      ( ( j + 1 ) * backgroundResolution ) - ( Math.floor ( limitY / 2 ) * backgroundResolution ) ] );
+
+                  context.fillStyle = ( ( i + j + 10000 ) % 2 ? "yellow" : "red" );
+                  context.fillRect(sxy[0], sxy[1], sxy2[0] - sxy[0] + 1, sxy2[1] - sxy[1] + 1);
                }
             }
          }
