@@ -76,7 +76,7 @@
             return colset[ ri * 2 + up ][ ( parity  + 10000 ) % 2 ];
          }
 
-         function drawSphere( cxy  ) {
+         function drawSphere( cxy ) {
             var angStep = Math.PI / sphereResolution;
 
             var angDx = -( cxy[0] - Math.floor( cxy[0] / backgroundResolution ) * backgroundResolution ) * angStep / backgroundResolution ;
@@ -89,7 +89,10 @@
                                    convertCoordsToPoint( calculateSphericDeviationFromPoint( cxy, (i+1) * angStep + angDx, (j+1) * angStep + angDy, sphereRad ) ),
                                    convertCoordsToPoint( calculateSphericDeviationFromPoint( cxy, (i  ) * angStep + angDx, (j+1) * angStep + angDy, sphereRad ) ) ];
 
-                  var col = ( ( i + j + 10000 ) % 2 ) ? "yellow" : "red";
+                  var col = getColor( 
+                               cxy[0] + i * backgroundResolution,
+                               cxy[1] + j * backgroundResolution,
+                               i + j );
                   drawPoly( col, vertices );
                }
             }
@@ -133,6 +136,8 @@
             screenWidth  = mainItem.width  = window.innerWidth  - 20;
             screenHeight = mainItem.height = window.innerHeight - 20;
             screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+            screenWidthInScale  = screenWidth  / screenScale;
+            screenHeightInScale = screenHeight / screenScale;
 
             // starting the engine only if it is not running
             if ( !ANIMATION ) {
