@@ -38,13 +38,10 @@
             var dy = Math.cos( alpha ) * Math.cos( beta ) * radius;
             var dz = Math.sin( beta )  * radius;
 
-            var px = xz[0] * eyeDist / (baseY - eyeY);
-            var py = xz[1] * eyeDist / (baseY - eyeY);
+            var ptx = ( dx ) * eyeDist / ( baseY - eyeY - dy );
+            var pty = ( dz ) * eyeDist / ( baseY - eyeY - dy );
 
-            var ptx = ( xz[0] + dx ) * eyeDist / ( baseY - eyeY - dy );
-            var pty = ( xz[1] + dz ) * eyeDist / ( baseY - eyeY - dy );
-
-            return [ptx - px + xz[0], pty - py + xz[1]];
+            return [ptx + xz[0], pty + xz[1]];
          }
 
          function convertCoordsToPoint( cxy ) {
