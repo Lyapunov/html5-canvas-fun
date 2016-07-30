@@ -96,7 +96,16 @@
                   var sxy2 = convertCoordsToPoint(  [ ( ( i + 1 ) * backgroundResolution ) - ( Math.floor ( limitX / 2 ) * backgroundResolution ),
                                                       ( ( j + 1 ) * backgroundResolution ) - ( Math.floor ( limitY / 2 ) * backgroundResolution ) ] );
 
-                  context.fillStyle = ( ( i + j + 10000 ) % 2 ? "yellow" : "red" );
+                  // selecting colorset
+                  var ri = ( ( i + 1 ) * backgroundResolution ) > ( Math.floor ( limitX / 2 ) * backgroundResolution );
+                  var up = ( ( j + 1 ) * backgroundResolution ) > ( Math.floor ( limitY / 2 ) * backgroundResolution );
+                  var colset = [ ["yellow", "red"],
+                                 ["green" , "blue"],
+                                 ["white" , "black"],
+                                 ["magenta" , "cyan"] ];
+                  var col = colset[ ri * 2 + up ];
+
+                  context.fillStyle = col[ ( i + j + 10000 ) % 2 ];
                   context.fillRect(sxy[0], sxy[1], sxy2[0] - sxy[0] + 1, sxy2[1] - sxy[1] + 1);
                }
             }
