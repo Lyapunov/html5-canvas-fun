@@ -71,14 +71,15 @@
          function drawSphere() {
             var angStep = Math.PI / sphereResolution;
             
-            for ( var i = -Math.floor( sphereResolution / 2 ); i < sphereResolution -Math.floor( sphereResolution / 2 ); ++i ) {
-               for ( var j = -Math.floor( sphereResolution / 2 ); j < sphereResolution -Math.floor( sphereResolution / 2 ); ++j ) {
-                  var alpha = i * angStep;
-                  var beta  = j * angStep;
-                  var dxy = calculateSphericDeviationFromPoint( [0,0], alpha, beta, sphereRad );
+            for ( var i = -Math.floor( sphereResolution / 2 ) - 1; i < sphereResolution -Math.floor( sphereResolution / 2 ); ++i ) {
+               for ( var j = -Math.floor( sphereResolution / 2 ) - 1; j < sphereResolution -Math.floor( sphereResolution / 2 ); ++j ) {
+                  var vertices = [ convertCoordsToPoint( calculateSphericDeviationFromPoint( [0,0], (i  ) * angStep, (j  ) * angStep, sphereRad ) ),
+                                   convertCoordsToPoint( calculateSphericDeviationFromPoint( [0,0], (i+1) * angStep, (j  ) * angStep, sphereRad ) ),
+                                   convertCoordsToPoint( calculateSphericDeviationFromPoint( [0,0], (i+1) * angStep, (j+1) * angStep, sphereRad ) ),
+                                   convertCoordsToPoint( calculateSphericDeviationFromPoint( [0,0], (i  ) * angStep, (j+1) * angStep, sphereRad ) ) ];
+
                   context.fillStyle = "yellow";
-                  var sxy = convertCoordsToPoint( dxy );
-                  context.fillRect(sxy[0], sxy[1], 3, 3);
+                  drawPoly( "yellow", vertices );
                }
             }
          }
