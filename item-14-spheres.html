@@ -52,6 +52,22 @@
                      screenHeight / 2 + screenScale * cxy[1] ];
          }
 
+         function drawPoly( color, vertices ) {
+            context.fillStyle = color;
+            var isFirst = 1;
+            context.beginPath();
+            vertices.forEach( function( pxy ) {
+               if ( isFirst ) {
+                  isFirst = 0;
+                  context.moveTo( pxy[0], pxy[1] );
+               } else {
+                  context.lineTo( pxy[0], pxy[1] );
+               }
+            });
+            context.closePath();
+            context.fill();
+         };
+
          function drawSphere() {
             var angStep = Math.PI / sphereResolution;
             
