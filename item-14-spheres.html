@@ -78,8 +78,8 @@
                                    convertCoordsToPoint( calculateSphericDeviationFromPoint( [0,0], (i+1) * angStep, (j+1) * angStep, sphereRad ) ),
                                    convertCoordsToPoint( calculateSphericDeviationFromPoint( [0,0], (i  ) * angStep, (j+1) * angStep, sphereRad ) ) ];
 
-                  context.fillStyle = "yellow";
-                  drawPoly( "yellow", vertices );
+                  var col = ( ( i + j + 10000 ) % 2 ) ? "yellow" : "red";
+                  drawPoly( col, vertices );
                }
             }
          }
