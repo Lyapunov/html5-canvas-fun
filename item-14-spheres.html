@@ -33,6 +33,8 @@
 
          var backgroundResolution = 0.05;
          var spherePos = [0, 0];
+         var delta = 0.004;
+         var sphereDelta = [delta, delta];
 
          function calculateSphericDeviationFromPoint( xz, alpha, beta, radius ) {
             var dx = Math.sin( alpha ) * Math.cos( beta ) * radius;
@@ -133,8 +135,20 @@
                drawBackground();
                drawSphere( spherePos );
                ANIMATION = requestAnimationFrame(drawScene);
-               spherePos[0] += 0.004;
-               spherePos[1] += 0.004;
+               spherePos[0] += sphereDelta[0];
+               spherePos[1] += sphereDelta[1];
+               if ( spherePos[0] > screenWidthInScale / 2 - sphereRad / 2 ) {
+                  sphereDelta[0] = -delta;
+               }
+               if ( spherePos[0] < -screenWidthInScale / 2 + sphereRad / 2 ) {
+                  sphereDelta[0] = delta;
+               }
+               if ( spherePos[1] > screenHeightInScale / 2 - sphereRad / 2 ) {
+                  sphereDelta[1] = -delta;
+               }
+               if ( spherePos[1] < -screenHeightInScale / 2 + sphereRad / 2 ) {
+                  sphereDelta[1] = delta;
+               }
             }, 1000 / fps );
          }
 
