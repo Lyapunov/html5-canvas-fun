@@ -73,7 +73,7 @@
                            ["green" , "blue"],
                            ["white" , "black"],
                            ["magenta" , "cyan"] ];
-            return colset[ ri * 2 + up ][ parity ];
+            return colset[ ri * 2 + up ][ ( parity  + 10000 ) % 2 ];
          }
 
          function drawSphere( cxy  ) {
@@ -111,7 +111,7 @@
                   context.fillStyle = getColor(
                      ( ( i + 1 ) * backgroundResolution ) - ( Math.floor ( limitX / 2 ) * backgroundResolution ), 
                      ( ( j + 1 ) * backgroundResolution ) - ( Math.floor ( limitY / 2 ) * backgroundResolution ),
-                     ( i + j + 10000 ) % 2
+                     i + j 
                   );
                   context.fillRect(sxy[0], sxy[1], sxy2[0] - sxy[0] + 1, sxy2[1] - sxy[1] + 1);
                }
