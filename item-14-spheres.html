@@ -44,7 +44,7 @@
             var ptx = ( xz[0] + dx ) * eyeDist / ( baseY - eyeY - dy );
             var pty = ( xz[1] + dz ) * eyeDist / ( baseY - eyeY - dy );
 
-            return [ptx - px, pty - py];
+            return [ptx - px + xz[0], pty - py + xz[1]];
          }
 
          function convertCoordsToPoint( cxy ) {
@@ -68,15 +68,15 @@
             context.fill();
          };
 
-         function drawSphere() {
+         function drawSphere( cxy  ) {
             var angStep = Math.PI / sphereResolution;
             
             for ( var i = -Math.floor( sphereResolution / 2 ) - 1; i < sphereResolution -Math.floor( sphereResolution / 2 ); ++i ) {
                for ( var j = -Math.floor( sphereResolution / 2 ) - 1; j < sphereResolution -Math.floor( sphereResolution / 2 ); ++j ) {
-                  var vertices = [ convertCoordsToPoint( calculateSphericDeviationFromPoint( [0,0], (i  ) * angStep, (j  ) * angStep, sphereRad ) ),
-                                   convertCoordsToPoint( calculateSphericDeviationFromPoint( [0,0], (i+1) * angStep, (j  ) * angStep, sphereRad ) ),
-                                   convertCoordsToPoint( calculateSphericDeviationFromPoint( [0,0], (i+1) * angStep, (j+1) * angStep, sphereRad ) ),
-                                   convertCoordsToPoint( calculateSphericDeviationFromPoint( [0,0], (i  ) * angStep, (j+1) * angStep, sphereRad ) ) ];
+                  var vertices = [ convertCoordsToPoint( calculateSphericDeviationFromPoint( cxy, (i  ) * angStep, (j  ) * angStep, sphereRad ) ),
+                                   convertCoordsToPoint( calculateSphericDeviationFromPoint( cxy, (i+1) * angStep, (j  ) * angStep, sphereRad ) ),
+                                   convertCoordsToPoint( calculateSphericDeviationFromPoint( cxy, (i+1) * angStep, (j+1) * angStep, sphereRad ) ),
+                                   convertCoordsToPoint( calculateSphericDeviationFromPoint( cxy, (i  ) * angStep, (j+1) * angStep, sphereRad ) ) ];
 
                   var col = ( ( i + j + 10000 ) % 2 ) ? "yellow" : "red";
                   drawPoly( col, vertices );
@@ -116,7 +116,7 @@
          function drawScene() {
             setTimeout( function() {
                drawBackground();
-               drawSphere();
+               drawSphere( [0, 0] );
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / fps );
          }
