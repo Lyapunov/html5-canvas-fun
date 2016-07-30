@@ -90,8 +90,8 @@
             var angDx = -( cxy[0] - Math.floor( cxy[0] / backgroundResolution ) * backgroundResolution ) * angStep / backgroundResolution ;
             var angDy = -( cxy[1] - Math.floor( cxy[1] / backgroundResolution ) * backgroundResolution ) * angStep / backgroundResolution ;
             
-            for ( var i = -Math.floor( sphereResolution / 2 ) - 1; i < sphereResolution -Math.floor( sphereResolution / 2 ); ++i ) {
-               for ( var j = -Math.floor( sphereResolution / 2 ) - 1; j < sphereResolution -Math.floor( sphereResolution / 2 ); ++j ) {
+            for ( var i = -Math.floor( sphereResolution / 2 ); i < sphereResolution -Math.floor( sphereResolution / 2 )-1; ++i ) {
+               for ( var j = -Math.floor( sphereResolution / 2 )+1; j < sphereResolution -Math.floor( sphereResolution / 2 ); ++j ) {
                   var vertices = [ convertCoordsToPoint( calculateSphericDeviationFromPoint( cxy, (i  ) * angStep + angDx, (j  ) * angStep + angDy, sphereRad ) ),
                                    convertCoordsToPoint( calculateSphericDeviationFromPoint( cxy, (i+1) * angStep + angDx, (j  ) * angStep + angDy, sphereRad ) ),
                                    convertCoordsToPoint( calculateSphericDeviationFromPoint( cxy, (i+1) * angStep + angDx, (j+1) * angStep + angDy, sphereRad ) ),
