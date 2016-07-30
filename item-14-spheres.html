@@ -19,15 +19,19 @@
          var screenWidth  = mainItem.width  = window.innerWidth  - 20;
          var screenHeight = mainItem.height = window.innerHeight - 20;
          var screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+         var screenWidthInScale  = screenWidth  / screenScale;
+         var screenHeightInScale = screenHeight / screenScale;
 
          var fps = 25;
          var ANIMATION;
 
          var sphereResolution = 20;
-         var sphereRad = 1.;
+         var sphereRad = 0.75;
          var eyeDist = 1.5;
          var baseY = 0;
          var eyeY = -3;
+
+         var backgroundResolution = 0.1;
 
          function calculateSphericDeviationFromPoint( xz, alpha, beta, radius ) {
             var dx = Math.sin( alpha ) * Math.cos( beta ) * radius;
@@ -43,6 +47,11 @@
             return [ptx - px, pty - py];
          }
 
+         function convertCoordsToPoint( cxy ) {
+            return [ screenWidth  / 2 + screenScale * cxy[0],
+                     screenHeight / 2 + screenScale * cxy[1] ];
+         }
+
          function drawSphere() {
             var angStep = Math.PI / sphereResolution;
             
@@ -52,9 +61,8 @@
                   var beta  = j * angStep;
                   var dxy = calculateSphericDeviationFromPoint( [0,0], alpha, beta, sphereRad );
                   context.fillStyle = "yellow";
-                  var sx = screenWidth / 2  + screenScale * dxy[0];
-                  var sy = screenHeight / 2 + screenScale * dxy[1];
-                  context.fillRect(sx, sy, 3, 3);
+                  var sxy = convertCoordsToPoint( dxy );
+                  context.fillRect(sxy[0], sxy[1], 3, 3);
                }
             }
          }
@@ -62,6 +70,17 @@
          function drawBackground() {
             context.fillStyle = "black";
             context.fillRect(0,0,screenWidth,screenHeight);
+
+            var limitX = Math.floor( screenWidthInScale  / backgroundResolution ) + 1;
+            var limitY = Math.floor( screenHeightInScale / backgroundResolution ) + 1;
+            for ( var i = 0; i < limitX; ++i ) {
+               for ( var j = 0; j < limitY; ++j ) {
+                  var sxy = convertCoordsToPoint(  [ ( i * backgroundResolution ) - screenWidthInScale / 2,
+                                                     ( j * backgroundResolution ) - screenHeightInScale / 2 ] );
+                  context.fillStyle = "blue";
+                  context.fillRect(sxy[0], sxy[1], 3, 3);
+               }
+            }
          }
 
          // common functions 
