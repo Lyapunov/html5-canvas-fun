@@ -1,0 +1,86 @@
+<!DOCTYPE HTML>
+<html>
+   <head>
+      <style>
+         body {
+            margin : 0px;
+            padding: 0px;
+            cursor : none;
+         }
+         div#preload {
+            display: none;
+         }
+      </style>
+   </head>
+   <body>
+      <!-- https://perishablepress.com/a-way-to-preload-images-without-javascript-that-is-so-much-better/ 
+      <div id = "preload">
+         <img src= width="1" height="1" alt="Image 01" /> 
+      </div> -->
+   	<canvas id="canvas" width="500" height="500">
+      Your browser doesn't support html5 canvas.
+      </canvas>
+      <script>
+         var mainItem     = document.getElementById('canvas');
+         var context      = mainItem.getContext('2d');
+
+         var screenWidth  = mainItem.width  = window.innerWidth  - 20;
+         var screenHeight = mainItem.height = window.innerHeight - 20;
+         var screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+
+         var fps = 25;
+         var ANIMATION;
+
+         // preloading images
+         var imageObj = new Image();
+         imageObj.src = "item-15-cursor.png";
+
+         function drawBackground() {
+            context.fillStyle = "black";
+            context.fillRect(0,0,screenWidth,screenHeight);
+         }
+
+         var curX = 0;
+         var curY = 0;
+         function drawCursor() {
+            context.drawImage(imageObj, 0, 0, 135, 210, curX, curY, 20, 31);
+//            context.drawImage(imageObj, curX, curY);
+         }
+
+         // common functions 
+         function drawScene() {
+            setTimeout( function() {
+               drawBackground();
+               drawCursor();
+               ANIMATION = requestAnimationFrame(drawScene);
+            }, 1000 / fps );
+         }
+
+         function initCanvas() {
+            screenWidth  = mainItem.width  = window.innerWidth  - 20;
+            screenHeight = mainItem.height = window.innerHeight - 20;
+            screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+
+            // starting the engine only if it is not running
+            if ( !ANIMATION ) {
+               drawScene();
+            }
+         }
+
+         mainItem.onmousedown = function(event) {};
+
+         mainItem.onmouseup = function(event) {};
+
+         mainItem.onmousemove = function(event) {
+            curX = event.clientX;
+            curY = event.clientY;
+         };
+
+         //init
+         (function() {
+            initCanvas();
+            addEventListener('resize', initCanvas, false);
+         })();
+      </script>
+   </body>
+</html>
