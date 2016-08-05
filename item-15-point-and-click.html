@@ -32,19 +32,24 @@
          var ANIMATION;
 
          // preloading images
-         var imageObj = new Image();
-         imageObj.src = "item-15-cursor.png";
+         var images = new Object();
+         images['cursor'] = new Image();
+         images['cursor'].src = "item-15-cursor.png";
+         images['background'] = new Image();
+         images['background'].src = "item-15-background.png";
 
          function drawBackground() {
             context.fillStyle = "black";
             context.fillRect(0,0,screenWidth,screenHeight);
+            // 1970 x 1120
+            context.drawImage(images['background'], 0, 0, 1970, 1120, 0, 0, screenWidth, screenHeight);
          }
 
          var curX = 0;
          var curY = 0;
          function drawCursor() {
-            context.drawImage(imageObj, 0, 0, 135, 210, curX, curY, 20, 31);
-//            context.drawImage(imageObj, curX, curY);
+            context.drawImage(images['cursor'], 0, 0, 135, 210, curX, curY, 20, 31);
+//            context.drawImage(images['cursor'], curX, curY);
          }
 
          // common functions 
