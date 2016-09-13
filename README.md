@@ -6,7 +6,7 @@ According to a story, when Enzo Ferrari, the legendary Italian car maker got bor
 
 When I'm getting bored, I entertain myself with coding raw, simple and nostalgic stuffs.
 
-The topics of the stuffs in this repo are originating from '90s. They were popular at that time, and they are from various sources. E.g. see item 7, it is the starfield screen saver of Windows 3.1. Or see the rotating cube. I'm planning to extend the list of the items with the sources.
+The themes are from the '90s. They were popular at that time, and they are from various sources. E.g. see item 7, it is the starfield screen saver of Windows 3.1. Or see the rotating cube. I'm planning to extend the list of the items with the sources.
 
 Once I coded all of these in Turbo Pascal and Asm, and now I am very happy I don't need to use those old stuffs any more. Javascript + canvas do a more straightforward job together.
 
