@@ -26,10 +26,32 @@
          var myImage = new Image();
          myImage.src = "item-16-image.png";
 
+         var part = {x:25,y:25,points:[{x:0,y:0},{x:100,y:100},{x:0,y:100}]};
+
+         // http://stackoverflow.com/questions/21299439/clipping-images-into-different-shapes-like-triangle-pentagon-in-html5-canvas
+         function define(part){
+            context.save();
+            context.translate(part.x,part.y);
+            context.beginPath();
+            var point=part.points[0];
+            context.moveTo(point.x,point.y);
+            for(var i=0;i<part.points.length;i++){
+               var point=part.points[i];
+               context.lineTo(point.x,point.y);
+            }
+            context.closePath();
+            context.restore();
+         }
+
          function drawBackground() {
             context.fillStyle = "black";
             context.fillRect(0,0,screenWidth,screenHeight);
+
+            context.save();
+            define( part );
+            context.clip();
             context.drawImage(myImage, 10, 10);
+            context.restore();
          }
 
          // common functions 
