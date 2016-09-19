@@ -30,6 +30,13 @@
 
          // http://stackoverflow.com/questions/21299439/clipping-images-into-different-shapes-like-triangle-pentagon-in-html5-canvas
          function define(part){
+            // http://www.w3schools.com/tags/canvas_settransform.asp
+            context.setTransform( 1,            // horizontal scaling
+                                  0.25,         // horizontal skewing
+                                  0.25,         // vertical skewing
+                                  1,            // vertical scaling
+                                  0,            // horizontal moving
+                                  0);           // vertical moving
             context.save();
             context.translate(part.x,part.y);
             context.beginPath();
