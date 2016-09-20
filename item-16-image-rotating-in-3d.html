@@ -26,7 +26,7 @@
          var myImage = new Image();
          myImage.src = "item-16-image.png";
 
-         var part = {x:100,y:25,points:[{x:0,y:0},{x:0,y:400},{x:400,y:0}]};
+         var part = {x:0,y:0,dx:400,dy:400};
 
          var triangle = [{x:200,y:100},{x:800,y:200},{x:250,y:500}];
 
@@ -44,22 +44,22 @@
 
          // http://stackoverflow.com/questions/21299439/clipping-images-into-different-shapes-like-triangle-pentagon-in-html5-canvas
          function drawTexturedTriangle( vertices ) {
+            var tan1 = ( vertices[1].x == vertices[0].x ) ? ( vertices[1].y - vertices[0].y ) :  ( vertices[1].y - vertices[0].y ) / ( vertices[1].x - vertices[0].x );
+            var rat1 = ( vertices[1].x - vertices[0].x ) / part.dx;
+            var tan2 = ( vertices[2].y == vertices[0].y ) ? ( vertices[2].x - vertices[0].x ) :  ( vertices[2].x - vertices[0].x ) / ( vertices[2].y - vertices[0].y );
+            var rat2 = ( vertices[2].y - vertices[0].y ) / part.dy;
             context.save();
-            context.setTransform( 1,            // horizontal scaling
-                                  0.25,         // horizontal skewing
-                                  0.25,         // vertical skewing
-                                  1,            // vertical scaling
+            context.setTransform( rat1,          // horizontal scaling
+                                  tan1 * rat1,   // horizontal skewing
+                                  tan2 * rat2,   // vertical skewing
+                                  rat2,          // vertical scaling
                                   vertices[0].x, // horizontal moving
                                   vertices[0].y);// vertical moving
-//            context.translate(part.x,part.y);
             context.save();
             context.beginPath();
-            var point=part.points[0];
-            context.moveTo(point.x,point.y);
-            for(var i=0;i<part.points.length;i++){
-               var point=part.points[i];
-               context.lineTo(point.x,point.y);
-            }
+            context.moveTo(part.x,part.y);
+            context.lineTo(part.x + part.dx, part.y);
+            context.lineTo(part.x          , part.y + part.dy);
             context.closePath();
             context.restore();
 
