@@ -26,7 +26,7 @@
          var myImage = new Image();
          myImage.src = "item-16-image.png";
 
-         var part = {x:0,y:0,dx:400,dy:400};
+         var texture = {x:0,y:0,dx:400,dy:400};
 
          var triangle = [{x:200,y:100},{x:800,y:200},{x:250,y:500}];
 
@@ -43,11 +43,11 @@
          }
 
          // http://stackoverflow.com/questions/21299439/clipping-images-into-different-shapes-like-triangle-pentagon-in-html5-canvas
-         function drawTexturedTriangle( vertices ) {
+         function drawTexturedTriangle( vertices, texdescriptor ) {
             var tan1 = ( vertices[1].x == vertices[0].x ) ? ( vertices[1].y - vertices[0].y ) :  ( vertices[1].y - vertices[0].y ) / ( vertices[1].x - vertices[0].x );
-            var rat1 = ( vertices[1].x - vertices[0].x ) / part.dx;
+            var rat1 = ( vertices[1].x - vertices[0].x ) / texdescriptor.dx;
             var tan2 = ( vertices[2].y == vertices[0].y ) ? ( vertices[2].x - vertices[0].x ) :  ( vertices[2].x - vertices[0].x ) / ( vertices[2].y - vertices[0].y );
-            var rat2 = ( vertices[2].y - vertices[0].y ) / part.dy;
+            var rat2 = ( vertices[2].y - vertices[0].y ) / texdescriptor.dy;
             context.save();
             context.setTransform( rat1,          // horizontal scaling
                                   tan1 * rat1,   // horizontal skewing
@@ -57,9 +57,9 @@
                                   vertices[0].y);// vertical moving
             context.save();
             context.beginPath();
-            context.moveTo(part.x,part.y);
-            context.lineTo(part.x + part.dx, part.y);
-            context.lineTo(part.x          , part.y + part.dy);
+            context.moveTo(texdescriptor.x,texdescriptor.y);
+            context.lineTo(texdescriptor.x + texdescriptor.dx, texdescriptor.y);
+            context.lineTo(texdescriptor.x          , texdescriptor.y + texdescriptor.dy);
             context.closePath();
             context.restore();
 
@@ -72,7 +72,7 @@
             context.fillStyle = "black";
             context.fillRect(0,0,screenWidth,screenHeight);
 
-            drawTexturedTriangle( triangle );
+            drawTexturedTriangle( triangle, texture );
             drawWireframeTriangle( triangle );
          }
 
