@@ -28,6 +28,8 @@
 
          var part = {x:25,y:25,points:[{x:0,y:0},{x:0,y:400},{x:400,y:0}]};
 
+         var triangle = [{x:200,y:100},{x:600,y:200},{x:250,y:500}];
+
          // http://stackoverflow.com/questions/21299439/clipping-images-into-different-shapes-like-triangle-pentagon-in-html5-canvas
          function define(part){
             // http://www.w3schools.com/tags/canvas_settransform.asp
@@ -50,15 +52,32 @@
             context.restore();
          }
 
-         function drawBackground() {
-            context.fillStyle = "black";
-            context.fillRect(0,0,screenWidth,screenHeight);
+         function drawWireframeTriangle( vertices ) {
+            context.strokeStyle = "lightblue";
+            context.beginPath();
+            if ( vertices.length >= 3 ) {
+               context.moveTo( vertices[0].x, vertices[0].y );
+            }
+            context.lineTo( vertices[1].x, vertices[1].y );
+            context.lineTo( vertices[2].x, vertices[2].y );
+            context.closePath();
+            context.stroke();
+         }
 
+         function drawTexturedTriangle( vetrices ) {
             context.save();
             define( part );
             context.clip();
             context.drawImage(myImage, 10, 10);
             context.restore();
+         }
+
+         function drawBackground() {
+            context.fillStyle = "black";
+            context.fillRect(0,0,screenWidth,screenHeight);
+
+            drawTexturedTriangle( triangle );
+            drawWireframeTriangle( triangle );
          }
 
          // common functions 
