@@ -26,9 +26,9 @@
          var myImage = new Image();
          myImage.src = "item-16-image.png";
 
-         var part = {x:25,y:25,points:[{x:0,y:0},{x:0,y:400},{x:400,y:0}]};
+         var part = {x:100,y:25,points:[{x:0,y:0},{x:0,y:400},{x:400,y:0}]};
 
-         var triangle = [{x:200,y:100},{x:600,y:200},{x:250,y:500}];
+         var triangle = [{x:200,y:100},{x:800,y:200},{x:250,y:500}];
 
          function drawWireframeTriangle( vertices ) {
             context.strokeStyle = "lightblue";
@@ -43,16 +43,16 @@
          }
 
          // http://stackoverflow.com/questions/21299439/clipping-images-into-different-shapes-like-triangle-pentagon-in-html5-canvas
-         function drawTexturedTriangle( vetrices ) {
+         function drawTexturedTriangle( vertices ) {
             context.save();
             context.setTransform( 1,            // horizontal scaling
                                   0.25,         // horizontal skewing
                                   0.25,         // vertical skewing
                                   1,            // vertical scaling
-                                  0,            // horizontal moving
-                                  0);           // vertical moving
+                                  vertices[0].x, // horizontal moving
+                                  vertices[0].y);// vertical moving
+//            context.translate(part.x,part.y);
             context.save();
-            context.translate(part.x,part.y);
             context.beginPath();
             var point=part.points[0];
             context.moveTo(point.x,point.y);
@@ -64,7 +64,7 @@
             context.restore();
 
             context.clip();
-            context.drawImage(myImage, 10, 10);
+            context.drawImage(myImage, 0, 0);
             context.restore();
          }
 
