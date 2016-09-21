@@ -25,6 +25,10 @@
 
          var myImage = new Image();
          myImage.src = "item-16-image.png";
+         var myImageVertices = [{x:-50,y:-50, z:100},
+                                {x: 50,y:-50, z:100},
+                                {x: 50,y: 50, z:100},
+                                {x:-50,y: 50, z:100}];
 
          var texture = {x:0,y:0,dx:400,dy:400};
 
@@ -74,6 +78,20 @@
             return retval;
          }
 
+         function rotateVectorAroundX( vector, angle ) {
+            // vector.x remains.
+            var ny = vector.y *  Math.cos( angle ) + vector.z * Math.sin( angle );
+            var nz = vector.y * -Math.sin( angle ) + vector.z * Math.cos( angle );
+            vector.y = ny;
+            vector.z = nz;
+         }
+
+         function rotateVectorsAroundX( vectors, angle ) {
+            for ( var i = 0; i < vectors.length; ++i ) {
+               rotateVectorAroundX( vectors[i], angle );
+            }
+         }
+
          function drawPictureIn3D( vertices3d, image, supdimensions ) {
             if ( vertices3d.length < 4 ) {
                return;
@@ -83,7 +101,7 @@
                                 projection( vertices3d[2] ),
                                 projection( vertices3d[3] ) ];
 
-            var res = 1; // resolution
+            var res = 5; // resolution
 
             var tdx = ( supdimensions.x2 - supdimensions.x1 ) / res;
             var tdy = ( supdimensions.y2 - supdimensions.y1 ) / res;
@@ -141,11 +159,8 @@
             context.fillStyle = "black";
             context.fillRect(0,0,screenWidth,screenHeight);
 
-            var vertices = [{x:-50,y:-50, z:100},
-                            {x: 50,y:-50, z:100},
-                            {x: 50,y: 50, z:100},
-                            {x:-50,y: 50, z:100}];
-            drawPictureIn3D( vertices, myImage, {x1:0, y1:0, x2:400, y2: 400});
+            drawPictureIn3D( myImageVertices, myImage, {x1:0, y1:0, x2:400, y2: 400});
+            rotateVectorsAroundX( myImageVertices, 0.005 );
          }
 
          // common functions 
