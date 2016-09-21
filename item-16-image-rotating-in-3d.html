@@ -42,6 +42,25 @@
             context.stroke();
          }
 
+         var dist = 1.0;
+         function projection( vertex3d ) {
+            var dx = ( vertex3d.x * dist ) / vertex3d.z;
+            var dy = ( vertex3d.y * dist ) / vertex3d.z;
+            return { x: screenWidth / 2 + screenScale * dx, y : screenHeight / 2 + screenScale * dy };
+         }
+
+         function drawPictureIn3D( vertices3d, image, image_dimensions ) {
+            if ( vertices3d.length < 4 ) {
+               return;
+            }
+            var vertices = [ projection( vertices3d[0] ),
+                             projection( vertices3d[1] ),
+                             projection( vertices3d[2] ),
+                             projection( vertices3d[3] ) ];
+            drawWireframeTriangle( [ vertices[0], vertices[1], vertices[3] ] );
+            drawWireframeTriangle( [ vertices[1], vertices[2], vertices[3] ] );
+         }
+
          // http://stackoverflow.com/questions/21299439/clipping-images-into-different-shapes-like-triangle-pentagon-in-html5-canvas
          function drawTexturedTriangle( vertices, texdescriptor ) {
             var tan1 = ( vertices[1].x == vertices[0].x ) ? ( vertices[1].y - vertices[0].y ) :  ( vertices[1].y - vertices[0].y ) / ( vertices[1].x - vertices[0].x );
@@ -74,6 +93,11 @@
 
             drawTexturedTriangle( triangle, texture );
             drawWireframeTriangle( triangle );
+            var vertices = [{x:-50,y: 50, z:100},
+                            {x: 50,y: 50, z:100},
+                            {x: 50,y:-50, z:100},
+                            {x:-50,y:-50, z:100}];
+            drawPictureIn3D( vertices, myImage );
          }
 
          // common functions 
