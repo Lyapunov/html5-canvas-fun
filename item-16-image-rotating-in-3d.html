@@ -46,7 +46,7 @@
             context.stroke();
          }
 
-         var dist = 1.0;
+         var dist = 1.5;
          function projection( vertex3d ) {
             var dx = ( vertex3d.x * dist ) / vertex3d.z;
             var dy = ( vertex3d.y * dist ) / vertex3d.z;
@@ -101,7 +101,7 @@
                                 projection( vertices3d[2] ),
                                 projection( vertices3d[3] ) ];
 
-            var res = 5; // resolution
+            var res = 3; // resolution
 
             var tdx = ( supdimensions.x2 - supdimensions.x1 ) / res;
             var tdy = ( supdimensions.y2 - supdimensions.y1 ) / res;
@@ -155,12 +155,26 @@
             context.restore();
          }
 
+         var rotCounter = 100;
+         var rotAng = 0.005;
+
          function drawBackground() {
             context.fillStyle = "black";
             context.fillRect(0,0,screenWidth,screenHeight);
 
             drawPictureIn3D( myImageVertices, myImage, {x1:0, y1:0, x2:400, y2: 400});
-            rotateVectorsAroundX( myImageVertices, 0.005 );
+            rotateVectorsAroundX( myImageVertices, rotAng );
+            if ( rotAng > 0 ) {
+               ++rotCounter;
+               if ( rotCounter > 200 ) {
+                  rotAng = -rotAng;
+               }
+            } else {
+               --rotCounter;
+               if ( rotCounter < 0 ) {
+                  rotAng = -rotAng;
+               }
+            }
          }
 
          // common functions 
