@@ -49,7 +49,7 @@
             return { x: screenWidth / 2 + screenScale * dx, y : screenHeight / 2 + screenScale * dy };
          }
 
-         function drawPictureIn3D( vertices3d, image, image_dimensions ) {
+         function drawPictureIn3D( vertices3d, image, dimensions ) {
             if ( vertices3d.length < 4 ) {
                return;
             }
@@ -58,8 +58,8 @@
                              projection( vertices3d[2] ),
                              projection( vertices3d[3] ) ];
 
-            drawTexturedTriangle( [ vertices[0], vertices[1], vertices[3] ], image, {x:0, y:0, dx:400, dy:400} );
-            drawTexturedTriangle( [ vertices[2], vertices[3], vertices[1] ], image, {x:400, y:400, dx:-400, dy:-400} );
+            drawTexturedTriangle( [ vertices[0], vertices[1], vertices[3] ], image, {x:dimensions.x1, y:dimensions.y1, dx:(dimensions.x2-dimensions.x1), dy:(dimensions.y2-dimensions.y1)} );
+            drawTexturedTriangle( [ vertices[2], vertices[3], vertices[1] ], image, {x:dimensions.x2, y:dimensions.y2, dx:(dimensions.x1-dimensions.x2), dy:(dimensions.y1-dimensions.y2)} );
 
             drawWireframeTriangle( [ vertices[0], vertices[1], vertices[3] ] );
             drawWireframeTriangle( [ vertices[2], vertices[3], vertices[1] ] );
@@ -100,7 +100,7 @@
                             {x: 50,y:-50, z:100},
                             {x: 50,y: 50, z:100},
                             {x:-50,y: 50, z:100}];
-            drawPictureIn3D( vertices, myImage );
+            drawPictureIn3D( vertices, myImage, {x1:0, y1:0, x2:400, y2: 400});
          }
 
          // common functions 
