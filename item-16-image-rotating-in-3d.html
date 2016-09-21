@@ -49,20 +49,59 @@
             return { x: screenWidth / 2 + screenScale * dx, y : screenHeight / 2 + screenScale * dy };
          }
 
+         function uvSum( vertices, u, v ) {
+            if ( vertices.length < 4 ) {
+               return;
+            }
+            var weights = [ ( 1 - u ) * ( 1 - v ), u * ( 1 - v ), u * v, ( 1 - u ) * v ];
+            return weightedSum( vertices, weights );
+
+         }
+
+         function weightedSum( vertices, weights ) {
+            var retval = {x:0, y:0, z:0};
+            var weightsum = 0;
+            for ( var i = 0; i < vertices.length; ++i ) {
+               retval.x += vertices[i].x * weights[i];
+               retval.y += vertices[i].y * weights[i];
+               retval.z += vertices[i].z * weights[i];
+               weightsum += weights[i];
+            }
+            retval.x /= weightsum;
+            retval.y /= weightsum;
+            retval.z /= weightsum;
+
+            return retval;
+         }
+
          function drawPictureIn3D( vertices3d, image, dimensions ) {
             if ( vertices3d.length < 4 ) {
                return;
             }
-            var vertices = [ projection( vertices3d[0] ),
-                             projection( vertices3d[1] ),
-                             projection( vertices3d[2] ),
-                             projection( vertices3d[3] ) ];
+            var supvertices = [ projection( vertices3d[0] ),
+                                projection( vertices3d[1] ),
+                                projection( vertices3d[2] ),
+                                projection( vertices3d[3] ) ];
 
-            drawTexturedTriangle( [ vertices[0], vertices[1], vertices[3] ], image, {x:dimensions.x1, y:dimensions.y1, dx:(dimensions.x2-dimensions.x1), dy:(dimensions.y2-dimensions.y1)} );
-            drawTexturedTriangle( [ vertices[2], vertices[3], vertices[1] ], image, {x:dimensions.x2, y:dimensions.y2, dx:(dimensions.x1-dimensions.x2), dy:(dimensions.y1-dimensions.y2)} );
+            var res = 1; // resolution
+            for ( var px = 0; px < res; ++px ) {
+               for ( var py = 0; py < res; ++py ) {
+                  var vertices = [ uvSum( supvertices, px / ( res), py / ( res )),
+                                   uvSum( supvertices, (px + 1) / ( res), py / ( res) ),
+                                   uvSum( supvertices, (px + 1) / ( res), (py + 1) / ( res) ),
+                                   uvSum( supvertices, px / ( res), (py + 1) / (res ) ) ];
+                  
 
-            drawWireframeTriangle( [ vertices[0], vertices[1], vertices[3] ] );
-            drawWireframeTriangle( [ vertices[2], vertices[3], vertices[1] ] );
+                  drawTexturedTriangle( [ vertices[0], vertices[1], vertices[3] ], image,
+                                        {x:dimensions.x1, y:dimensions.y1, dx:(dimensions.x2-dimensions.x1), dy:(dimensions.y2-dimensions.y1)} );
+                  drawTexturedTriangle( [ vertices[2], vertices[3], vertices[1] ], image,
+                                        {x:dimensions.x2, y:dimensions.y2, dx:(dimensions.x1-dimensions.x2), dy:(dimensions.y1-dimensions.y2)} );
+
+/*                  drawWireframeTriangle( [ vertices[0], vertices[1], vertices[3] ] );
+                  drawWireframeTriangle( [ vertices[2], vertices[3], vertices[1] ] );*/
+
+               }
+            }
          }
 
          // http://stackoverflow.com/questions/21299439/clipping-images-into-different-shapes-like-triangle-pentagon-in-html5-canvas
