@@ -57,12 +57,16 @@
                              projection( vertices3d[1] ),
                              projection( vertices3d[2] ),
                              projection( vertices3d[3] ) ];
+
+            drawTexturedTriangle( [ vertices[0], vertices[1], vertices[3] ], image, {x:0, y:0, dx:400, dy:400} );
+            drawTexturedTriangle( [ vertices[2], vertices[3], vertices[1] ], image, {x:400, y:400, dx:-400, dy:-400} );
+
             drawWireframeTriangle( [ vertices[0], vertices[1], vertices[3] ] );
-            drawWireframeTriangle( [ vertices[1], vertices[2], vertices[3] ] );
+            drawWireframeTriangle( [ vertices[2], vertices[3], vertices[1] ] );
          }
 
          // http://stackoverflow.com/questions/21299439/clipping-images-into-different-shapes-like-triangle-pentagon-in-html5-canvas
-         function drawTexturedTriangle( vertices, texdescriptor ) {
+         function drawTexturedTriangle( vertices, image, texdescriptor ) {
             var tan1 = ( vertices[1].x == vertices[0].x ) ? ( vertices[1].y - vertices[0].y ) :  ( vertices[1].y - vertices[0].y ) / ( vertices[1].x - vertices[0].x );
             var rat1 = ( vertices[1].x - vertices[0].x ) / texdescriptor.dx;
             var tan2 = ( vertices[2].y == vertices[0].y ) ? ( vertices[2].x - vertices[0].x ) :  ( vertices[2].x - vertices[0].x ) / ( vertices[2].y - vertices[0].y );
@@ -74,6 +78,7 @@
                                   rat2,          // vertical scaling
                                   vertices[0].x, // horizontal moving
                                   vertices[0].y);// vertical moving
+            context.translate(-texdescriptor.x,-texdescriptor.y);
             context.save();
             context.beginPath();
             context.moveTo(texdescriptor.x,texdescriptor.y);
@@ -83,7 +88,7 @@
             context.restore();
 
             context.clip();
-            context.drawImage(myImage, 0, 0);
+            context.drawImage(image, 0, 0);
             context.restore();
          }
 
@@ -91,12 +96,10 @@
             context.fillStyle = "black";
             context.fillRect(0,0,screenWidth,screenHeight);
 
-            drawTexturedTriangle( triangle, texture );
-            drawWireframeTriangle( triangle );
-            var vertices = [{x:-50,y: 50, z:100},
-                            {x: 50,y: 50, z:100},
+            var vertices = [{x:-50,y:-50, z:100},
                             {x: 50,y:-50, z:100},
-                            {x:-50,y:-50, z:100}];
+                            {x: 50,y: 50, z:100},
+                            {x:-50,y: 50, z:100}];
             drawPictureIn3D( vertices, myImage );
          }
 
