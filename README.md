@@ -28,3 +28,6 @@ The list of items are done so far:
 * [Item 12, raycasting](http://html5-canvas-fun.bitballoon.com/item-12-raycasting.html)
 * [Item 13, infinite labyrinth 3d](http://html5-canvas-fun.bitballoon.com/item-13-infinite-labyrinth-3d.html)
 * [Item 14, sphere](http://html5-canvas-fun.bitballoon.com/item-14-sphere.html)
+* [Item 16, image rotating in 3d](http://html5-canvas-fun.bitballoon.com/item-16-image-rotating-in-3d.html)
+* [Item 17, random textured triangle](http://html5-canvas-fun.bitballoon.com/item-17-textured-triangles.html)
+* [Item 17, rotating textured cube](http://html5-canvas-fun.bitballoon.com/item-18-rotating-textured-cube.html)
