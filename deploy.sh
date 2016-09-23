@@ -1,2 +1,2 @@
 #!/bin/bash
-zip html5-canvas-fun.zip *.html *.pn
+zip html5-canvas-fun.zip *.html *.png
