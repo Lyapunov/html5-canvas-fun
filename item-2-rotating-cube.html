@@ -110,9 +110,7 @@
                   face.averageZ();
                });
                this.faces.sort( function(a,b) { return a.avgz < b.avgz } );
-               console.log('drawfaces');
                for ( var i = 0; i < this.faces.length; ++i ) {
-                  console.log(faces[i].num, ':', faces[i].avgz);
                   faces[i].draw();
                }
             };
