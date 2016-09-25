@@ -23,6 +23,19 @@
          var fps = 25;
          var ANIMATION;
 
+         function GameObject( xy ) {
+            this.self = this;
+            this.xy = xy;
+            this.drawOut = function() {
+               context.beginPath();
+               context.fillStyle = 'blue';
+               context.rect(this.xy.x, this.xy.y, 100, 100);
+               context.fill();
+            }
+         }
+
+         var hero = new GameObject( {x:10, y:10} );
+
          function drawBackground() {
             context.fillStyle = "black";
             context.fillRect(0,0,screenWidth,screenHeight);
@@ -32,6 +45,7 @@
          function drawScene() {
             setTimeout( function() {
                drawBackground();
+               hero.drawOut();
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / fps );
          }
