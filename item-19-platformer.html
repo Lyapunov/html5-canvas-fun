@@ -30,7 +30,7 @@
             this.movable = movable;
             this.drawOut = function() {
                context.beginPath();
-               context.fillStyle = 'blue';
+               context.fillStyle = this.movable ? 'blue' : 'green';
                context.rect(this.xywh.x, this.xywh.y, this.xywh.w, this.xywh.h);
                context.fill();
             }
@@ -43,6 +43,13 @@
 
          var hero = new GameObject( {x:10, y:10, w:64, h:128}, 1 );
 
+         var WORLD = [];
+
+         function createWorld() {
+            WORLD.push( hero );
+            WORLD.push( new GameObject( {x:10, y:200, w:64, h:64}, 0 ) );
+         }
+
          function drawBackground() {
             context.fillStyle = "black";
             context.fillRect(0,0,screenWidth,screenHeight);
@@ -52,8 +59,10 @@
          function drawScene() {
             setTimeout( function() {
                drawBackground();
-               hero.drawOut();
-               hero.move();
+               console.log(WORLD.length);
+               console.log(WORLD);
+               WORLD.forEach( function( obi ){ obi.drawOut(); } );
+               WORLD.forEach( function( obi ){ obi.move(); } );
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / fps );
          }
@@ -71,6 +80,7 @@
 
          //init
          (function() {
+            createWorld();
             initCanvas();
             addEventListener('resize', initCanvas, false);
          })();
