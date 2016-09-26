@@ -23,18 +23,25 @@
          var fps = 25;
          var ANIMATION;
 
-         function GameObject( xy ) {
-            this.self = this;
-            this.xy = xy;
+         var FALL_STEP = 1;
+
+         function GameObject( xywh, movable ) {
+            this.xywh = xywh;
+            this.movable = movable;
             this.drawOut = function() {
                context.beginPath();
                context.fillStyle = 'blue';
-               context.rect(this.xy.x, this.xy.y, 100, 100);
+               context.rect(this.xywh.x, this.xywh.y, this.xywh.w, this.xywh.h);
                context.fill();
+            }
+            this.move = function() {
+               if ( this.movable ) {
+                  this.xywh.y += FALL_STEP;
+               }
             }
          }
 
-         var hero = new GameObject( {x:10, y:10} );
+         var hero = new GameObject( {x:10, y:10, w:64, h:128}, 1 );
 
          function drawBackground() {
             context.fillStyle = "black";
@@ -46,6 +53,7 @@
             setTimeout( function() {
                drawBackground();
                hero.drawOut();
+               hero.move();
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / fps );
          }
