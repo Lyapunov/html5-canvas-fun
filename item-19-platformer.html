@@ -25,13 +25,16 @@
 
          var FALL_STEP = 1;
 
+         var WORLD = [];
+         var CAMERA = { x:0, y:0, w: 640, h:480 };
+
          function GameObject( xywh, movable ) {
             this.xywh = xywh;
             this.movable = movable;
             this.drawOut = function() {
                context.beginPath();
                context.fillStyle = this.movable ? 'blue' : 'green';
-               context.rect(this.xywh.x, this.xywh.y, this.xywh.w, this.xywh.h);
+               context.rect(this.xywh.x - CAMERA.x, this.xywh.y - CAMERA.y, this.xywh.w, this.xywh.h);
                context.fill();
             }
             this.move = function() {
@@ -43,13 +46,27 @@
 
          var hero = new GameObject( {x:30, y:10, w:64, h:128}, 1 );
 
-         var WORLD = [];
-
          function createWorld() {
             WORLD.push( hero );
             WORLD.push( new GameObject( {x:10, y:200, w:64, h:64}, 0 ) );
             WORLD.push( new GameObject( {x:74, y:232, w:64, h:64}, 0 ) );
             WORLD.sort( function(a,b) { return a.xywh.x > b.xywh.x; } );
+
+            // Setting first and last object on camera picture
+            CAMERA.first = WORLD.length;
+            for ( var i = 0; i < WORLD.length; ++i ) {
+               if ( WORLD[i].xywh.x >= CAMERA.x ) {
+                  CAMERA.first = i;
+                  break;
+               }
+            }
+            CAMERA.last = WORLD.length;
+            for ( var i = 0; i < WORLD.length; ++i ) {
+               if ( WORLD[i].xywh.x > CAMERA.x + CAMERA.w ) {
+                  CAMERA.last = i;
+                  break;
+               }
+            }
          }
 
          function drawBackground() {
