@@ -42,9 +42,14 @@
                   this.xywh.y += FALL_STEP;
                }
             }
+            this.commonX = function( other ) {
+               return Math.abs(this.xywh.x - other.xywh.x) <= ( this.xywh.w + other.xywh.w ) / 2;
+            }
+            this.commonY = function( other ) {
+               return Math.abs(this.xywh.y - other.xywh.y) <= ( this.xywh.w + other.xywh.y ) / 2;
+            }
             this.hit = function( other ) {
-               return Math.abs(this.xywh.x - other.xywh.x) <= ( this.xywh.w + other.xywh.w ) / 2 
-                      && Math.abs(this.xywh.y - other.xywh.y) <= ( this.xywh.w + other.xywh.y ) / 2;
+               return this.commonX( other ) && this.commonY( other );
             }
          }
 
