@@ -42,6 +42,10 @@
                   this.xywh.y += FALL_STEP;
                }
             }
+            this.hit = function( other ) {
+               return Math.abs(this.xywh.x - other.xywh.x) <= ( this.xywh.w + other.xywh.w ) / 2 
+                      && Math.abs(this.xywh.y - other.xywh.y) <= ( this.xywh.w + other.xywh.y ) / 2;
+            }
          }
 
          var hero = new GameObject( {x:30, y:10, w:64, h:128}, 1 );
@@ -69,6 +73,18 @@
             }
          }
 
+         function hitCorrection( i ) {
+            if ( WORLD[i].movable ) {
+               for ( var j = CAMERA.first; j < CAMERA.last; ++j ) {
+                  if ( !WORLD[j].movable ) {
+                     if ( WORLD[i].hit( WORLD[j] ) ) {
+                        console.log( i + ' hit ' + j );
+                     }
+                  }
+               }
+            }
+         }
+
          function drawBackground() {
             context.fillStyle = "black";
             context.fillRect(0,0,screenWidth,screenHeight);
@@ -79,10 +95,11 @@
             setTimeout( function() {
                drawBackground();
                for ( var i = CAMERA.first; i < CAMERA.last; ++i ) {
-                   WORLD[i].drawOut();
+                  WORLD[i].drawOut();
                }
-                for ( var i = CAMERA.first; i < CAMERA.last; ++i ) {
-                   WORLD[i].move();
+               for ( var i = CAMERA.first; i < CAMERA.last; ++i ) {
+                  WORLD[i].move();
+                  hitCorrection( i );
                }
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / fps );
