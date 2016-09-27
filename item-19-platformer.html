@@ -24,6 +24,9 @@
          var ANIMATION;
 
          var FALL_STEP = 3;
+         var HERO_STEP_X = 2;
+         var HERO_STEP_Y = 5;
+         var HERO_DELTA = {x:0, y:0};
 
          var WORLD = [];
          var CAMERA = { x:0, y:0, w: 640, h:480, gap: 100 };
@@ -129,11 +132,36 @@
                for ( var i = CAMERA.first; i < CAMERA.last; ++i ) {
                   WORLD[i].move();
                }
+               hero.xywh.x += HERO_DELTA.x;
+               hero.xywh.y += HERO_DELTA.y;
+               HERO_DELTA = {x:0,y:0};
                for ( var i = CAMERA.first; i < CAMERA.last; ++i ) {
                   hitCorrection(i);
                }
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / fps );
+         }
+
+         function keyHandler(e) {
+           console.log( e.keyCode );
+           switch( e.keyCode ) {
+              case 65:
+                 HERO_DELTA = {x: -HERO_STEP_X, y:0};
+                 break;
+              case 68:
+                 HERO_DELTA = {x: +HERO_STEP_X, y:0};
+                 break;
+              case 69:
+                 break;
+              case 81:
+                 break;
+              case 83:
+                 HERO_DELTA = {x:0, y:+HERO_STEP_Y};
+                 break;
+              case 87:
+                 HERO_DELTA = {x:0, y:-HERO_STEP_Y};
+                 break;
+           }
          }
 
          function initCanvas() {
@@ -152,6 +180,7 @@
             createWorld();
             initCanvas();
             addEventListener('resize', initCanvas, false);
+            addEventListener('keydown',keyHandler,false);
          })();
       </script>
    </body>
