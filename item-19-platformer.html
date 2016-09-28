@@ -76,10 +76,10 @@
                }
             }
             this.commonX = function( other ) {
-               return Math.floor( ( this.xywh.w + other.xywh.w ) / 2 ) - Math.abs(this.xywh.x - other.xywh.x);
+               return Math.floor( ( this.xywh.w + other.xywh.w ) / 2 ) - Math.abs(this.xywh.x + this.xywh.w / 2 - other.xywh.x - other.xywh.w / 2);
             }
             this.commonY = function( other ) {
-               return Math.floor( ( this.xywh.w + other.xywh.y ) / 2 ) - Math.abs(this.xywh.y - other.xywh.y);
+               return Math.floor( ( this.xywh.h + other.xywh.h ) / 2 ) - Math.abs(this.xywh.y + this.xywh.h / 2 - other.xywh.y - other.xywh.h / 2);
             }
             this.hit = function( other ) {
                var cx = this.commonX( other );
@@ -128,7 +128,7 @@
                   if ( !WORLD[j].movable ) {
                      var hit = WORLD[i].hit( WORLD[j] );
                      if ( hit != 0 ) {
-                        if ( WORLD[i].xywh.y +  WORLD[i].xywh.h / 2 < WORLD[j].xywh.y +  WORLD[j].xywh.h / 2 ) {
+                        if ( WORLD[i].xywh.y + ( WORLD[i].xywh.h / 2 ) < ( WORLD[j].xywh.y + WORLD[j].xywh.h / 2 ) ) {
                            WORLD[i].setToGround( WORLD[j].xywh.y - WORLD[i].xywh.h );
                            clearBit = 0;
                         } else {
@@ -143,7 +143,6 @@
                               WORLD[i].xywh.y = WORLD[j].xywh.y + WORLD[j].xywh.h;
                            }
                         }
-                        break;
                      }
                   }
                }
