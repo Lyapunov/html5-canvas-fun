@@ -42,6 +42,7 @@
                context.fill();
             }
             this.ground = 0;
+            this.jumping = 0;
             this.clearGroundBit = function() {
                if ( this.ground ) {
                   this.ground = 0;
@@ -62,14 +63,23 @@
                return this.ground;
             }
             this.jump = function() {
-               if ( this.ground ) {
-                  this.clearGroundBit();
-                  this.v = -10;
-               }
+               this.jumping = 1;
             }
             this.move = function() {
                if ( this.movable ) {
-                  this.xywh.y += this.v;
+                  if ( this.jumping ) {
+                     this.jumping = 0;
+                     if ( this.ground ) {
+                        this.ground = 0;
+                        this.v = -10;
+                     }
+                  }
+
+                  if ( this.ground ) {
+                     this.xywh.y += 1;
+                  } else {
+                     this.xywh.y += this.v;
+                  }
                   if ( this.v < 100 ) {
                      this.v += FALL_ACC;
                   }
