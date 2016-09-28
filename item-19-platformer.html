@@ -126,10 +126,10 @@
                for ( var j = CAMERA.first; j < CAMERA.last; ++j ) {
                   if ( !WORLD[j].movable ) {
                      var hit = WORLD[i].hit( WORLD[j] );
-                     if ( hit ) {
+                     if ( hit != 0 ) {
                         if ( hit > 0 ) {
                            // X is dominant, correcting Y
-                           if ( WORLD[i].xywh.y < WORLD[j].xywh.y +  WORLD[j].xywh.h / 2 ) {
+                           if ( WORLD[i].xywh.y +  WORLD[i].xywh.h / 2 < WORLD[j].xywh.y +  WORLD[j].xywh.h / 2 ) {
                               WORLD[i].setToGround( WORLD[j].xywh.y - WORLD[i].xywh.h );
                               clearBit = 0;
                            } else {
@@ -137,7 +137,7 @@
                            }
                         } else {
                            // Y is dominant, correcting X
-                           if ( WORLD[i].xywh.x < WORLD[j].xywh.x ) {
+                           if ( WORLD[i].xywh.x + WORLD[i].xywh.w / 2 < WORLD[j].xywh.x + WORLD[j].xywh.w / 2 ) {
                               WORLD[i].xywh.x = WORLD[j].xywh.x - WORLD[i].xywh.w;
                            } else {
                               WORLD[i].xywh.x = WORLD[j].xywh.x + WORLD[j].xywh.w;
