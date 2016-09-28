@@ -44,14 +44,12 @@
             this.ground = 0;
             this.clearGroundBit = function() {
                if ( this.ground ) {
-                  console.log('clearGroundBit');
                   this.ground = 0;
                }
             }
             this.setToGround = function( posY ) {
                if ( this.v >= 0 ) {
                   if ( !this.ground ) {
-                     console.log('setGroundBit');
                      this.ground = 1;
                   }
 
@@ -73,7 +71,6 @@
                if ( this.movable ) {
                   this.xywh.y += this.v;
                   if ( this.v < 100 ) {
-                     console.log('moveit ' + this.v);
                      this.v += FALL_ACC;
                   }
                }
@@ -200,7 +197,6 @@
                  break;
               case 87:
                  // W
-                 console.log('jump');
                  hero.jump();
                  break;
            }
