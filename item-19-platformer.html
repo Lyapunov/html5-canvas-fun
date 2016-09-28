@@ -101,6 +101,7 @@
             WORLD.push( hero );
             WORLD.push( new GameObject( {x:10, y:200, w:64, h:64}, 0 ) );
             WORLD.push( new GameObject( {x:74, y:232, w:64, h:64}, 0 ) );
+            WORLD.push( new GameObject( {x:138,y:330, w:64, h:64}, 0 ) );
             WORLD.sort( function(a,b) { return a.xywh.x > b.xywh.x; } );
 
             // Setting first and last object on camera picture
@@ -127,20 +128,19 @@
                   if ( !WORLD[j].movable ) {
                      var hit = WORLD[i].hit( WORLD[j] );
                      if ( hit != 0 ) {
-                        if ( hit > 0 ) {
-                           // X is dominant, correcting Y
-                           if ( WORLD[i].xywh.y +  WORLD[i].xywh.h / 2 < WORLD[j].xywh.y +  WORLD[j].xywh.h / 2 ) {
-                              WORLD[i].setToGround( WORLD[j].xywh.y - WORLD[i].xywh.h );
-                              clearBit = 0;
+                        if ( WORLD[i].xywh.y +  WORLD[i].xywh.h / 2 < WORLD[j].xywh.y +  WORLD[j].xywh.h / 2 ) {
+                           WORLD[i].setToGround( WORLD[j].xywh.y - WORLD[i].xywh.h );
+                           clearBit = 0;
+                        } else {
+                           if ( hit < 0 ) {
+                              // Y is dominant, correcting X
+                              if ( WORLD[i].xywh.x + WORLD[i].xywh.w / 2 < WORLD[j].xywh.x + WORLD[j].xywh.w / 2 ) {
+                                 WORLD[i].xywh.x = WORLD[j].xywh.x - WORLD[i].xywh.w;
+                              } else {
+                                 WORLD[i].xywh.x = WORLD[j].xywh.x + WORLD[j].xywh.w;
+                              }
                            } else {
                               WORLD[i].xywh.y = WORLD[j].xywh.y + WORLD[j].xywh.h;
-                           }
-                        } else {
-                           // Y is dominant, correcting X
-                           if ( WORLD[i].xywh.x + WORLD[i].xywh.w / 2 < WORLD[j].xywh.x + WORLD[j].xywh.w / 2 ) {
-                              WORLD[i].xywh.x = WORLD[j].xywh.x - WORLD[i].xywh.w;
-                           } else {
-                              WORLD[i].xywh.x = WORLD[j].xywh.x + WORLD[j].xywh.w;
                            }
                         }
                         break;
