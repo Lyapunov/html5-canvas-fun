@@ -48,12 +48,15 @@
                   this.ground = 0;
                }
             }
-            this.setGroundBit = function() {
+            this.setToGround = function( posY ) {
                if ( this.v >= 0 ) {
                   if ( !this.ground ) {
                      console.log('setGroundBit');
                      this.ground = 1;
                   }
+
+                  // lock
+                  this.xywh.y = posY;
                   this.v = 0;
                }
             }
@@ -70,6 +73,7 @@
                if ( this.movable ) {
                   this.xywh.y += this.v;
                   if ( this.v < 100 ) {
+                     console.log('moveit ' + this.v);
                      this.v += FALL_ACC;
                   }
                }
@@ -129,8 +133,7 @@
                         if ( hit > 0 ) {
                            // X is dominant, correcting Y
                            if ( WORLD[i].xywh.y < WORLD[j].xywh.y ) {
-                              WORLD[i].xywh.y = WORLD[j].xywh.y - WORLD[i].xywh.h;
-                              WORLD[i].setGroundBit();
+                              WORLD[i].setToGround( WORLD[j].xywh.y - WORLD[i].xywh.h );
                               clearBit = 0;
                            } else {
                               WORLD[i].xywh.y = WORLD[j].xywh.y + WORLD[j].xywh.h;
