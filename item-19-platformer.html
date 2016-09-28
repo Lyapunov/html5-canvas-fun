@@ -23,7 +23,7 @@
          var fps = 25;
          var ANIMATION;
 
-         var FALL_STEP = 3;
+         var FALL_ACC = 1;
          var HERO_STEP_X = 2;
          var HERO_STEP_Y = 5;
          var HERO_DELTA = {x:0, y:0};
@@ -33,6 +33,7 @@
 
          function GameObject( xywh, movable ) {
             this.xywh = xywh;
+            this.v = 0;
             this.movable = movable;
             this.drawOut = function() {
                context.beginPath();
@@ -40,9 +41,37 @@
                context.rect(this.xywh.x - CAMERA.x, this.xywh.y - CAMERA.y, this.xywh.w, this.xywh.h);
                context.fill();
             }
+            this.ground = 0;
+            this.clearGroundBit = function() {
+               if ( this.ground ) {
+                  console.log('clearGroundBit');
+                  this.ground = 0;
+               }
+            }
+            this.setGroundBit = function() {
+               if ( this.v >= 0 ) {
+                  if ( !this.ground ) {
+                     console.log('setGroundBit');
+                     this.ground = 1;
+                  }
+                  this.v = 0;
+               }
+            }
+            this.getGroundBit = function() {
+               return this.ground;
+            }
+            this.jump = function() {
+               if ( this.ground ) {
+                  this.clearGroundBit();
+                  this.v = -10;
+               }
+            }
             this.move = function() {
                if ( this.movable ) {
-                  this.xywh.y += FALL_STEP;
+                  this.xywh.y += this.v;
+                  if ( this.v < 100 ) {
+                     this.v += FALL_ACC;
+                  }
                }
             }
             this.commonX = function( other ) {
@@ -92,6 +121,7 @@
 
          function hitCorrection( i ) {
             if ( WORLD[i].movable ) {
+               var clearBit = 1;
                for ( var j = CAMERA.first; j < CAMERA.last; ++j ) {
                   if ( !WORLD[j].movable ) {
                      var hit = WORLD[i].hit( WORLD[j] );
@@ -100,6 +130,8 @@
                            // X is dominant, correcting Y
                            if ( WORLD[i].xywh.y < WORLD[j].xywh.y ) {
                               WORLD[i].xywh.y = WORLD[j].xywh.y - WORLD[i].xywh.h;
+                              WORLD[i].setGroundBit();
+                              clearBit = 0;
                            } else {
                               WORLD[i].xywh.y = WORLD[j].xywh.y + WORLD[j].xywh.h;
                            }
@@ -111,8 +143,12 @@
                               WORLD[i].xywh.x = WORLD[j].xywh.x + WORLD[j].xywh.w;
                            }
                         }
+                        break;
                      }
                   }
+               }
+               if ( clearBit ) {
+                  WORLD[i].clearGroundBit();
                }
             }
          }
@@ -143,12 +179,13 @@
          }
 
          function keyHandler(e) {
-           console.log( e.keyCode );
            switch( e.keyCode ) {
               case 65:
+                 // A
                  HERO_DELTA = {x: -HERO_STEP_X, y:0};
                  break;
               case 68:
+                 // D
                  HERO_DELTA = {x: +HERO_STEP_X, y:0};
                  break;
               case 69:
@@ -156,10 +193,12 @@
               case 81:
                  break;
               case 83:
-                 HERO_DELTA = {x:0, y:+HERO_STEP_Y};
+                 // S
                  break;
               case 87:
-                 HERO_DELTA = {x:0, y:-HERO_STEP_Y};
+                 // W
+                 console.log('jump');
+                 hero.jump();
                  break;
            }
          }
