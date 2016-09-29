@@ -16,9 +16,8 @@
          var mainItem     = document.getElementById('canvas');
          var context      = mainItem.getContext('2d');
 
-         var screenWidth  = mainItem.width  = window.innerWidth  - 20;
-         var screenHeight = mainItem.height = window.innerHeight - 20;
-         var screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+         var screenWidth  = mainItem.width  = 640;
+         var screenHeight = mainItem.height = 480;
 
          var fps = 25;
          var ANIMATION;
@@ -216,9 +215,8 @@
          }
 
          function initCanvas() {
-            screenWidth  = mainItem.width  = window.innerWidth  - 20;
-            screenHeight = mainItem.height = window.innerHeight - 20;
-            screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+            screenWidth  = mainItem.width  = 640;
+            screenHeight = mainItem.height = 480;
 
             // starting the engine only if it is not running
             if ( !ANIMATION ) {
