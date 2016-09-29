@@ -23,8 +23,8 @@
          var ANIMATION;
 
          var FALL_ACC = 1;
-         var HERO_STEP_X = 2;
-         var HERO_STEP_Y = 5;
+         var HERO_STEP_X = 5;
+         var HERO_JUMP_V = -12;
          var HERO_DELTA = {x:0, y:0};
 
          var WORLD = [];
@@ -70,7 +70,7 @@
                      this.jumping = 0;
                      if ( this.ground ) {
                         this.ground = 0;
-                        this.v = -10;
+                        this.v = HERO_JUMP_V;
                      }
                   }
 
