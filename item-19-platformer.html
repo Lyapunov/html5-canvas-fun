@@ -143,6 +143,7 @@
                            WORLD[i].setToGround( WORLD[j].xywh.y - WORLD[i].xywh.h );
                            clearBit = 0;
                         } else {
+                           WORLD[i].v = Math.max( 0, WORLD[i].v );
                            if ( hit < 0 ) {
                               // Y is dominant, correcting X
                               if ( WORLD[i].xywh.x + WORLD[i].xywh.w / 2 < WORLD[j].xywh.x + WORLD[j].xywh.w / 2 ) {
