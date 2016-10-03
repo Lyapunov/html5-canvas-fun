@@ -211,7 +211,6 @@
                }
                hero.xywh.x += HERO_DELTA.x;
                hero.xywh.y += HERO_DELTA.y;
-               HERO_DELTA = {x:0,y:0};
                for ( var i = CAMERA.first; i < CAMERA.last; ++i ) {
                   hitCorrection(i);
                }
@@ -219,25 +218,35 @@
             }, 1000 / fps );
          }
 
-         function keyHandler(e) {
+         function keyHandlerDown(e) {
            switch( e.keyCode ) {
-              case 65:
-                 // A
+              case 37:
+                 // left
                  HERO_DELTA = {x: -HERO_STEP_X, y:0};
                  break;
-              case 68:
-                 // D
+              case 39:
+                 // right
                  HERO_DELTA = {x: +HERO_STEP_X, y:0};
                  break;
-              case 69:
+              case 38:
+                 // up
+                 hero.jump();
                  break;
-              case 81:
+           }
+         }
+
+         function keyHandlerUp(e) {
+           switch( e.keyCode ) {
+              case 37:
+                 // left
+                 HERO_DELTA = {x:0,y:0};
                  break;
-              case 83:
-                 // S
+              case 39:
+                 // right
+                 HERO_DELTA = {x:0,y:0};
                  break;
-              case 87:
-                 // W
+              case 38:
+                 // up
                  hero.jump();
                  break;
            }
@@ -258,7 +267,8 @@
             createWorld();
             initCanvas();
             addEventListener('resize', initCanvas, false);
-            addEventListener('keydown',keyHandler,false);
+            addEventListener('keydown',keyHandlerDown,false);
+            addEventListener('keyup'  ,keyHandlerUp,false);
          })();
       </script>
    </body>
