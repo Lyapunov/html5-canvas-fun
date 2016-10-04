@@ -30,13 +30,14 @@
          var WORLD = [];
          var CAMERA = { x:0, y:0, w: 640, h:480, gap: 100, tolerance:150 };
 
-         function GameObject( xywh, movable ) {
+         function GameObject( xywh, movable, breakable ) {
             this.xywh = xywh;
             this.v = 0;
             this.movable = movable;
+            this.breakable = breakable;
             this.drawOut = function() {
                context.beginPath();
-               context.fillStyle = this.movable ? 'blue' : 'green';
+               context.fillStyle = this.movable ? 'blue' : ( this.breakable ? 'yellow' :  'green' );
                context.rect(this.xywh.x - CAMERA.x, this.xywh.y - CAMERA.y, this.xywh.w, this.xywh.h);
                context.fill();
             }
@@ -104,7 +105,7 @@
             }
          }
 
-         var hero = new GameObject( {x:30, y:10, w:64, h:128}, 1 );
+         var hero = new GameObject( {x:30, y:10, w:64, h:128}, 1, 0 );
 
          function setCamera() {
             // Setting first and last object on camera picture
@@ -126,18 +127,20 @@
 
          function createWorld() {
             WORLD.push( hero );
-            WORLD.push( new GameObject( {x:10, y:200, w:100, h:64}, 0 ) );
-            WORLD.push( new GameObject( {x:110,y:200, w:100, h:64}, 0 ) );
-            WORLD.push( new GameObject( {x:210,y:200, w:64, h:64}, 0 ) );
-            WORLD.push( new GameObject( {x:274,y:232, w:64, h:64}, 0 ) );
-            WORLD.push( new GameObject( {x:338,y:330, w:64, h:64}, 0 ) );
-            WORLD.push( new GameObject( {x:402,y:530, w:100, h:64}, 0 ) );
-            WORLD.push( new GameObject( {x:502,y:530, w:100, h:64}, 0 ) );
-            WORLD.push( new GameObject( {x:602,y:530, w:100, h:64}, 0 ) );
-            WORLD.push( new GameObject( {x:702,y:530, w:64, h:64}, 0 ) );
-            WORLD.push( new GameObject( {x:702,y:466, w:64, h:64}, 0 ) );
-            WORLD.push( new GameObject( {x:766,y:402, w:64, h:64}, 0 ) );
-            WORLD.push( new GameObject( {x:830,y:338, w:64, h:64}, 0 ) );
+            WORLD.push( new GameObject( {x:10, y:200, w:100, h:64}, 0, 0 ) );
+            WORLD.push( new GameObject( {x:110,y:200, w:100, h:64}, 0, 0 ) );
+            WORLD.push( new GameObject( {x:210,y:200, w:64, h:64}, 0, 0 ) );
+            WORLD.push( new GameObject( {x:274,y:232, w:64, h:64}, 0, 0 ) );
+            WORLD.push( new GameObject( {x:338,y:330, w:64, h:64}, 0, 0 ) );
+            WORLD.push( new GameObject( {x:402,y:530, w:100, h:64}, 0, 0 ) );
+            WORLD.push( new GameObject( {x:502,y:530, w:100, h:64}, 0, 0 ) );
+            WORLD.push( new GameObject( {x:602,y:530, w:100, h:64}, 0, 0 ) );
+            WORLD.push( new GameObject( {x:702,y:530, w:64, h:64}, 0, 0 ) );
+            WORLD.push( new GameObject( {x:702,y:466, w:64, h:64}, 0, 0 ) );
+            WORLD.push( new GameObject( {x:766,y:402, w:64, h:64}, 0, 0 ) );
+            WORLD.push( new GameObject( {x:830,y:338, w:64, h:64}, 0, 0 ) );
+            WORLD.push( new GameObject( {x:894,y:338, w:100, h:64}, 0, 1 ) );
+            WORLD.push( new GameObject( {x:994,y:338, w:100, h:64}, 0, 0 ) );
             WORLD.sort( function(a,b) { return a.xywh.x > b.xywh.x; } );
             setCamera();
          }
