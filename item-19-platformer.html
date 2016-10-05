@@ -36,16 +36,24 @@
             this.movable = movable;
             this.breakable = breakable;
             this.drawOut = function() {
-               context.beginPath();
-               context.fillStyle = this.movable ? 'blue' : ( this.breakable ? 'yellow' :  'green' );
-               context.rect(this.xywh.x - CAMERA.x, this.xywh.y - CAMERA.y, this.xywh.w, this.xywh.h);
-               context.fill();
+               if ( this.xywh.w > 0 && this.xywh.h > 0 ) {
+                  context.beginPath();
+                  context.fillStyle = this.movable ? 'blue' : ( this.breakable ? 'yellow' :  'green' );
+                  context.rect(this.xywh.x - CAMERA.x, this.xywh.y - CAMERA.y, this.xywh.w, this.xywh.h);
+                  context.fill();
+               }
             }
             this.ground = 0;
             this.jumping = 0;
             this.clearGroundBit = function() {
                if ( this.ground ) {
                   this.ground = 0;
+               }
+            }
+            this.breaking = function() {
+               if ( this.breakable ) {
+                  this.xywh.w = 0;
+                  this.xywh.h = 0;
                }
             }
             this.setToGround = function( posY ) {
@@ -171,6 +179,10 @@
                   if ( !WORLD[j].movable ) {
                      var hit = WORLD[i].hit( WORLD[j] );
                      if ( hit != 0 ) {
+                        if ( WORLD[j].breakable ) {
+                           WORLD[j].breaking(); 
+                           continue;
+                        }
                         if ( WORLD[i].xywh.y + ( WORLD[i].xywh.h / 2 ) < ( WORLD[j].xywh.y + WORLD[j].xywh.h / 2 ) ) {
                            WORLD[i].setToGround( WORLD[j].xywh.y - WORLD[i].xywh.h );
                            clearBit = 0;
