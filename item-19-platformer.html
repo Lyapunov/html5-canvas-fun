@@ -28,7 +28,7 @@
          var HERO_DELTA = {x:0, y:0};
 
          var WORLD = [];
-         var CAMERA = { x:0, y:0, w: 640, h:480, gap: 100, tolerance:150 };
+         var CAMERA = { x:0, y:0, w: 640, h:480, gap: 100, tolerance:100 };
 
          function GameObject( xywh, movable, breakable ) {
             this.xywh = xywh;
@@ -160,18 +160,22 @@
          function scroll() {
              var hcx = Math.floor( hero.xywh.x +  hero.xywh.w / 2 );
              var hcy = Math.floor( hero.xywh.y +  hero.xywh.h / 2 );
-             if ( CAMERA.x > hcx - CAMERA.tolerance ) {
-                CAMERA.x = hcx - CAMERA.tolerance;
+
+             var ccx = Math.floor( CAMERA.x + CAMERA.w / 2 );
+             var ccy = Math.floor( CAMERA.y + CAMERA.h / 2 );
+
+             if ( ccx < hcx - CAMERA.tolerance ) {
+                CAMERA.x = hcx - CAMERA.tolerance - CAMERA.w / 2;
                 setCamera();
-             } else if ( CAMERA.x + CAMERA.w < hcx + CAMERA.tolerance ) {
-                CAMERA.x = hcx + CAMERA.tolerance - CAMERA.w;
+             } else if ( ccx > hcx + CAMERA.tolerance ) {
+                CAMERA.x = hcx + CAMERA.tolerance - CAMERA.w / 2;
                 setCamera();
              }
-             if ( CAMERA.y > hcy - CAMERA.tolerance ) {
-                CAMERA.y = hcy - CAMERA.tolerance;
+             if ( ccy < hcy - CAMERA.tolerance ) {
+                CAMERA.y = hcy - CAMERA.tolerance - CAMERA.h / 2;
                 setCamera();
-             } else if ( CAMERA.y + CAMERA.h < hcy + CAMERA.tolerance ) {
-                CAMERA.y = hcy + CAMERA.tolerance - CAMERA.h;
+             } else if ( ccy > hcy + CAMERA.tolerance ) {
+                CAMERA.y = hcy + CAMERA.tolerance - CAMERA.h / 2;
                 setCamera();
              }
          }
