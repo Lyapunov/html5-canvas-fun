@@ -26,9 +26,21 @@
          var HERO_STEP_X = 5;
          var HERO_JUMP_V = -12;
          var HERO_DELTA = {x:0, y:0};
+         var GROUND_Y = 1000;
+         var FINAL_Y = 1000;
 
          var WORLD = [];
          var CAMERA = { x:0, y:0, w: 640, h:480, gap: 100, tolerance:100 };
+
+         function drawGround() {
+            context.beginPath();
+            context.fillStyle = 'red';
+            var start_row = GROUND_Y - CAMERA.y;
+            if ( start_row < 480 ) {
+               context.rect( 0, Math.max( 0, GROUND_Y - CAMERA.y ), 640, 480 );
+            }
+            context.fill();
+         }
 
          function GameObject( xywh, movable, breakable ) {
             this.xywh = xywh;
@@ -75,6 +87,9 @@
             }
             this.move = function() {
                if ( this.movable ) {
+                  if ( this.xywh.y > FINAL_Y ) {
+                     return;
+                  }
                   if ( this.jumping ) {
                      this.jumping = 0;
                      if ( this.ground ) {
@@ -229,6 +244,7 @@
                for ( var i = CAMERA.first; i < CAMERA.last; ++i ) {
                   WORLD[i].drawOut();
                }
+               drawGround();
                for ( var i = CAMERA.first; i < CAMERA.last; ++i ) {
                   WORLD[i].move();
                }
