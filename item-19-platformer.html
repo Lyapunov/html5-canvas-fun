@@ -128,7 +128,8 @@
             }
          }
 
-         var hero = new GameObject( {x:30, y:10, w:64, h:128}, 1, 0 );
+         var hero_start_xywh = {x:30, y:10, w:64, h:128};
+         var hero = new GameObject( hero_start_xywh, 1, 0 );
 
          function setCamera() {
             // Setting first and last object on camera picture
@@ -239,6 +240,11 @@
          // common functions 
          function drawScene() {
             setTimeout( function() {
+               if ( hero.xywh.y > GROUND_Y ) {
+                  hero.xywh = {x:30, y:10, w:64, h:128};
+                  hero.v = 0;
+                  HERO_DELTA = {x:0, y:0}; //HERO_DELTA_START;
+               }
                scroll();
                drawBackground();
                for ( var i = CAMERA.first; i < CAMERA.last; ++i ) {
