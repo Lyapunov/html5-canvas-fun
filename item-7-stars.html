@@ -59,7 +59,7 @@
          }
 
          function sortStars() {
-            stars.sort( function(a,b) { return a[2] < b[2]; } ); // correct, > is wrong (in the expected way)
+            stars.sort( function(a,b) { return b[2] - a[2]; } ); // correct, > is wrong (in the expected way)
          }
 
          function initStars() {

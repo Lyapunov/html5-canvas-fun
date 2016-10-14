@@ -194,7 +194,7 @@
                this.faces.forEach( function( face ) {
                   face.averageZ();
                });
-               this.faces.sort( function(a,b) { return a.avgz < b.avgz } );
+               this.faces.sort( function(a,b) { return b.avgz - a.avgz } );
                for ( var i = 0; i < this.faces.length; ++i ) {
                   faces[i].draw();
                }
