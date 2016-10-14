@@ -171,7 +171,7 @@
             WORLD.push( new GameObject( {x:1294,y:682, w:100, h:64}, 0, 0 ) );
             WORLD.push( new GameObject( {x:1394,y:802, w:100, h:64}, 0, 0 ) );
             WORLD.push( new GameObject( {x:1494,y:920, w:100, h:64}, 0, 0 ) );
-            WORLD.sort( function(a,b) { return a.xywh.x > b.xywh.x; } );
+            WORLD.sort( function(a,b) { return a.xywh.x - b.xywh.x; } );
             setCamera();
          }
 
