@@ -42,15 +42,16 @@
             context.fill();
          }
 
-         function GameObject( xywh, movable, breakable ) {
+         function GameObject( xywh, movable, breakable, teleport ) {
             this.xywh = xywh;
             this.v = 0;
             this.movable = movable;
             this.breakable = breakable;
+            this.teleport = teleport;
             this.drawOut = function() {
                if ( this.xywh.w > 0 && this.xywh.h > 0 ) {
                   context.beginPath();
-                  context.fillStyle = this.movable ? 'blue' : ( this.breakable ? 'yellow' :  'green' );
+                  context.fillStyle = this.teleport ? 'purple' : ( this.movable ? 'blue' : ( this.breakable ? 'yellow' :  'green' ) );
                   context.rect(this.xywh.x - CAMERA.x, this.xywh.y - CAMERA.y, this.xywh.w, this.xywh.h);
                   context.fill();
                }
@@ -66,6 +67,15 @@
                if ( this.breakable ) {
                   this.xywh.w = 0;
                   this.xywh.h = 0;
+               }
+            }
+            this.teleporting = function () {
+               if ( this.teleport &&
+                    this.teleport.x !== 'undefined' &&
+                    this.teleport.y !== 'undefined' ) {
+                  hero.xywh = {x: this.teleport.x, y: this.teleport.y, w:64, h:128};
+                  hero.v = 0;
+                  HERO_DELTA = {x:0, y:0}; //HERO_DELTA_START;
                }
             }
             this.setToGround = function( posY ) {
@@ -151,26 +161,27 @@
 
          function createWorld() {
             WORLD.push( hero );
-            WORLD.push( new GameObject( {x:10, y:200, w:100, h:64}, 0, 0 ) );
-            WORLD.push( new GameObject( {x:110,y:200, w:100, h:64}, 0, 0 ) );
-            WORLD.push( new GameObject( {x:210,y:200, w:64, h:64}, 0, 0 ) );
-            WORLD.push( new GameObject( {x:274,y:232, w:64, h:64}, 0, 0 ) );
-            WORLD.push( new GameObject( {x:338,y:330, w:64, h:64}, 0, 0 ) );
-            WORLD.push( new GameObject( {x:402,y:530, w:100, h:64}, 0, 0 ) );
-            WORLD.push( new GameObject( {x:502,y:530, w:100, h:64}, 0, 0 ) );
-            WORLD.push( new GameObject( {x:602,y:530, w:100, h:64}, 0, 0 ) );
-            WORLD.push( new GameObject( {x:562,y:300, w:64, h:64}, 0, 1 ) );
-            WORLD.push( new GameObject( {x:702,y:530, w:64, h:64}, 0, 0 ) );
-            WORLD.push( new GameObject( {x:702,y:466, w:64, h:64}, 0, 0 ) );
-            WORLD.push( new GameObject( {x:766,y:402, w:64, h:64}, 0, 0 ) );
-            WORLD.push( new GameObject( {x:830,y:338, w:64, h:64}, 0, 0 ) );
-            WORLD.push( new GameObject( {x:894,y:338, w:100, h:64}, 0, 1 ) );
-            WORLD.push( new GameObject( {x:994,y:338, w:100, h:64}, 0, 0 ) );
-            WORLD.push( new GameObject( {x:1094,y:338, w:100, h:64}, 0, 0 ) );
-            WORLD.push( new GameObject( {x:1194,y:402, w:100, h:64}, 0, 0 ) );
-            WORLD.push( new GameObject( {x:1294,y:682, w:100, h:64}, 0, 0 ) );
-            WORLD.push( new GameObject( {x:1394,y:802, w:100, h:64}, 0, 0 ) );
-            WORLD.push( new GameObject( {x:1494,y:920, w:100, h:64}, 0, 0 ) );
+            WORLD.push( new GameObject( {x:10, y:200,  w:100, h:64}, 0, 0, 0 ) );
+            WORLD.push( new GameObject( {x:110,y:200,  w:100, h:64}, 0, 0, 0 ) );
+            WORLD.push( new GameObject( {x:210,y:200,  w:64,  h:64}, 0, 0, 0 ) );
+            WORLD.push( new GameObject( {x:274,y:232,  w:64,  h:64}, 0, 0, 0 ) );
+            WORLD.push( new GameObject( {x:338,y:330,  w:64,  h:64}, 0, 0, 0 ) );
+            WORLD.push( new GameObject( {x:402,y:530,  w:100, h:64}, 0, 0, 0 ) );
+            WORLD.push( new GameObject( {x:502,y:530,  w:100, h:64}, 0, 0, 0 ) );
+            WORLD.push( new GameObject( {x:602,y:530,  w:100, h:64}, 0, 0, 0 ) );
+            WORLD.push( new GameObject( {x:562,y:300,  w:64,  h:64}, 0, 1, 0 ) );
+            WORLD.push( new GameObject( {x:702,y:530,  w:64,  h:64}, 0, 0, 0 ) );
+            WORLD.push( new GameObject( {x:702,y:466,  w:64,  h:64}, 0, 0, 0 ) );
+            WORLD.push( new GameObject( {x:766,y:402,  w:64,  h:64}, 0, 0, 0 ) );
+            WORLD.push( new GameObject( {x:830,y:338,  w:64,  h:64}, 0, 0, 0 ) );
+            WORLD.push( new GameObject( {x:894,y:338,  w:100, h:64}, 0, 1, 0 ) );
+            WORLD.push( new GameObject( {x:994,y:338,  w:100, h:64}, 0, 0, 0 ) );
+            WORLD.push( new GameObject( {x:1094,y:338, w:100, h:64}, 0, 0, 0 ) );
+            WORLD.push( new GameObject( {x:1194,y:402, w:100, h:64}, 0, 0, 0 ) );
+            WORLD.push( new GameObject( {x:1294,y:682, w:100, h:64}, 0, 0, 0 ) );
+            WORLD.push( new GameObject( {x:1394,y:802, w:100, h:64}, 0, 0, 0 ) );
+            WORLD.push( new GameObject( {x:1494,y:920, w:100, h:64}, 0, 0, 0 ) );
+            WORLD.push( new GameObject( {x:1400,y:338, w:64,  h:64}, 0, 0, {x:500, y:-200} ) );
             WORLD.sort( function(a,b) { return a.xywh.x > b.xywh.x; } );
             setCamera();
          }
@@ -207,6 +218,10 @@
                      if ( hit != 0 ) {
                         if ( WORLD[j].breakable ) {
                            WORLD[j].breaking(); 
+                           continue;
+                        }
+                        if ( WORLD[j].teleport ) {
+                           WORLD[j].teleporting(); 
                            continue;
                         }
                         if ( WORLD[i].xywh.y + ( WORLD[i].xywh.h / 2 ) < ( WORLD[j].xywh.y + WORLD[j].xywh.h / 2 ) ) {
