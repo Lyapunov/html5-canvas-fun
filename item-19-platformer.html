@@ -30,7 +30,7 @@
          var FINAL_Y = 1000;
 
          var WORLD = [];
-         var CAMERA = { x:0, y:0, w: 640, h:480, gap: 100, tolerance:100 };
+         var CAMERA = { x:0, y:0, w: 640, h:480, gap: 100, tolerance:50 };
 
          function drawGround() {
             context.beginPath();
@@ -328,7 +328,7 @@
          (function() {
             createWorld();
             initCanvas();
-            addEventListener('resize', initCanvas, false);
+
             addEventListener('keydown',keyHandlerDown,false);
             addEventListener('keyup'  ,keyHandlerUp,false);
          })();
