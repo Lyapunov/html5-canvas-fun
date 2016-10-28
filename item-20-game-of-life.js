@@ -1,3 +1,6 @@
+//var lib = require('item-20-game-of-life-lib');
+require(['item-20-game-of-life-lib'], function() {
+
 var mainItem     = document.getElementById('canvas');
 var context      = mainItem.getContext('2d');
 
@@ -9,7 +12,7 @@ var fps = 25;
 var ANIMATION;
 
 function drawBackground() {
-   context.fillStyle = "yellow";
+   context.fillStyle = color();
    context.fillRect(0,0,screenWidth,screenHeight);
 }
 
@@ -37,3 +40,5 @@ function initCanvas() {
    initCanvas();
    addEventListener('resize', initCanvas, false);
 })();
+
+});
