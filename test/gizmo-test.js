@@ -1,10 +1,11 @@
 var buster = require("buster");
 var assert = buster.referee.assert;
 
-var subj = require("../item-20-game-of-life-");
+var subj = require("../item-20-game-of-life-lib");
+console.log(subj);
 
 buster.testCase("Gizmo", {
-   "knows a little math" : function() {
-      assert.equals(2 + 3, 4);
+   "uses the right color" : function() {
+      assert.equals(subj.color(), "purple");
    }
 });
