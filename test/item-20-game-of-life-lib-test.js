@@ -8,6 +8,14 @@ buster.testCase("Game of life lib", {
       var game = new subj.GameBoard();
       game.addCell(1,1);
       game.tick();
-      assert.equals(game.getCell(0,0), 0);
+      assert.equals(game.getCell(0,0), false);
+   },
+   "middle cell survives" : function() {
+      var game = new subj.GameBoard();
+      game.addCell(1,1);
+      game.addCell(2,1);
+      game.addCell(3,1);
+      game.tick();
+      assert.equals(game.getCell(2,1), true);
    }
 });

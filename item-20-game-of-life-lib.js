@@ -3,11 +3,14 @@ var color = function() {
 }
 
 var GameBoard = function() {
-   this.addCell = function (x,y) {
+   this.cells=[];
+   this.addCell = function (cx,cy) {
+      this.cells.push({x:cx,y:cy});
    };
    this.tick = function() {}
    this.getCell = function (x,y) {
-      return 0;
+      console.log(this.cells.length > 2);
+      return ( this.cells.length > 2 );
    };
 }
 
