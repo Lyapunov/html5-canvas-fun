@@ -32,5 +32,16 @@ buster.testCase("Game of life lib", {
       this.game.addCell(3,1);
       this.game.tick();
       assert.equals(this.game.getCell(2,1), true);
+   },
+   "glider after two ticks in a row" : function() {
+      this.game.addCell(1,0);
+      this.game.addCell(2,1);
+      this.game.addCell(0,2);
+      this.game.addCell(1,2);
+      this.game.addCell(2,2);
+
+      this.game.tick();
+      this.game.tick();
+      assert.equals(this.game.getCell(1,3), true);
    }
 });

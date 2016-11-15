@@ -27,6 +27,7 @@ var GameBoard = function() {
             newCells.push( xy ); 
          }
       } );
+      var memory = [];
       this.cells.forEach( function( xy ) {
          for ( var i = -1; i <= 1; ++i ) {
             for ( var j = -1; j <= 1; ++j ) {
@@ -34,8 +35,12 @@ var GameBoard = function() {
                   continue;
                }
                var nxy = {x:xy.x+i,y:xy.y+j};
-               if ( self.numberOfNeighbours( nxy ) == 3 ) {
-                  newCells.push( nxy );
+               var marker = nxy.x+"_"+nxy.y;
+               if ( !(marker in memory ) ) {
+                  if ( self.numberOfNeighbours( nxy ) == 3 ) {
+                     newCells.push( nxy );
+                  }
+                  memory[ marker ]=1;
                }
             }
          }
