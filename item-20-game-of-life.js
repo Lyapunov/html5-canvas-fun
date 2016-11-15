@@ -13,8 +13,8 @@ var tiles = 25;
 
 var fps = 25;
 var ANIMATION;
-var noColor = "blue";
-var yesColor = "red";
+var noColor = "black";
+var yesColor = "green";
 
 function drawBackground() {
    context.fillStyle = color();
