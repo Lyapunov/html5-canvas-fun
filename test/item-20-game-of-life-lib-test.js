@@ -25,5 +25,12 @@ buster.testCase("Game of life lib", {
       this.game.addCell(3,1);
       this.game.tick();
       assert.equals(this.game.getCell(3,1), false);
+   },
+   "cell revives" : function() {
+      this.game.addCell(1,1);
+      this.game.addCell(2,2);
+      this.game.addCell(3,1);
+      this.game.tick();
+      assert.equals(this.game.getCell(2,1), true);
    }
 });
