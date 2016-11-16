@@ -11,7 +11,7 @@ var screenScale  = Math.min( screenWidth, screenHeight );
 var board;
 var tiles = 25;
 
-var fps = 25;
+var fps = 10;
 var ANIMATION;
 var noColor = "black";
 var yesColor = "green";
