@@ -21,13 +21,17 @@ var GameBoard = function() {
    };
    this.tick = function() {
       var newCells=[];
+      var memory = [];
       this.cells.forEach( function( xy ) {
          var non = self.numberOfNeighbours( xy );
          if ( non == 2 || non == 3 ) {
-            newCells.push( xy ); 
+            var marker = xy.x+"_"+xy.y;
+            if ( !(marker in memory ) ) {
+               newCells.push( xy ); 
+            }
+            memory[ marker ]=1;
          }
       } );
-      var memory = [];
       this.cells.forEach( function( xy ) {
          for ( var i = -1; i <= 1; ++i ) {
             for ( var j = -1; j <= 1; ++j ) {
@@ -35,9 +39,9 @@ var GameBoard = function() {
                   continue;
                }
                var nxy = {x:xy.x+i,y:xy.y+j};
-               var marker = nxy.x+"_"+nxy.y;
-               if ( !(marker in memory ) ) {
-                  if ( self.numberOfNeighbours( nxy ) == 3 ) {
+               if ( self.numberOfNeighbours( nxy ) == 3 ) {
+                  var marker = nxy.x+"_"+nxy.y;
+                  if ( !(marker in memory ) ) {
                      newCells.push( nxy );
                   }
                   memory[ marker ]=1;
