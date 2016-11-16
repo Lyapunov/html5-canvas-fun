@@ -28,7 +28,7 @@ function drawBackground() {
             var by = ( (y+1) * screenScale ) / tiles;
             context.fillStyle = board.getCell(x,y) ? yesColor : noColor;
             var shift = (screenWidth - screenScale) / 2;
-            context.fillRect(ax+shift,ay,bx+shift,by);
+            context.fillRect(ax+shift,ay,(bx-ax),(by-ay));
          }
       }
    }
