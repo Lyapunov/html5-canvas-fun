@@ -37,10 +37,10 @@
                          [0,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,0,0,0,0,0,0,0],
                          [0,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,0,1,1,1,1,0,0],
                          [0,0,1,1,1,1,1,1,0,0,0,0,4,0,4,0,0,0,0,1,4,1,1,1,1,0,0],
-                         [0,0,1,1,1,1,1,1,0,0,0,1,1,1,1,1,0,0,4,1,0,1,1,1,1,0,0],
-                         [0,0,1,1,1,1,1,1,0,0,0,1,0,4,0,1,0,0,0,1,0,1,1,1,1,0,0],
+                         [0,0,1,1,1,1,1,1,0,0,0,1,1,1,1,1,0,0,0,1,0,1,1,1,1,0,0],
+                         [0,0,1,1,1,1,1,1,0,0,0,1,0,4,0,1,0,1,0,1,0,1,1,1,1,0,0],
                          [0,0,1,1,1,1,1,1,0,0,0,1,0,1,0,3,0,1,4,1,0,0,0,0,0,0,0],
-                         [0,0,1,1,1,1,1,1,0,0,0,1,0,0,0,2,0,0,0,1,4,1,1,1,1,0,0],
+                         [0,0,1,1,1,1,1,1,0,0,0,1,0,0,0,2,0,1,0,1,4,1,1,1,1,0,0],
                          [0,0,1,1,1,1,1,1,0,0,0,1,1,1,1,1,0,0,0,1,0,1,1,1,1,0,0],
                          [0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1,1,1,0,0],
                          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],
@@ -51,7 +51,7 @@
                          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
                          ];
 
-         var cameraCenter = [11.5,18.5];
+         var cameraCenter = [15.5,15.5];
          var tileSize = 50;
 
          function drawBackground() {
@@ -59,11 +59,11 @@
             context.fillRect(0,0,screenWidth,screenHeight);
          }
 
-         function drawTile(x,y) {
+         function drawTile(y,x) {
             context.fillStyle = "blue";
             context.beginPath();
-            var px = (x + y) * Math.sqrt(3) * tileSize * 2 + screenWidth / 2;
-            var py = (x - y) * tileSize * 2 + screenHeight / 2;
+            var px = (x + y) * Math.sqrt(3) * tileSize + screenWidth / 2;
+            var py = (x - y) * tileSize + screenHeight / 2;
             context.moveTo( px, py - tileSize );
             context.lineTo( px + Math.sqrt(3) * tileSize, py );
             context.lineTo( px, py + tileSize );
@@ -72,8 +72,35 @@
             context.fill();
          }
 
+         function getMapCell(y,x) {
+            if ( y < levelMap.length && y >= 0 && x < levelMap[y].length && x >= 0 ) {
+               return levelMap[y][x];
+            }
+            return 0;
+         }
+
+         function drawFloor(y,x,cy,cx,oy,ox) {
+            if ( getMapCell(cy+y,cx+x) ) {
+               drawTile(-y+oy,x-ox);
+            }
+         }
+
          function drawForeground() {
-            drawTile(0,0);
+            var cy = Math.floor(cameraCenter[0]);
+            var cx = Math.floor(cameraCenter[1]);
+            var offy = cameraCenter[0] - cy - 0.5;
+            var offx = cameraCenter[1] - cx - 0.5;
+
+            drawFloor(0,0,cy,cx,offy,offx);
+            for ( var rad = 1; rad < 5; ++rad ) {
+               for ( var pos = -rad; pos < rad; ++pos ) {
+                  drawFloor(  rad,  pos,cy,cx,offy,offx);
+                  drawFloor(1+pos,  rad,cy,cx,offy,offx);
+                  drawFloor(  pos, -rad,cy,cx,offy,offx);
+                  drawFloor( -rad,1+pos,cy,cx,offy,offx);
+               }
+            }
+//            cameraCenter[0]+= 0.1;
          }
 
          // common functions 
@@ -96,10 +123,47 @@
             }
          }
 
+         function keyHandlerDown(e) {
+           console.log(e.keyCode);
+           switch( e.keyCode ) {
+              case 37:
+                 // left
+                 cameraCenter[1]-= 0.1;
+                 break;
+              case 39:
+                 // right
+                 cameraCenter[1]+= 0.1;
+                 break;
+              case 38:
+                 // up
+                 cameraCenter[0]-= 0.1;
+                 break;
+              case 40:
+                 // up
+                 cameraCenter[0]+= 0.1;
+                 break;
+           }
+         }
+
+         function keyHandlerUp(e) {
+           switch( e.keyCode ) {
+              case 37:
+                 // left
+                 break;
+              case 39:
+                 // right
+                 break;
+              case 38:
+                 break;
+           }
+         }
+
          //init
          (function() {
             initCanvas();
             addEventListener('resize', initCanvas, false);
+            addEventListener('keydown',keyHandlerDown,false);
+            addEventListener('keyup'  ,keyHandlerUp,false);
          })();
       </script>
    </body>
