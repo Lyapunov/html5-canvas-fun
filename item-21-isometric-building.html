@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<html>
+   <head>
+      <style>
+         body {
+            margin : 0px;
+            padding: 0px;
+         }
+      </style>
+   </head>
+   <body>
+   	<canvas id="canvas" width="500" height="500">
+      Your browser doesn't support html5 canvas.
+      </canvas>
+      <script>
+         var mainItem     = document.getElementById('canvas');
+         var context      = mainItem.getContext('2d');
+
+         var screenWidth  = mainItem.width  = window.innerWidth  - 20;
+         var screenHeight = mainItem.height = window.innerHeight - 20;
+         var screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+
+         var fps = 25;
+         var ANIMATION;
+
+         var levelMap = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                         [0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0],
+                         [0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0],
+                         [0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0],
+                         [0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0],
+                         [0,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1,1,1,0,0],
+                         [0,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,0,4,0,0,0,0,0,0,0],
+                         [0,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,4,1,0,1,1,1,1,0,0],
+                         [0,0,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,1,0,1,1,1,1,0,0],
+                         [0,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,0,0],
+                         [0,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,0,0,0,0,0,0,0],
+                         [0,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,0,1,1,1,1,0,0],
+                         [0,0,1,1,1,1,1,1,0,0,0,0,4,0,4,0,0,0,0,1,4,1,1,1,1,0,0],
+                         [0,0,1,1,1,1,1,1,0,0,0,1,1,1,1,1,0,0,4,1,0,1,1,1,1,0,0],
+                         [0,0,1,1,1,1,1,1,0,0,0,1,0,4,0,1,0,0,0,1,0,1,1,1,1,0,0],
+                         [0,0,1,1,1,1,1,1,0,0,0,1,0,1,0,3,0,1,4,1,0,0,0,0,0,0,0],
+                         [0,0,1,1,1,1,1,1,0,0,0,1,0,0,0,2,0,0,0,1,4,1,1,1,1,0,0],
+                         [0,0,1,1,1,1,1,1,0,0,0,1,1,1,1,1,0,0,0,1,0,1,1,1,1,0,0],
+                         [0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1,1,1,0,0],
+                         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],
+                         [0,0,1,1,1,1,1,1,4,1,1,4,1,1,1,1,1,1,1,1,4,1,1,1,1,0,0],
+                         [0,0,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,0,0],
+                         [0,0,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,0,0],
+                         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+                         ];
+
+         var cameraCenter = [11.5,18.5];
+         var tileSize = 50;
+
+         function drawBackground() {
+            context.fillStyle = "black";
+            context.fillRect(0,0,screenWidth,screenHeight);
+         }
+
+         function drawTile(x,y) {
+            context.fillStyle = "blue";
+            context.beginPath();
+            var px = (x + y) * Math.sqrt(3) * tileSize * 2 + screenWidth / 2;
+            var py = (x - y) * tileSize * 2 + screenHeight / 2;
+            context.moveTo( px, py - tileSize );
+            context.lineTo( px + Math.sqrt(3) * tileSize, py );
+            context.lineTo( px, py + tileSize );
+            context.lineTo( px - Math.sqrt(3) * tileSize, py );
+            context.closePath();
+            context.fill();
+         }
+
+         function drawForeground() {
+            drawTile(0,0);
+         }
+
+         // common functions 
+         function drawScene() {
+            setTimeout( function() {
+               drawBackground();
+               drawForeground();
+               ANIMATION = requestAnimationFrame(drawScene);
+            }, 1000 / fps );
+         }
+
+         function initCanvas() {
+            screenWidth  = mainItem.width  = window.innerWidth  - 20;
+            screenHeight = mainItem.height = window.innerHeight - 20;
+            screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+
+            // starting the engine only if it is not running
+            if ( !ANIMATION ) {
+               drawScene();
+            }
+         }
+
+         //init
+         (function() {
+            initCanvas();
+            addEventListener('resize', initCanvas, false);
+         })();
+      </script>
+   </body>
+</html>
