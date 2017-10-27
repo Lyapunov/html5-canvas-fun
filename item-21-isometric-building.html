@@ -79,8 +79,65 @@
             return 0;
          }
 
+         function isMapCellVisible(y,x,cy,cx,oy,ox,debug=0) {
+            var dirY  = y - oy;
+            var dirX  = x - ox;
+            var dirL  = Math.hypot(dirX,dirY);
+            dirY /= dirL;
+            dirX /= dirL;
+
+            var celly = cy;
+            var cellx = cx;
+
+            var sy    = 0.5 + oy;
+            var sx    = 0.5 + ox;
+            var dist  = 0;
+            var arrived = 0;
+            var limit = 10;
+            var err = 1e-6;
+            if ( debug ) {
+               console.log( [cy,cx], " -> ", [cy+y,cx+x] ); 
+            }
+
+            while ( limit && getMapCell( celly, cellx ) != 0 && !( celly == cy + y && cellx == cx + x ) ) {
+               if ( debug ) {
+                  console.log( limit + " - " + celly + ", " + cellx + " [" + sy + ", " + sx + "] dir:" + dirY + ", " + dirX); 
+               }
+
+               --limit;
+               var jump  = Math.min( Math.max( ( 1 - sx ) / dirX, -sx / dirX ),
+                                     Math.max( ( 1 - sy ) / dirY, -sy / dirY ) );
+               dist += jump;
+               sx = sx + dirX * jump;
+               sy = sy + dirY * jump;
+               if ( Math.abs(sx) < err && dirX < 0) {
+                  sx = 1;
+                  cellx -= 1;
+                  arrived = 1;
+               } else if ( Math.abs(1-sx) < err && dirX > 0 ) {
+                  sx = 0;
+                  cellx += 1;
+                  arrived = 2;
+               }
+               if ( Math.abs(sy) < err && dirY < 0 ) {
+                  sy = 1;
+                  celly -= 1;
+                  arrived = 3;
+               } else if ( Math.abs(1-sy) < err && dirY > 0 ) {
+                  sy = 0;
+                  celly += 1;
+                  arrived = 4;
+               }
+            }
+
+            if ( debug ) {
+               console.log( limit + " - " + celly + ", " + cellx + " [" + sy + ", " + sx + "] dir:" + dirY + ", " + dirX); 
+            }
+            return ( celly == cy + y && cellx == cx + x );
+         }
+
          function drawFloor(y,x,cy,cx,oy,ox) {
-            if ( getMapCell(cy+y,cx+x) ) {
+            if ( getMapCell(cy+y,cx+x) && isMapCellVisible(y,x,cy,cx,oy,ox) ) {
                drawTile(-y+oy,x-ox);
             }
          }
@@ -92,7 +149,7 @@
             var offx = cameraCenter[1] - cx - 0.5;
 
             drawFloor(0,0,cy,cx,offy,offx);
-            for ( var rad = 1; rad < 5; ++rad ) {
+            for ( var rad = 1; rad < 10; ++rad ) {
                for ( var pos = -rad; pos < rad; ++pos ) {
                   drawFloor(  rad,  pos,cy,cx,offy,offx);
                   drawFloor(1+pos,  rad,cy,cx,offy,offx);
@@ -113,6 +170,8 @@
          }
 
          function initCanvas() {
+            console.log(isMapCellVisible(1,-2,12,15,0,0,1));
+
             screenWidth  = mainItem.width  = window.innerWidth  - 20;
             screenHeight = mainItem.height = window.innerHeight - 20;
             screenScale  = Math.min( screenWidth, screenHeight ) / 2;
