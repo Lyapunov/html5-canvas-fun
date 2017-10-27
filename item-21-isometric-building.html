@@ -59,8 +59,8 @@
             context.fillRect(0,0,screenWidth,screenHeight);
          }
 
-         function drawTile(y,x) {
-            context.fillStyle = "blue";
+         function drawFloor(y,x, color) {
+            context.fillStyle = color;
             context.beginPath();
             var px = (x + y) * Math.sqrt(3) * tileSize + screenWidth / 2;
             var py = (x - y) * tileSize + screenHeight / 2;
@@ -72,6 +72,66 @@
             context.fill();
          }
 
+         function drawWall(y,x,num, color) {
+            /*         x      x
+                      /|\    / \
+                     x0|1x  x   x
+                1    | x |  |\ /|
+               / \   |/ \|  |2x3|
+              4 o 2  x   x  x | x
+               \ /    \ /    \|/
+                3      x      x
+            */
+
+            context.fillStyle = color;
+            context.beginPath();
+            var px = (x + y) * Math.sqrt(3) * tileSize + screenWidth / 2;
+            var py = (x - y) * tileSize + screenHeight / 2;
+
+/*            context.moveTo( px, py - tileSize );
+            context.lineTo( px + Math.sqrt(3) * tileSize, py );
+            context.lineTo( px, py + tileSize );
+            context.lineTo( px - Math.sqrt(3) * tileSize, py );*/
+
+            switch (num) {
+               case 0:
+                  {
+                     context.moveTo( px, py - tileSize );
+                     context.lineTo( px - Math.sqrt(3) * tileSize, py );
+                     context.lineTo( px - Math.sqrt(3) * tileSize, py - 2 * tileSize );
+                     context.lineTo( px, py - 3 * tileSize );
+                  }
+                  break;
+               case 1:
+                  {
+                     context.moveTo( px, py - tileSize );
+                     context.lineTo( px + Math.sqrt(3) * tileSize, py );
+                     context.lineTo( px + Math.sqrt(3) * tileSize, py - 2 * tileSize );
+                     context.lineTo( px, py - 3 * tileSize );
+                  }
+                  break;
+               case 2:
+                  {
+                     context.moveTo( px, py + tileSize );
+                     context.lineTo( px - Math.sqrt(3) * tileSize, py );
+                     context.lineTo( px - Math.sqrt(3) * tileSize, py - 2 * tileSize );
+                     context.lineTo( px, py - tileSize );
+
+                  }
+                  break;
+               case 3:
+                  {
+                     context.moveTo( px, py + tileSize );
+                     context.lineTo( px + Math.sqrt(3) * tileSize, py );
+                     context.lineTo( px + Math.sqrt(3) * tileSize, py - 2 * tileSize );
+                     context.lineTo( px, py - tileSize );
+                  }
+                  break;
+            }
+            context.closePath();
+            context.fill();
+         }
+
          function getMapCell(y,x) {
             if ( y < levelMap.length && y >= 0 && x < levelMap[y].length && x >= 0 ) {
                return levelMap[y][x];
@@ -79,7 +139,7 @@
             return 0;
          }
 
-         function isMapCellVisible(y,x,cy,cx,oy,ox,debug=0) {
+         function isMapCellVisible(y,x,cy,cx,oy,ox,sx=0.5+ox,sy=0.5+oy,debug=0) {
             var dirY  = y - oy;
             var dirX  = x - ox;
             var dirL  = Math.hypot(dirX,dirY);
@@ -89,11 +149,9 @@
             var celly = cy;
             var cellx = cx;
 
-            var sy    = 0.5 + oy;
-            var sx    = 0.5 + ox;
             var dist  = 0;
             var arrived = 0;
-            var limit = 10;
+            var limit = 50;
             var err = 1e-6;
             if ( debug ) {
                console.log( [cy,cx], " -> ", [cy+y,cx+x] ); 
@@ -136,9 +194,29 @@
             return ( celly == cy + y && cellx == cx + x );
          }
 
-         function drawFloor(y,x,cy,cx,oy,ox) {
-            if ( getMapCell(cy+y,cx+x) && isMapCellVisible(y,x,cy,cx,oy,ox) ) {
-               drawTile(-y+oy,x-ox);
+         function drawCell(y,x,cy,cx,oy,ox) {
+            if ( isMapCellVisible(y,x,cy,cx,oy,ox) 
+                 || isMapCellVisible(y,x,cy,cx,oy,ox,0,0) 
+                 || isMapCellVisible(y,x,cy,cx,oy,ox,0,1) 
+                 || isMapCellVisible(y,x,cy,cx,oy,ox,1,0) 
+                 || isMapCellVisible(y,x,cy,cx,oy,ox,1,1) 
+               )  {
+               if ( getMapCell(cy+y,cx+x) ) {
+                  drawFloor(-y+oy,x-ox, "yellow");
+                  if ( !getMapCell(cy+y,cx+x-1) ) {
+                     drawWall(-y+oy,x-ox,0, "blue");
+                  }
+                  if ( !getMapCell(cy+y-1,cx+x) ) {
+                     drawWall(-y+oy,x-ox,1, "blue");
+                  }
+
+                  if ( !getMapCell(cy+y+1,cx+x) ) {
+                     drawWall(-y+oy,x-ox,2, "blue");
+                  }
+                  if ( !getMapCell(cy+y,cx+x+1) ) {
+                     drawWall(-y+oy,x-ox,3, "blue");
+                  }
+               }
             }
          }
 
@@ -148,15 +226,15 @@
             var offy = cameraCenter[0] - cy - 0.5;
             var offx = cameraCenter[1] - cx - 0.5;
 
-            drawFloor(0,0,cy,cx,offy,offx);
-            for ( var rad = 1; rad < 10; ++rad ) {
+            for ( var rad = 10; rad > 0; --rad ) {
                for ( var pos = -rad; pos < rad; ++pos ) {
-                  drawFloor(  rad,  pos,cy,cx,offy,offx);
-                  drawFloor(1+pos,  rad,cy,cx,offy,offx);
-                  drawFloor(  pos, -rad,cy,cx,offy,offx);
-                  drawFloor( -rad,1+pos,cy,cx,offy,offx);
+                  drawCell(  rad,  pos,cy,cx,offy,offx);
+                  drawCell(1+pos,  rad,cy,cx,offy,offx);
+                  drawCell(  pos, -rad,cy,cx,offy,offx);
+                  drawCell( -rad,1+pos,cy,cx,offy,offx);
                }
             }
+            drawCell(0,0,cy,cx,offy,offx);
 //            cameraCenter[0]+= 0.1;
          }
 
