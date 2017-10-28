@@ -83,20 +83,14 @@
                 3      x      x
             */
 
-            context.globalAlpha = 0.5;
-            context.fillStyle = color;
-            context.beginPath();
             var px = (x + y) * Math.sqrt(3) * tileSize + screenWidth / 2;
             var py = (x - y) * tileSize + screenHeight / 2;
-
-/*            context.moveTo( px, py - tileSize );
-            context.lineTo( px + Math.sqrt(3) * tileSize, py );
-            context.lineTo( px, py + tileSize );
-            context.lineTo( px - Math.sqrt(3) * tileSize, py );*/
 
             switch (num) {
                case 0:
                   {
+                     context.fillStyle = color;
+                     context.beginPath();
                      context.moveTo( px, py - tileSize );
                      context.lineTo( px - Math.sqrt(3) * tileSize, py );
                      context.lineTo( px - Math.sqrt(3) * tileSize, py - 2 * tileSize );
@@ -105,6 +99,8 @@
                   break;
                case 1:
                   {
+                     context.fillStyle = color;
+                     context.beginPath();
                      context.moveTo( px, py - tileSize );
                      context.lineTo( px + Math.sqrt(3) * tileSize, py );
                      context.lineTo( px + Math.sqrt(3) * tileSize, py - 2 * tileSize );
@@ -113,19 +109,29 @@
                   break;
                case 2:
                   {
+                     context.globalAlpha = 0.75;
+                     context.fillStyle = "#000000";
+                     context.beginPath();
                      context.moveTo( px, py + tileSize );
                      context.lineTo( px - Math.sqrt(3) * tileSize, py );
                      context.lineTo( px - Math.sqrt(3) * tileSize, py - 2 * tileSize );
                      context.lineTo( px, py - tileSize );
-
                   }
                   break;
                case 3:
                   {
+                     context.globalAlpha = 0.75;
+                     context.fillStyle = "#000000";
+                     context.beginPath();
                      context.moveTo( px, py + tileSize );
                      context.lineTo( px + Math.sqrt(3) * tileSize, py );
                      context.lineTo( px + Math.sqrt(3) * tileSize, py - 2 * tileSize );
                      context.lineTo( px, py - tileSize );
+                  }
+                  break;
+               default:
+                  {
+                     throw "Ooops";
                   }
                   break;
             }
@@ -242,27 +248,19 @@
             var offx = cameraCenter[1] - cx - 0.5;
 
             {
-               for ( var rad = 10; rad > 0; --rad ) {
-                  for ( var pos = -rad; pos < rad; ++pos ) {
-                     drawCellFloor(  rad,  pos,cy,cx,offy,offx);
-                     drawCellFloor(1+pos,  rad,cy,cx,offy,offx);
-                     drawCellFloor(  pos, -rad,cy,cx,offy,offx);
-                     drawCellFloor( -rad,1+pos,cy,cx,offy,offx);
+               for ( var py = -10; py < 10; ++py ) {
+                  for ( var px = -10; px < 10; ++px ) {
+                     drawCellFloor(py,px,cy,cx,offy,offx);
                   }
                }
-               drawCellFloor(0,0,cy,cx,offy,offx);
             }
 
             {
-               for ( var rad = 10; rad > 0; --rad ) {
-                  for ( var pos = -rad; pos < rad; ++pos ) {
-                     drawCellWall(  rad,  pos,cy,cx,offy,offx);
-                     drawCellWall(1+pos,  rad,cy,cx,offy,offx);
-                     drawCellWall(  pos, -rad,cy,cx,offy,offx);
-                     drawCellWall( -rad,1+pos,cy,cx,offy,offx);
+               for ( var py = -10; py < 10; ++py ) {
+                  for ( var px = -10; px < 10; ++px ) {
+                     drawCellWall(py,px,cy,cx,offy,offx);
                   }
                }
-               drawCellWall(0,0,cy,cx,offy,offx);
             }
          }
 
