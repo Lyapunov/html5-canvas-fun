@@ -332,7 +332,7 @@
          }
 
 
-         function drawForeground( camCenter, deltaY = 0, deltaX = 0 ) {
+         function drawForeground( camCenter, upperLook=1, deltaY = 0, deltaX = 0 ) {
             console.log("--->",camCenter,deltaY,deltaX);
             var cy = Math.floor(camCenter[0]);
             var cx = Math.floor(camCenter[1]);
@@ -342,6 +342,9 @@
 
             var cellsy = [];
             var cellsx = [];
+
+            var nextly = [];
+            var nextlx = [];
 
             for ( var y = -10; y < 10; ++y ) {
                for ( var x = -10; x < 10; ++x ) {
@@ -356,8 +359,14 @@
                         cellsy.push(y);
                         cellsx.push(x);
                      }
-                     if ( mapval == 5 && x + y <= 2 ) {
-                        drawForeground([cy+y+0.5,cx+x+0.5,cz-1],-y-1+oy,-x+ox-1);
+                     if ( upperLook ) {
+                        if ( mapval == 5 && x + y <= 2 ) {
+                           drawForeground([cy+y+0.5,cx+x+0.5,cz-1],0,-y-1+oy,-x+ox-1);
+                        }
+                        if ( mapval == 6 && x + y <= 2 ) {
+                           nextly.push(y);
+                           nextlx.push(x);
+                        }
                      }
                   }
                }
@@ -374,6 +383,14 @@
             {
                for ( var i = 0; i < cellsx.length; ++i ) {
                   drawCellWall(cellsy[i],cellsx[i],cz,cy,cx,oy+deltaY,ox+deltaX);
+               }
+            }
+
+            {
+               for ( var i = 0; i < nextly.length; ++i ) {
+                  var y = nextly[i];
+                  var x = nextlx[i];
+                  drawForeground([cy+y+0.5,cx+x+0.5,cz+1],0,-y+1+oy,-x+ox+1);
                }
             }
          }
