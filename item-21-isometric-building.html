@@ -281,12 +281,12 @@
          }
 
 
-         function drawForeground( deltaY = 0, deltaX = 0 ) {
-            var cy = Math.floor(cameraCenter[0]);
-            var cx = Math.floor(cameraCenter[1]);
-            var cz = Math.floor(cameraCenter[2]);
-            var oy = cameraCenter[0] - cy - 0.5;
-            var ox = cameraCenter[1] - cx - 0.5;
+         function drawForeground( camCenter, deltaY = 0, deltaX = 0 ) {
+            var cy = Math.floor(camCenter[0]);
+            var cx = Math.floor(camCenter[1]);
+            var cz = Math.floor(camCenter[2]);
+            var oy = camCenter[0] - cy - 0.5;
+            var ox = camCenter[1] - cx - 0.5;
 
             var cellsy = [];
             var cellsx = [];
@@ -324,7 +324,7 @@
          function drawScene() {
             setTimeout( function() {
                drawBackground();
-               drawForeground();
+               drawForeground(cameraCenter);
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / fps );
          }
