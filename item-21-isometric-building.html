@@ -229,7 +229,9 @@
          }
 
          function drawCellFloor(y,x,cy,cx,oy,ox) {
-            drawFloor(-y+oy,x-ox, "gray");
+            if ( getMapCell(cy+y,cx+x) != 5 ) {
+               drawFloor(-y+oy,x-ox, "gray");
+            }
          }
 
          function drawCellWall(y,x,cy,cx,oy,ox) {
