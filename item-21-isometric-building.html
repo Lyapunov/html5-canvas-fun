@@ -104,9 +104,9 @@
                             [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                             [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]];
 
-         var levelMap = [levelMapEven,levelMapOdd,levelMapEven,levelMapOdd,levelMapEven,levelMapOdd,levelMapEven,levelMapOdd,levelMapEven,levelMapOdd,levelMapEven];
+         var levelMap = [levelMapEven,levelMapOdd,levelMapEven,levelMapOdd,levelMapEven,levelMapOdd,levelMapEven,levelMapOdd,levelMapEven,levelMapOdd,levelMapLast];
 
-         var cameraCenter = [15.5,15.5];
+         var cameraCenter = [15.5,15.5,6];
          var tileSize = 50;
 
          function drawBackground() {
@@ -195,14 +195,14 @@
             context.globalAlpha = 1.0;
          }
 
-         function getMapCell(y,x) {
-            if ( y < levelMapEven.length && y >= 0 && x < levelMapEven[y].length && x >= 0 ) {
-               return levelMapEven[y][x];
+         function getMapCell(y,x,z) {
+            if ( z < levelMap.length && z >= 0 && y < levelMap[z].length && y >= 0 && x < levelMap[z][y].length && x >= 0 ) {
+               return levelMap[z][y][x];
             }
             return 0;
          }
 
-         function isMapCellVisible(y,x,cy,cx,oy,ox,sx=0.5+ox,sy=0.5+oy,debug=0) {
+         function isMapCellVisible(y,x,cy,cx,cz,oy,ox,sx=0.5+ox,sy=0.5+oy,debug=0) {
             var dirY  = y - oy;
             var dirX  = x - ox;
             var dirL  = Math.hypot(dirX,dirY);
@@ -211,6 +211,7 @@
 
             var celly = cy;
             var cellx = cx;
+            var cellz = cz;
 
             var dist  = 0;
             var arrived = 0;
@@ -220,7 +221,7 @@
                console.log( [cy,cx], " -> ", [cy+y,cx+x] ); 
             }
 
-            while ( limit && getMapCell( celly, cellx ) != 0 && !( celly == cy + y && cellx == cx + x ) ) {
+            while ( limit && getMapCell( celly, cellx, cellz ) != 0 && !( celly == cy + y && cellx == cx + x ) ) {
                if ( debug ) {
                   console.log( limit + " - " + celly + ", " + cellx + " [" + sy + ", " + sx + "] dir:" + dirY + ", " + dirX); 
                }
@@ -257,24 +258,24 @@
             return ( celly == cy + y && cellx == cx + x );
          }
 
-         function drawCellFloor(y,x,cy,cx,oy,ox) {
-            if ( getMapCell(cy+y,cx+x) != 5 ) {
+         function drawCellFloor(y,x,z,cy,cx,oy,ox) {
+            if ( getMapCell(cy+y,cx+x,z) != 5 ) {
                drawFloor(-y+oy,x-ox, "gray");
             }
          }
 
-         function drawCellWall(y,x,cy,cx,oy,ox) {
-            if ( !getMapCell(cy+y,cx+x-1) ) {
+         function drawCellWall(y,x,z,cy,cx,oy,ox) {
+            if ( !getMapCell(cy+y,cx+x-1,z) ) {
                drawWall(-y+oy,x-ox,0, "blue");
             }
-            if ( !getMapCell(cy+y-1,cx+x) ) {
+            if ( !getMapCell(cy+y-1,cx+x,z) ) {
                drawWall(-y+oy,x-ox,1, "blue");
             }
 
-            if ( !getMapCell(cy+y+1,cx+x) ) {
+            if ( !getMapCell(cy+y+1,cx+x,z) ) {
                drawWall(-y+oy,x-ox,2, "blue");
             }
-            if ( !getMapCell(cy+y,cx+x+1) ) {
+            if ( !getMapCell(cy+y,cx+x+1,z) ) {
                drawWall(-y+oy,x-ox,3, "blue");
             }
          }
@@ -283,6 +284,7 @@
          function drawForeground( deltaY = 0, deltaX = 0 ) {
             var cy = Math.floor(cameraCenter[0]);
             var cx = Math.floor(cameraCenter[1]);
+            var cz = Math.floor(cameraCenter[2]);
             var oy = cameraCenter[0] - cy - 0.5;
             var ox = cameraCenter[1] - cx - 0.5;
 
@@ -291,13 +293,13 @@
 
             for ( var y = -10; y < 10; ++y ) {
                for ( var x = -10; x < 10; ++x ) {
-                  if ( isMapCellVisible(y,x,cy,cx,oy,ox) 
-                       || isMapCellVisible(y,x,cy,cx,oy,ox,0,0) 
-                       || isMapCellVisible(y,x,cy,cx,oy,ox,0,1) 
-                       || isMapCellVisible(y,x,cy,cx,oy,ox,1,0) 
-                       || isMapCellVisible(y,x,cy,cx,oy,ox,1,1) )
+                  if ( isMapCellVisible(y,x,cy,cx,cz,oy,ox) 
+                       || isMapCellVisible(y,x,cy,cx,cz,oy,ox,0,0) 
+                       || isMapCellVisible(y,x,cy,cx,cz,oy,ox,0,1) 
+                       || isMapCellVisible(y,x,cy,cx,cz,oy,ox,1,0) 
+                       || isMapCellVisible(y,x,cy,cx,cz,oy,ox,1,1) )
                   {
-                     if ( getMapCell(cy+y,cx+x) ) {
+                     if ( getMapCell(cy+y,cx+x,cz) ) {
                         cellsy.push(y);
                         cellsx.push(x);
                      }
@@ -307,13 +309,13 @@
 
             {
                for ( var i = 0; i < cellsx.length; ++i ) {
-                  drawCellFloor(cellsy[i]+deltaY,cellsx[i]+deltaX,cy,cx,oy,ox);
+                  drawCellFloor(cellsy[i]+deltaY,cellsx[i]+deltaX,cz,cy,cx,oy,ox);
                }
             }
 
             {
                for ( var i = 0; i < cellsx.length; ++i ) {
-                  drawCellWall(cellsy[i]+deltaY,cellsx[i]+deltaX,cy,cx,oy,ox);
+                  drawCellWall(cellsy[i]+deltaY,cellsx[i]+deltaX,cz,cy,cx,oy,ox);
                }
             }
          }
@@ -328,7 +330,7 @@
          }
 
          function initCanvas() {
-            console.log(isMapCellVisible(1,-2,12,15,0,0,1));
+            console.log(isMapCellVisible(1,-2,12,15,6,0,0,1));
 
             screenWidth  = mainItem.width  = window.innerWidth  - 20;
             screenHeight = mainItem.height = window.innerHeight - 20;
