@@ -259,6 +259,7 @@
          }
 
          function drawCellFloor(y,x,z,cy,cx,oy,ox) {
+            console.log("===>",y,x,z,cy,cx,oy,ox);
             if ( getMapCell(cy+y,cx+x,z) != 5 ) {
                drawFloor(-y+oy,x-ox, "gray");
             }
@@ -282,6 +283,7 @@
 
 
          function drawForeground( camCenter, deltaY = 0, deltaX = 0 ) {
+            console.log("--->",camCenter,deltaY,deltaX);
             var cy = Math.floor(camCenter[0]);
             var cx = Math.floor(camCenter[1]);
             var cz = Math.floor(camCenter[2]);
@@ -299,23 +301,29 @@
                        || isMapCellVisible(y,x,cy,cx,cz,oy,ox,1,0) 
                        || isMapCellVisible(y,x,cy,cx,cz,oy,ox,1,1) )
                   {
-                     if ( getMapCell(cy+y,cx+x,cz) ) {
+                     var mapval = getMapCell(cy+y,cx+x,cz);
+                     if ( mapval ) {
                         cellsy.push(y);
                         cellsx.push(x);
+                     }
+                     if ( mapval == 5 && x + y <= 2 ) {
+                        drawForeground([cy+y+0.5,cx+x+0.5,cz-1],-y-1+oy,-x+ox-1);
                      }
                   }
                }
             }
 
+            console.log(cellsx.length);
+
             {
                for ( var i = 0; i < cellsx.length; ++i ) {
-                  drawCellFloor(cellsy[i]+deltaY,cellsx[i]+deltaX,cz,cy,cx,oy,ox);
+                  drawCellFloor(cellsy[i],cellsx[i],cz,cy,cx,oy+deltaY,ox+deltaX);
                }
             }
 
             {
                for ( var i = 0; i < cellsx.length; ++i ) {
-                  drawCellWall(cellsy[i]+deltaY,cellsx[i]+deltaX,cz,cy,cx,oy,ox);
+                  drawCellWall(cellsy[i],cellsx[i],cz,cy,cx,oy+deltaY,ox+deltaX);
                }
             }
          }
