@@ -229,40 +229,22 @@
          }
 
          function drawCellFloor(y,x,cy,cx,oy,ox) {
-            if ( isMapCellVisible(y,x,cy,cx,oy,ox) 
-                 || isMapCellVisible(y,x,cy,cx,oy,ox,0,0) 
-                 || isMapCellVisible(y,x,cy,cx,oy,ox,0,1) 
-                 || isMapCellVisible(y,x,cy,cx,oy,ox,1,0) 
-                 || isMapCellVisible(y,x,cy,cx,oy,ox,1,1) 
-               )  {
-               if ( getMapCell(cy+y,cx+x) ) {
-                  drawFloor(-y+oy,x-ox, "gray");
-               }
-            }
+            drawFloor(-y+oy,x-ox, "gray");
          }
 
          function drawCellWall(y,x,cy,cx,oy,ox) {
-            if ( isMapCellVisible(y,x,cy,cx,oy,ox) 
-                 || isMapCellVisible(y,x,cy,cx,oy,ox,0,0) 
-                 || isMapCellVisible(y,x,cy,cx,oy,ox,0,1) 
-                 || isMapCellVisible(y,x,cy,cx,oy,ox,1,0) 
-                 || isMapCellVisible(y,x,cy,cx,oy,ox,1,1) 
-               )  {
-               if ( getMapCell(cy+y,cx+x) ) {
-                  if ( !getMapCell(cy+y,cx+x-1) ) {
-                     drawWall(-y+oy,x-ox,0, "blue");
-                  }
-                  if ( !getMapCell(cy+y-1,cx+x) ) {
-                     drawWall(-y+oy,x-ox,1, "blue");
-                  }
+            if ( !getMapCell(cy+y,cx+x-1) ) {
+               drawWall(-y+oy,x-ox,0, "blue");
+            }
+            if ( !getMapCell(cy+y-1,cx+x) ) {
+               drawWall(-y+oy,x-ox,1, "blue");
+            }
 
-                  if ( !getMapCell(cy+y+1,cx+x) ) {
-                     drawWall(-y+oy,x-ox,2, "blue");
-                  }
-                  if ( !getMapCell(cy+y,cx+x+1) ) {
-                     drawWall(-y+oy,x-ox,3, "blue");
-                  }
-               }
+            if ( !getMapCell(cy+y+1,cx+x) ) {
+               drawWall(-y+oy,x-ox,2, "blue");
+            }
+            if ( !getMapCell(cy+y,cx+x+1) ) {
+               drawWall(-y+oy,x-ox,3, "blue");
             }
          }
 
@@ -270,22 +252,37 @@
          function drawForeground() {
             var cy = Math.floor(cameraCenter[0]);
             var cx = Math.floor(cameraCenter[1]);
-            var offy = cameraCenter[0] - cy - 0.5;
-            var offx = cameraCenter[1] - cx - 0.5;
+            var oy = cameraCenter[0] - cy - 0.5;
+            var ox = cameraCenter[1] - cx - 0.5;
 
-            {
-               for ( var py = -10; py < 10; ++py ) {
-                  for ( var px = -10; px < 10; ++px ) {
-                     drawCellFloor(py,px,cy,cx,offy,offx);
+            var cellsy = [];
+            var cellsx = [];
+
+            for ( var y = -10; y < 10; ++y ) {
+               for ( var x = -10; x < 10; ++x ) {
+                  if ( isMapCellVisible(y,x,cy,cx,oy,ox) 
+                       || isMapCellVisible(y,x,cy,cx,oy,ox,0,0) 
+                       || isMapCellVisible(y,x,cy,cx,oy,ox,0,1) 
+                       || isMapCellVisible(y,x,cy,cx,oy,ox,1,0) 
+                       || isMapCellVisible(y,x,cy,cx,oy,ox,1,1) )
+                  {
+                     if ( getMapCell(cy+y,cx+x) ) {
+                        cellsy.push(y);
+                        cellsx.push(x);
+                     }
                   }
                }
             }
 
             {
-               for ( var py = -10; py < 10; ++py ) {
-                  for ( var px = -10; px < 10; ++px ) {
-                     drawCellWall(py,px,cy,cx,offy,offx);
-                  }
+               for ( var i = 0; i < cellsx.length; ++i ) {
+                  drawCellFloor(cellsy[i],cellsx[i],cy,cx,oy,ox);
+               }
+            }
+
+            {
+               for ( var i = 0; i < cellsx.length; ++i ) {
+                  drawCellWall(cellsy[i],cellsx[i],cy,cx,oy,ox);
                }
             }
          }
