@@ -106,7 +106,8 @@
 
          var levelMap = [levelMapEven,levelMapOdd,levelMapEven,levelMapOdd,levelMapEven,levelMapOdd,levelMapEven,levelMapOdd,levelMapEven,levelMapOdd,levelMapLast];
 
-         var cameraCenter = [15.5,15.5,6];
+         var cameraCenter    = [15.5,15.5,6];
+         var figurePosition  = [15.5,15.5,6];
          var tileSize = 50;
 
          function drawBackground() {
@@ -123,6 +124,20 @@
             context.lineTo( px + Math.sqrt(3) * tileSize, py );
             context.lineTo( px, py + tileSize );
             context.lineTo( px - Math.sqrt(3) * tileSize, py );
+            context.closePath();
+            context.fill();
+         }
+
+         function drawItem(y,x,color) {
+            context.fillStyle = color;
+            context.beginPath();
+            var radius = tileSize / 2;
+            var px = (x + y) * Math.sqrt(3) * tileSize + screenWidth / 2;
+            var py = (x - y) * tileSize + screenHeight / 2;
+            context.moveTo( px - radius, py - 4* radius );
+            context.lineTo( px + radius, py - 4* radius );
+            context.lineTo( px + radius, py );
+            context.lineTo( px - radius, py );
             context.closePath();
             context.fill();
          }
@@ -309,12 +324,16 @@
             }
          }
 
-         function drawCellWall(y,x,z,cy,cx,oy,ox) {
+         function drawCellWall(figurePos,y,x,z,cy,cx,oy,ox) {
             if ( !getMapCell(cy+y,cx+x-1,z) ) {
                drawWall(-y+oy,x-ox,0, "blue");
             }
             if ( !getMapCell(cy+y-1,cx+x,z) ) {
                drawWall(-y+oy,x-ox,1, "blue");
+            }
+//            console.log([y,x,z]," vs. ",figurePos," vs. ",[cy,cx]);
+            if ( Math.floor(figurePos[0]+y-cy) == 0 && Math.floor(figurePos[1]+x-cx) == 0 && Math.floor(figurePos[2]-z) == 0 ) {
+               drawItem(-y,x,"green");
             }
 
             if ( getMapCell(cy+y,cx+x,z) == 6 && !getMapCell(cy+y-1,cx+x,z) ) {
@@ -332,7 +351,7 @@
          }
 
 
-         function drawForeground( camCenter, upperLook=1, deltaY = 0, deltaX = 0 ) {
+         function drawForeground( camCenter, figurePos, upperLook=1, deltaY = 0, deltaX = 0 ) {
             console.log("--->",camCenter,deltaY,deltaX);
             var cy = Math.floor(camCenter[0]);
             var cx = Math.floor(camCenter[1]);
@@ -361,7 +380,7 @@
                      }
                      if ( upperLook ) {
                         if ( mapval == 5 && x + y <= 2 ) {
-                           drawForeground([cy+y+0.5,cx+x+0.5,cz-1],0,-y-1+oy,-x+ox-1);
+                           drawForeground([cy+y+0.5,cx+x+0.5,cz-1],figurePos,0,-y-1+oy,-x+ox-1);
                         }
                         if ( mapval == 6 && x + y <= 2 ) {
                            nextly.push(y);
@@ -382,7 +401,7 @@
 
             {
                for ( var i = 0; i < cellsx.length; ++i ) {
-                  drawCellWall(cellsy[i],cellsx[i],cz,cy,cx,oy+deltaY,ox+deltaX);
+                  drawCellWall(figurePos,cellsy[i],cellsx[i],cz,cy,cx,oy+deltaY,ox+deltaX);
                }
             }
 
@@ -390,7 +409,7 @@
                for ( var i = 0; i < nextly.length; ++i ) {
                   var y = nextly[i];
                   var x = nextlx[i];
-                  drawForeground([cy+y+0.5,cx+x+0.5,cz+1],0,-y+1+oy,-x+ox+1);
+                  drawForeground([cy+y+0.5,cx+x+0.5,cz+1],figurePos,0,-y+1+oy,-x+ox+1);
                }
             }
          }
@@ -399,7 +418,7 @@
          function drawScene() {
             setTimeout( function() {
                drawBackground();
-               drawForeground(cameraCenter);
+               drawForeground(cameraCenter, figurePosition);
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / fps );
          }
@@ -423,18 +442,22 @@
               case 37:
                  // left
                  cameraCenter[1]-= 0.1;
+                 figurePosition[1]-= 0.1;
                  break;
               case 39:
                  // right
                  cameraCenter[1]+= 0.1;
+                 figurePosition[1]+= 0.1;
                  break;
               case 38:
                  // up
                  cameraCenter[0]-= 0.1;
+                 figurePosition[0]-= 0.1;
                  break;
               case 40:
                  // up
                  cameraCenter[0]+= 0.1;
+                 figurePosition[0]+= 0.1;
                  break;
            }
          }
