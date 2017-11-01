@@ -5,6 +5,7 @@
          body {
             margin : 0px;
             padding: 0px;
+            cursor : none;
          }
       </style>
    </head>
@@ -22,6 +23,9 @@
 
          var fps = 25;
          var ANIMATION;
+
+         var curX = 0;
+         var curY = 0;
 
          var levelMapEven= [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                             [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -138,6 +142,16 @@
             context.lineTo( px + radius, py - 4* radius );
             context.lineTo( px + radius, py );
             context.lineTo( px - radius, py );
+            context.closePath();
+            context.fill();
+         }
+
+         function drawCursor(x,y) {
+            context.fillStyle = "red";
+            context.beginPath();
+            context.moveTo( x, y );
+            context.lineTo( x+15, y+20 );
+            context.lineTo( x, y+25 );
             context.closePath();
             context.fill();
          }
@@ -318,7 +332,6 @@
          }
 
          function drawCellFloor(y,x,z,cy,cx,oy,ox) {
-            console.log("===>",y,x,z,cy,cx,oy,ox);
             if ( getMapCell(cy+y,cx+x,z) != 5 ) {
                drawFloor(-y+oy,x-ox, "gray");
             }
@@ -331,7 +344,6 @@
             if ( !getMapCell(cy+y-1,cx+x,z) ) {
                drawWall(-y+oy,x-ox,1, "blue");
             }
-//            console.log([y,x,z]," vs. ",figurePos," vs. ",[cy,cx]);
             if ( Math.floor(figurePos[0]+y-cy) == 0 && Math.floor(figurePos[1]+x-cx) == 0 && Math.floor(figurePos[2]-z) == 0 ) {
                drawItem(-y,x,"green");
             }
@@ -352,7 +364,6 @@
 
 
          function drawForeground( camCenter, figurePos, upperLook=1, deltaY = 0, deltaX = 0 ) {
-            console.log("--->",camCenter,deltaY,deltaX);
             var cy = Math.floor(camCenter[0]);
             var cx = Math.floor(camCenter[1]);
             var cz = Math.floor(camCenter[2]);
@@ -391,8 +402,6 @@
                }
             }
 
-            console.log(cellsx.length);
-
             {
                for ( var i = 0; i < cellsx.length; ++i ) {
                   drawCellFloor(cellsy[i],cellsx[i],cz,cy,cx,oy+deltaY,ox+deltaX);
@@ -419,6 +428,7 @@
             setTimeout( function() {
                drawBackground();
                drawForeground(cameraCenter, figurePosition);
+               drawCursor(curX,curY);
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / fps );
          }
@@ -474,6 +484,16 @@
                  break;
            }
          }
+
+
+         mainItem.onmousedown = function(event) {};
+
+         mainItem.onmouseup = function(event) {};
+
+         mainItem.onmousemove = function(event) {
+            curX = event.clientX;
+            curY = event.clientY;
+         };
 
          //init
          (function() {
