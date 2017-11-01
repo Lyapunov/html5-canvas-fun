@@ -26,6 +26,7 @@
 
          var curX = 0;
          var curY = 0;
+         var curTarg = 0;
 
          var levelMapEven= [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                             [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -110,7 +111,6 @@
 
          var levelMap = [levelMapEven,levelMapOdd,levelMapEven,levelMapOdd,levelMapEven,levelMapOdd,levelMapEven,levelMapOdd,levelMapEven,levelMapOdd,levelMapLast];
 
-         var cameraCenter    = [15.5,15.5,6];
          var figurePosition  = [15.5,15.5,6];
          var tileSize = 50;
 
@@ -134,14 +134,14 @@
 
          function drawTile(tile,color) {
             if ( tile !== undefined ) {
-               context.fillStyle = color;
+               context.strokeStyle = color;
                context.beginPath();
                context.moveTo( tile.p1.x, tile.p1.y );
                context.lineTo( tile.p2.x, tile.p2.y );
                context.lineTo( tile.p3.x, tile.p3.y );
                context.lineTo( tile.p4.x, tile.p4.y );
                context.closePath();
-               context.fill();
+               context.stroke();
             }
          }
 
@@ -359,7 +359,7 @@
                drawFloor(-y+oy,x-ox, "gray");
             }
 
-            var obi = {x:x,y:y,z:z};
+            var obi = {x:x+cx,y:y+cy,z:z};
             tiles.push(getFloorTile(-y+oy,x-ox,obi));
          }
 
@@ -479,9 +479,10 @@
             setTimeout( function() {
                drawBackground();
                var tiles = [];
-               drawForeground(cameraCenter, figurePosition, tiles);
+               drawForeground(figurePosition, figurePosition, tiles);
                drawCursor(curX,curY);
-               drawTile(getCursorsTile(tiles,curX,curY), "yellow");
+               curTarg = getCursorsTile(tiles,curX,curY);
+               drawTile(curTarg, "yellow");
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / fps );
          }
@@ -503,22 +504,18 @@
            switch( e.keyCode ) {
               case 37:
                  // left
-                 cameraCenter[1]-= 0.1;
                  figurePosition[1]-= 0.1;
                  break;
               case 39:
                  // right
-                 cameraCenter[1]+= 0.1;
                  figurePosition[1]+= 0.1;
                  break;
               case 38:
                  // up
-                 cameraCenter[0]-= 0.1;
                  figurePosition[0]-= 0.1;
                  break;
               case 40:
                  // up
-                 cameraCenter[0]+= 0.1;
                  figurePosition[0]+= 0.1;
                  break;
            }
@@ -538,7 +535,10 @@
          }
 
 
-         mainItem.onmousedown = function(event) {};
+         mainItem.onmousedown = function(event) {
+            console.log(figurePosition);
+            console.log(curTarg);
+         };
 
          mainItem.onmouseup = function(event) {};
 
