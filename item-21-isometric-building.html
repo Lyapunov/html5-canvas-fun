@@ -474,7 +474,7 @@
             var findings = [[source.y,source.x,source.z]];
             hops[findings[0]]=false;
             var level = 0;
-            var dirs = [[0,1],[-1,0],[0,-1],[-1,0]];
+            var dirs = [[0,1],[-1,0],[0,-1],[1,0]];
             while ( level < 10 && findings.length > 0 ) {
                ++level;
                var nfindings = [];
@@ -521,7 +521,6 @@
             }
 
             var ctar = figureWay[0];
-            console.log("moving..",figurePosition, ctar);
            
             for ( var i = 0; i < 2; ++i ) {
                if ( Math.abs(ctar[i] + 0.5 - figurePosition[i]) > 0.1 ) {
@@ -567,19 +566,15 @@
            switch( e.keyCode ) {
               case 37:
                  // left
-                 figurePosition[1]-= 0.1;
                  break;
               case 39:
                  // right
-                 figurePosition[1]+= 0.1;
                  break;
               case 38:
                  // up
-                 figurePosition[0]-= 0.1;
                  break;
               case 40:
                  // up
-                 figurePosition[0]+= 0.1;
                  break;
            }
          }
@@ -599,15 +594,10 @@
 
 
          mainItem.onmousedown = function(event) {
-            console.log(figurePosition);
-            console.log(curTarg);
             var way = bfs({x:Math.floor(figurePosition[1]),
                            y:Math.floor(figurePosition[0]),
                            z:Math.floor(figurePosition[2])},
                           curTarg);
-            if ( way.length > 0 ) {
-               console.log("Found a way:", way);
-            }
             figureWay = way;
          };
 
