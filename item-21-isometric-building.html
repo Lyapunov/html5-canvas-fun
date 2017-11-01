@@ -121,15 +121,38 @@
 
          function drawFloor(y,x, color) {
             context.fillStyle = color;
-            context.beginPath();
             var px = (x + y) * Math.sqrt(3) * tileSize + screenWidth / 2;
             var py = (x - y) * tileSize + screenHeight / 2;
+            context.beginPath();
             context.moveTo( px, py - tileSize );
             context.lineTo( px + Math.sqrt(3) * tileSize, py );
             context.lineTo( px, py + tileSize );
             context.lineTo( px - Math.sqrt(3) * tileSize, py );
             context.closePath();
             context.fill();
+         }
+
+         function drawTile(tile,color) {
+            if ( tile !== undefined ) {
+               context.fillStyle = color;
+               context.beginPath();
+               context.moveTo( tile.p1.x, tile.p1.y );
+               context.lineTo( tile.p2.x, tile.p2.y );
+               context.lineTo( tile.p3.x, tile.p3.y );
+               context.lineTo( tile.p4.x, tile.p4.y );
+               context.closePath();
+               context.fill();
+            }
+         }
+
+         function getFloorTile(y,x,obi) {
+            var px = (x + y) * Math.sqrt(3) * tileSize + screenWidth / 2;
+            var py = (x - y) * tileSize + screenHeight / 2;
+            obi.p1 = {x:px,y:py-tileSize};
+            obi.p2 = {x:px + Math.sqrt(3) * tileSize,y:py};
+            obi.p3 = {x:px,y:py+tileSize};
+            obi.p4 = {x:px - Math.sqrt(3) * tileSize,y:py};
+            return obi;
          }
 
          function drawItem(y,x,color) {
@@ -331,10 +354,13 @@
             return ( celly == cy + y && cellx == cx + x );
          }
 
-         function drawCellFloor(y,x,z,cy,cx,oy,ox) {
+         function drawCellFloor(y,x,z,cy,cx,oy,ox,tiles) {
             if ( getMapCell(cy+y,cx+x,z) != 5 ) {
                drawFloor(-y+oy,x-ox, "gray");
             }
+
+            var obi = {x:x,y:y,z:z};
+            tiles.push(getFloorTile(-y+oy,x-ox,obi));
          }
 
          function drawCellWall(figurePos,y,x,z,cy,cx,oy,ox) {
@@ -363,7 +389,7 @@
          }
 
 
-         function drawForeground( camCenter, figurePos, upperLook=1, deltaY = 0, deltaX = 0 ) {
+         function drawForeground( camCenter, figurePos, tiles=[], upperLook=1, deltaY = 0, deltaX = 0 ) {
             var cy = Math.floor(camCenter[0]);
             var cx = Math.floor(camCenter[1]);
             var cz = Math.floor(camCenter[2]);
@@ -391,7 +417,7 @@
                      }
                      if ( upperLook ) {
                         if ( mapval == 5 && x + y <= 2 ) {
-                           drawForeground([cy+y+0.5,cx+x+0.5,cz-1],figurePos,0,-y-1+oy,-x+ox-1);
+                           drawForeground([cy+y+0.5,cx+x+0.5,cz-1],figurePos,tiles,0,-y-1+oy,-x+ox-1);
                         }
                         if ( mapval == 6 && x + y <= 2 ) {
                            nextly.push(y);
@@ -404,7 +430,7 @@
 
             {
                for ( var i = 0; i < cellsx.length; ++i ) {
-                  drawCellFloor(cellsy[i],cellsx[i],cz,cy,cx,oy+deltaY,ox+deltaX);
+                  drawCellFloor(cellsy[i],cellsx[i],cz,cy,cx,oy+deltaY,ox+deltaX,tiles);
                }
             }
 
@@ -418,7 +444,32 @@
                for ( var i = 0; i < nextly.length; ++i ) {
                   var y = nextly[i];
                   var x = nextlx[i];
-                  drawForeground([cy+y+0.5,cx+x+0.5,cz+1],figurePos,0,-y+1+oy,-x+ox+1);
+                  drawForeground([cy+y+0.5,cx+x+0.5,cz+1],figurePos,tiles,0,-y+1+oy,-x+ox+1);
+               }
+            }
+         }
+
+         function getPointSide(p1,p2,p3) {
+            var vx = p2.x - p1.x;
+            var vy = p2.y - p1.y;
+            var sx = -vy;
+            var sy = vx;
+            var retval = Math.sign(sx * (p3.x-p1.x) + sy * (p3.y-p1.y));
+            return retval;
+         }
+
+         function isPointInTriangle(p1,p2,p3,pt) {
+            var retval = ( getPointSide(p1,p2,p3) * getPointSide(p1,p2,pt) >= 0 )
+                      && ( getPointSide(p2,p3,p1) * getPointSide(p2,p3,pt) >= 0 )
+                      && ( getPointSide(p3,p1,p2) * getPointSide(p3,p1,pt) >= 0 );
+            return retval;
+         }
+
+         function getCursorsTile(tiles, cx, cy) {
+            for ( var i = 0; i < tiles.length; ++i ) {
+               if ( isPointInTriangle( tiles[i].p1, tiles[i].p2, tiles[i].p4, {x:cx,y:cy} )
+                 || isPointInTriangle( tiles[i].p2, tiles[i].p3, tiles[i].p4, {x:cx,y:cy} ) ) {
+                  return tiles[i];
                }
             }
          }
@@ -427,14 +478,15 @@
          function drawScene() {
             setTimeout( function() {
                drawBackground();
-               drawForeground(cameraCenter, figurePosition);
+               var tiles = [];
+               drawForeground(cameraCenter, figurePosition, tiles);
                drawCursor(curX,curY);
+               drawTile(getCursorsTile(tiles,curX,curY), "yellow");
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / fps );
          }
 
          function initCanvas() {
-            console.log(isMapCellVisible(1,-2,12,15,6,0,0,1));
 
             screenWidth  = mainItem.width  = window.innerWidth  - 20;
             screenHeight = mainItem.height = window.innerHeight - 20;
