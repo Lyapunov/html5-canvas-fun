@@ -364,12 +364,12 @@
             tiles.push(getFloorTile(-y+oy,x-ox,obi));
          }
 
-         function drawCellWall(figurePos,y,x,z,cy,cx,oy,ox) {
+         function drawCellWall(figurePos,y,x,z,cy,cx,oy,ox,deltaY=0,deltaX=0) {
             if ( !getMapCell(cy+y,cx+x-1,z) ) {
-               drawWall(-y+oy,x-ox,0, "blue");
+               drawWall(-y+oy+deltaY,x-ox-deltaX,0, "blue");
             }
             if ( !getMapCell(cy+y-1,cx+x,z) ) {
-               drawWall(-y+oy,x-ox,1, "blue");
+               drawWall(-y+oy+deltaY,x-ox-deltaX,1, "blue");
             }
 
             var isStairs = getMapCell(cy+y,cx+x,z) == 6;
@@ -377,30 +377,30 @@
             var isSouthStairs = isStairs && !getMapCell(cy+y+1,cx+x,z);
 
             if ( isNorthStairs ) {
-               drawStairs(-y+oy,x-ox,"gray",0);
+               drawStairs(-y+oy+deltaY,x-ox-deltaX,"gray",0);
             } 
 
             if ( Math.floor(figurePos[0]+y-cy) == 0 && Math.floor(figurePos[1]+x-cx) == 0 && Math.floor(figurePos[2]-z) == 0 ) {
                if ( isNorthStairs ) {
                   var mag = 0.5-oy;
-                  drawItem(-y+mag,x-mag,"green");
+                  drawItem(-y+mag+deltaY,x-mag-deltaX,"green");
                } else if ( isSouthStairs ) {
                   var mag = 0.5+oy;
-                  drawItem(-y+mag,x-mag,"green");
+                  drawItem(-y+mag+deltaY,x-mag-deltaX,"green");
                } else {
-                  drawItem(-y,x,"green");
+                  drawItem(-y+deltaY,x-deltaX,"green");
                }
             }
 
             if ( isSouthStairs ) {
-               drawStairs(-y+oy,x-ox,"gray",1);
+               drawStairs(-y+oy+deltaY,x-ox-deltaX,"gray",1);
             }
 
             if ( !getMapCell(cy+y+1,cx+x,z) ) {
-               drawWall(-y+oy,x-ox,2, "blue");
+               drawWall(-y+oy+deltaY,x-ox-deltaX,2, "blue");
             }
             if ( !getMapCell(cy+y,cx+x+1,z) ) {
-               drawWall(-y+oy,x-ox,3, "blue");
+               drawWall(-y+oy+deltaY,x-ox-deltaX,3, "blue");
             }
          }
 
@@ -433,7 +433,7 @@
                      }
                      if ( upperLook ) {
                         if ( mapval == 5 && x + y <= 2 ) {
-                           drawForeground([cy+y+0.5,cx+x+0.5,cz-1],figurePos,tiles,0,-y-1+oy,-x+ox-1);
+                           drawForeground([cy+y+0.5,cx+x+0.5,cz-1],figurePos,tiles,0,-y-1+oy+deltaY,-x+ox-1+deltaX);
                         }
                         if ( mapval == 6 && x + y <= 2 ) {
                            nextly.push(y);
@@ -452,7 +452,7 @@
 
             {
                for ( var i = 0; i < cellsx.length; ++i ) {
-                  drawCellWall(figurePos,cellsy[i],cellsx[i],cz,cy,cx,oy+deltaY,ox+deltaX);
+                  drawCellWall(figurePos,cellsy[i],cellsx[i],cz,cy,cx,oy,ox,deltaY,deltaX);
                }
             }
 
@@ -460,7 +460,7 @@
                for ( var i = 0; i < nextly.length; ++i ) {
                   var y = nextly[i];
                   var x = nextlx[i];
-                  drawForeground([cy+y+0.5,cx+x+0.5,cz+1],figurePos,tiles,0,-y+1+oy,-x+ox+1);
+                  drawForeground([cy+y+0.5,cx+x+0.5,cz+1],figurePos,tiles,0,-y+1+oy+deltaY,-x+ox+1+deltaX);
                }
             }
          }
