@@ -358,10 +358,9 @@
          function drawCellFloor(y,x,z,cy,cx,oy,ox,tiles) {
             if ( getMapCell(cy+y,cx+x,z) != 5 ) {
                drawFloor(-y+oy,x-ox, "gray");
+               var obi = {x:x+cx,y:y+cy,z:z};
+               tiles.push(getFloorTile(-y+oy,x-ox,obi));
             }
-
-            var obi = {x:x+cx,y:y+cy,z:z};
-            tiles.push(getFloorTile(-y+oy,x-ox,obi));
          }
 
          function drawCellWall(figurePos,y,x,z,cy,cx,oy,ox,deltaY=0,deltaX=0) {
@@ -512,7 +511,11 @@
                for ( var i = 0; i < findings.length; ++i ) {
                   for ( var j = 0; j < dirs.length; ++j ) {
                      var nextp = [(findings[i][0]+dirs[j][1]),(findings[i][1]+dirs[j][0]),(findings[i][2])];
-                     if ( getMapCell(nextp[0],nextp[1],nextp[2]) ) {
+                     var mapval = getMapCell(nextp[0],nextp[1],nextp[2]);
+                     if ( mapval == 5 ) {
+                        --nextp[2];
+                     }
+                     if ( mapval ) {
                         if ( hops[nextp] === undefined ) {
                            nfindings.push(nextp);
                            hops[nextp] = findings[i];
