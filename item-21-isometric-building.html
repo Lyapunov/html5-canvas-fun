@@ -412,6 +412,22 @@
             var oy = camCenter[0] - cy - 0.5;
             var ox = camCenter[1] - cx - 0.5;
 
+            if ( upperLook ) {
+               var isStairs = getMapCell(cy,cx,cz) == 6;
+               var isNorthStairs = isStairs && !getMapCell(cy-1,cx,cz);
+               var isSouthStairs = isStairs && !getMapCell(cy+1,cx,cz);
+
+               if ( isNorthStairs ) {
+                  var mag = 0.5-oy;
+                  deltaX -= mag;
+                  deltaY -= mag;
+               } else if ( isSouthStairs ) {
+                  var mag = 0.5+oy;
+                  deltaX -= mag;
+                  deltaY -= mag;
+               }
+            }
+
             var cellsy = [];
             var cellsx = [];
 
