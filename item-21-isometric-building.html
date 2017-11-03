@@ -371,13 +371,28 @@
             if ( !getMapCell(cy+y-1,cx+x,z) ) {
                drawWall(-y+oy,x-ox,1, "blue");
             }
+
+            var isStairs = getMapCell(cy+y,cx+x,z) == 6;
+            var isNorthStairs = isStairs && !getMapCell(cy+y-1,cx+x,z);
+            var isSouthStairs = isStairs && !getMapCell(cy+y+1,cx+x,z);
+
+            if ( isNorthStairs ) {
+               drawStairs(-y+oy,x-ox,"gray",0);
+            } 
+
             if ( Math.floor(figurePos[0]+y-cy) == 0 && Math.floor(figurePos[1]+x-cx) == 0 && Math.floor(figurePos[2]-z) == 0 ) {
-               drawItem(-y,x,"green");
+               if ( isNorthStairs ) {
+                  var mag = 0.5-oy;
+                  drawItem(-y+mag,x-mag,"green");
+               } else if ( isSouthStairs ) {
+                  var mag = 0.5+oy;
+                  drawItem(-y+mag,x-mag,"green");
+               } else {
+                  drawItem(-y,x,"green");
+               }
             }
 
-            if ( getMapCell(cy+y,cx+x,z) == 6 && !getMapCell(cy+y-1,cx+x,z) ) {
-               drawStairs(-y+oy,x-ox,"gray",0);
-            } else if ( getMapCell(cy+y,cx+x,z) == 6 && !getMapCell(cy+y+1,cx+x,z) ) {
+            if ( isSouthStairs ) {
                drawStairs(-y+oy,x-ox,"gray",1);
             }
 
@@ -522,6 +537,10 @@
 
             var ctar = figureWay[0];
            
+            if ( getMapCell( Math.floor(figurePosition[0]), Math.floor(figurePosition[1]), figurePosition[2] ) == 5 ) {
+               --figurePosition[2];
+            }
+
             for ( var i = 0; i < 2; ++i ) {
                if ( Math.abs(ctar[i] + 0.5 - figurePosition[i]) > 0.1 ) {
                   figurePosition[i] += 0.1 * Math.sign( ctar[i] + 0.5 - figurePosition[i] );
@@ -530,6 +549,7 @@
                   figurePosition[i] = ctar[i] + 0.5;
                }
             }
+            
             figureWay.reverse();
             figureWay.pop();
             figureWay.reverse();
