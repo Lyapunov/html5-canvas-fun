@@ -156,14 +156,14 @@
             return obi;
          }
 
-         function drawItem(y,x,color) {
+         function drawItem(y,x,color, shifts=1.0) {
             context.fillStyle = color;
             context.beginPath();
             var radius = tileSize / 2;
             var px = (x + y) * Math.sqrt(3) * tileSize + screenWidth / 2;
             var py = (x - y) * tileSize + screenHeight / 2;
-            context.moveTo( px - radius, py - 4* radius );
-            context.lineTo( px + radius, py - 4* radius );
+            context.moveTo( px - radius, py - 4* radius * shifts );
+            context.lineTo( px + radius, py - 4* radius * shifts );
             context.lineTo( px + radius, py );
             context.lineTo( px - radius, py );
             context.closePath();
@@ -388,6 +388,19 @@
                   drawItem(-y+mag+deltaY,x-mag-deltaX,"green");
                } else {
                   drawItem(-y+deltaY,x-deltaX,"green");
+               }
+            }
+
+            if ( Math.floor(figurePos[0]) == cy+y && Math.floor(figurePos[1]) == cx+x && Math.floor(figurePos[2]) == z - 1 ) {
+               var doy = 0.5 - (figurePosition[0]- Math.floor(figurePosition[0]));
+               var dox = 0.5 - (figurePosition[1]- Math.floor(figurePosition[1]));
+               var isNorthIntern = !getMapCell(cy+y-1,cx+x,z+1);
+               var isSouthIntern = !getMapCell(cy+y+1,cx+x,z+1);
+               if ( isNorthIntern ) {
+                  drawItem(-y+deltaY+doy,x-deltaX-dox,"green", Math.max(0.5+doy,0));
+               }
+               if ( isSouthIntern ) {
+                  drawItem(-y+deltaY+doy,x-deltaX-dox,"green", Math.max(0.5-doy,0));
                }
             }
 
