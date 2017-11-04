@@ -509,16 +509,18 @@
                ++level;
                var nfindings = [];
                for ( var i = 0; i < findings.length; ++i ) {
-                  for ( var j = 0; j < dirs.length; ++j ) {
-                     var nextp = [(findings[i][0]+dirs[j][1]),(findings[i][1]+dirs[j][0]),(findings[i][2])];
-                     var mapval = getMapCell(nextp[0],nextp[1],nextp[2]);
-                     if ( mapval == 5 ) {
-                        --nextp[2];
-                     }
-                     if ( mapval ) {
-                        if ( hops[nextp] === undefined ) {
-                           nfindings.push(nextp);
-                           hops[nextp] = findings[i];
+                  for ( var mag = 0; mag <= 1*(getMapCell(findings[i][0],findings[i][1],findings[i][2]) == 6); ++mag ) {
+                     for ( var j = 0; j < dirs.length; ++j ) {
+                        var nextp = [(findings[i][0]+dirs[j][1]),(findings[i][1]+dirs[j][0]),(findings[i][2])+mag];
+                        var mapval = getMapCell(nextp[0],nextp[1],nextp[2]);
+                        if ( mapval == 5 ) {
+                           --nextp[2];
+                        }
+                        if ( mapval ) {
+                           if ( hops[nextp] === undefined ) {
+                              nfindings.push(nextp);
+                              hops[nextp] = findings[i];
+                           }
                         }
                      }
                   }
@@ -568,6 +570,8 @@
                   figurePosition[i] = ctar[i] + 0.5;
                }
             }
+
+            figurePosition[2] = ctar[2];
             
             figureWay.reverse();
             figureWay.pop();
