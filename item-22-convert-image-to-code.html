@@ -33,13 +33,13 @@
          var phase = 0;
 
          function drawRImage(rimage, ux, uy, ds) {
-            var rude = 1;
             for ( var i = 0; i < rimage.yellows.length; ++i ) {
                 var item = rimage.yellows[i];
                 var dx = item[0];
                 var dy = item[1];
+                var len = item[2];
                 context.fillStyle = "yellow";
-                context.fillRect(ux+dx*ds,uy+dy*ds,ds*rude,ds*rude);
+                context.fillRect(ux+(dx-len+1)*ds,uy+dy*ds,ds*len,ds);
             }
             for ( var i = 0; i < rimage.reds.length; ++i ) {
                 var item = rimage.reds[i];
@@ -101,10 +101,14 @@
                      }
                   } else if ( !(!dat.data[0] && dat.data[1] && !dat.data[2]) ) {
                      // yellow
-                     var cdid = [(dx-dx%rude),(dy-dy%rude)];
-                     if ( rimage.yellows.filter(x=>x[0]==cdid[0]&&x[1]==cdid[1]).length == 0 ) {
+                     var cdid = [dx,dy,1];
+                     if ( rimage.yellows.length && rimage.yellows[rimage.yellows.length-1][0] == dx-1 && rimage.yellows[rimage.yellows.length-1][1] == dy ) {
+                        var lst = rimage.yellows[rimage.yellows.length-1];
+                        rimage.yellows[rimage.yellows.length-1] = [dx,dy,lst[2]+1];
+                     } else {
                         rimage.yellows.push(cdid);
                      }
+
                   }
                }
             }
