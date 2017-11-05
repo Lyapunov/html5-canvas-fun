@@ -106,34 +106,37 @@
            reds:[ 21,32,3,22,33,4,29,33,2,31,34,13,29,35,11,29,36,12,29,37,12,29,38,12,29,39,12,29,40,11,29,41,11,30,42,12,30,43,12,30,44,12,30,45,12,31,46,13,31,47,13,31,48,13,31,49,13,31,50,13,31,51,13,31,52,13,31,53,13,31,54,13,30,55,12,23,56,5,30,56,6,23,57,4,30,57,6,23,58,4,30,58,6,23,59,4,30,59,6,24,60,4,30,60,5,24,61,4,30,61,5,25,62,4,30,62,4,25,63,4,30,63,4,25,64,3,30,64,4,25,65,3,30,65,4,26,66,3,30,66,3,26,67,3,30,67,3,26,68,2,30,68,3,26,69,2,30,69,3,26,70,1,30,70,3,26,71,1,30,71,3,29,72,3,29,73,4,28,74,4,27,75,4,26,76,3,25,77,3,27,77,1,24,78,3,27,78,2,23,79,3,27,79,2,22,80,3,28,80,3,21,81,3,31,81,7,21,82,3,29,82,5,22,83,3,27,83,3,22,84,2,22,85,2 ]}
          ];
 
-         function drawRImage2(rimage, ux, uy, ylimitratio) {
+         function drawRImage2(rimage, cx, cy, ylimitratio, tileSize) {
             var ds = 1;
-            var ymax = 100;
-            var xmax = 54;
+            var percentage = tileSize / 50;
+            var ymax = 100 * percentage;
+            var xmax = 54  * percentage;
+            var ux = cx - xmax/2;
+            var uy = cy - ymax/2*ylimitratio - percentage*tileSize*ylimitratio;
             var ylim = ymax * ylimitratio
             for ( var i = 0; i < rimage.yellows.length/3; ++i ) {
-                var dx  = rimage.yellows[i*3+0];
-                var dy  = rimage.yellows[i*3+1];
+                var dx  = rimage.yellows[i*3+0] * percentage;
+                var dy  = rimage.yellows[i*3+1] * percentage;
                 if ( dy > ylim ) {
                    break;
                 }
-                var len = rimage.yellows[i*3+2];
+                var len = rimage.yellows[i*3+2] * percentage;
                 context.fillStyle = "yellow";
                 context.fillRect(ux+(dx-len+1)*ds,uy+dy*ds,ds*len,ds);
             }
             for ( var i = 0; i < rimage.reds.length/3; ++i ) {
-                var dx  = rimage.reds[i*3+0];
-                var dy  = rimage.reds[i*3+1];
+                var dx  = rimage.reds[i*3+0] * percentage;
+                var dy  = rimage.reds[i*3+1] * percentage;
                 if ( dy > ylim ) {
                    break;
                 }
-                var len = rimage.reds[i*3+2];
+                var len = rimage.reds[i*3+2] * percentage;
                 context.fillStyle = "red";
                 context.fillRect(ux+(dx-len+1)*ds,uy+dy*ds,ds*len,ds);
             }
             for ( var i = 0; i < rimage.blacks.length/2; ++i ) {
-                var dx = rimage.blacks[i*2+0];
-                var dy = rimage.blacks[i*2+1];
+                var dx = rimage.blacks[i*2+0] * percentage;
+                var dy = rimage.blacks[i*2+1] * percentage;
                 if ( dy > ylim ) {
                    break;
                 }
@@ -277,13 +280,7 @@
             var radius = tileSize / 2;
             var px = (x + y) * Math.sqrt(3) * tileSize + screenWidth / 2;
             var py = (x - y) * tileSize + screenHeight / 2;
-/*            context.moveTo( px - radius, py - 4* radius * shifts );
-            context.lineTo( px + radius, py - 4* radius * shifts );
-            context.lineTo( px + radius, py );
-            context.lineTo( px - radius, py );
-            context.closePath();
-            context.fill();*/
-            drawRImage2( figure_img_data[0], px - 54/2, py - 2* radius * shifts - 100/2 * shifts, shifts )
+            drawRImage2( figure_img_data[0], px, py, shifts, tileSize );
          }
 
          function drawCursor(x,y) {
