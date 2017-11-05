@@ -45,8 +45,9 @@
                 var item = rimage.reds[i];
                 var dx = item[0];
                 var dy = item[1];
+                var len = item[2];
                 context.fillStyle = "red";
-                context.fillRect(ux+dx*ds,uy+dy*ds,ds*rude,ds*rude);
+                context.fillRect(ux+(dx-len+1)*ds,uy+dy*ds,ds*len,ds);
             }
             for ( var i = 0; i < rimage.blacks.length; ++i ) {
                 var item = rimage.blacks[i];
@@ -82,8 +83,8 @@
             var cntr = 0;
             var rude = 1;
             var rimage = { blacks:[], reds:[], yellows:[] };
-            for ( var dx = 0; dx < areax; ++dx ) {
-               for ( var dy = 0; dy < areay; ++dy ) {
+            for ( var dy = 0; dy < areay; ++dy ) {
+                for ( var dx = 0; dx < areax; ++dx ) {
                   var dat = context.getImageData(shx+dx+Math.floor(ix*gridx),shy+iy*gridy+dy,1,1);
                   if ( !dat.data[0] && !dat.data[1] && !dat.data[2] ) {
                      // black
@@ -91,8 +92,11 @@
                      ++cntr;
                   } else if ( dat.data[0] && !dat.data[1] && !dat.data[2] ) {
                      // red
-                     var cdid = [(dx-dx%rude),(dy-dy%rude)];
-                     if ( rimage.reds.filter(x=>x[0]==cdid[0]&&x[1]==cdid[1]).length == 0 ) {
+                     var cdid = [dx,dy,1];
+                     if ( rimage.reds.length && rimage.reds[rimage.reds.length-1][0] == dx-1 && rimage.reds[rimage.reds.length-1][1] == dy ) {
+                        var lst = rimage.reds[rimage.reds.length-1];
+                        rimage.reds[rimage.reds.length-1] = [dx,dy,lst[2]+1];
+                     } else {
                         rimage.reds.push(cdid);
                      }
                   } else if ( !(!dat.data[0] && dat.data[1] && !dat.data[2]) ) {
