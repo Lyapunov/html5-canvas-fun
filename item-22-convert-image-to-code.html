@@ -52,7 +52,27 @@
                }
             }
             context.stroke();
-            console.log(context.getImageData(0,0,1,1));
+            var ix = 1;
+            var iy = 0;
+            var cntr = 0;
+            for ( var dx = 0; dx < areax; ++dx ) {
+               for ( var dy = 0; dy < areay; ++dy ) {
+                  var dat = context.getImageData(shx+dx+Math.floor(ix*gridx),shy+iy*gridy+dy,1,1);
+                  // black
+                  if ( !dat.data[0] && !dat.data[1] && !dat.data[2] ) {
+                     context.fillStyle = "black";
+                     context.fillRect(500+dx*5,100+dy*5,5,5);
+                     ++cntr;
+                  } else if ( dat.data[0] && !dat.data[1] && !dat.data[2] ) {
+                     context.fillStyle = "red";
+                     context.fillRect(500+dx*5,100+dy*5,5,5);
+                  } else if ( !(!dat.data[0] && dat.data[1] && !dat.data[2]) ) {
+                     context.fillStyle = "yellow";
+                     context.fillRect(500+dx*5,100+dy*5,5,5);
+                  }
+               }
+            }
+//            console.log(cntr);
 
             phase = (phase + 1)%8;
          }
