@@ -24,13 +24,37 @@
          var ANIMATION;
 
          // http://www.williammalone.com/articles/create-html5-canvas-javascript-sprite-animation/
-         var animImage = new Image();
-         animImage.src = "avatar-0.png";
+         var animImages = [];
+         for ( var i = 0; i < 8; ++i ) {
+            var animImage = new Image();
+            animImage.src = "avatar-"+i+".png";
+            animImages.push(animImage);
+         }
+         var phase = 0;
 
          function drawBackground() {
-            context.fillStyle = "black";
+            context.fillStyle = "green";
             context.fillRect(0,0,screenWidth,screenHeight);
-            context.drawImage(animImage,0,0,500,280);
+            context.drawImage(animImages[phase],0,0,500,280);
+
+            context.beginPath();
+            context.lineWidth = "1";
+            context.strokeStyle = "darkgreen";
+            var gridx = 54.5;
+            var gridy = 122;
+            var shx = 29;
+            var shy = 25;
+            var areax = 54;
+            var areay = 100;
+            for ( var x = 0; x < 8; ++x ) {
+               for ( var y = 0; y < 2; ++y ) {
+                  context.rect(shx+Math.floor(gridx*x),shy+gridy*y,areax,areay);
+               }
+            }
+            context.stroke();
+            console.log(context.getImageData(0,0,1,1));
+
+            phase = (phase + 1)%8;
          }
 
          // common functions 
