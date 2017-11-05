@@ -23,9 +23,14 @@
          var fps = 25;
          var ANIMATION;
 
+         // http://www.williammalone.com/articles/create-html5-canvas-javascript-sprite-animation/
+         var animImage = new Image();
+         animImage.src = "avatar-0.png";
+
          function drawBackground() {
             context.fillStyle = "black";
             context.fillRect(0,0,screenWidth,screenHeight);
+            context.drawImage(animImage,0,0,500,280);
          }
 
          // common functions 
