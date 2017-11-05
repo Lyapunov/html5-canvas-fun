@@ -32,6 +32,31 @@
          }
          var phase = 0;
 
+         function drawRImage(rimage, ux, uy, ds) {
+            var rude = 1;
+            for ( var i = 0; i < rimage.yellows.length; ++i ) {
+                var item = rimage.yellows[i];
+                var dx = item[0];
+                var dy = item[1];
+                context.fillStyle = "yellow";
+                context.fillRect(ux+dx*ds,uy+dy*ds,ds*rude,ds*rude);
+            }
+            for ( var i = 0; i < rimage.reds.length; ++i ) {
+                var item = rimage.reds[i];
+                var dx = item[0];
+                var dy = item[1];
+                context.fillStyle = "red";
+                context.fillRect(ux+dx*ds,uy+dy*ds,ds*rude,ds*rude);
+            }
+            for ( var i = 0; i < rimage.blacks.length; ++i ) {
+                var item = rimage.blacks[i];
+                var dx = item[0];
+                var dy = item[1];
+                context.fillStyle = "black";
+                context.fillRect(ux+dx*ds,uy+dy*ds,ds,ds);
+            }
+         }
+
          function drawBackground() {
             context.fillStyle = "green";
             context.fillRect(0,0,screenWidth,screenHeight);
@@ -53,26 +78,34 @@
             }
             context.stroke();
             var ix = 1;
-            var iy = 0;
+            var iy = 1;
             var cntr = 0;
+            var rude = 1;
+            var rimage = { blacks:[], reds:[], yellows:[] };
             for ( var dx = 0; dx < areax; ++dx ) {
                for ( var dy = 0; dy < areay; ++dy ) {
                   var dat = context.getImageData(shx+dx+Math.floor(ix*gridx),shy+iy*gridy+dy,1,1);
-                  // black
                   if ( !dat.data[0] && !dat.data[1] && !dat.data[2] ) {
-                     context.fillStyle = "black";
-                     context.fillRect(500+dx*5,100+dy*5,5,5);
+                     // black
+                     rimage.blacks.push([dx,dy]);
                      ++cntr;
                   } else if ( dat.data[0] && !dat.data[1] && !dat.data[2] ) {
-                     context.fillStyle = "red";
-                     context.fillRect(500+dx*5,100+dy*5,5,5);
+                     // red
+                     var cdid = [(dx-dx%rude),(dy-dy%rude)];
+                     if ( rimage.reds.filter(x=>x[0]==cdid[0]&&x[1]==cdid[1]).length == 0 ) {
+                        rimage.reds.push(cdid);
+                     }
                   } else if ( !(!dat.data[0] && dat.data[1] && !dat.data[2]) ) {
-                     context.fillStyle = "yellow";
-                     context.fillRect(500+dx*5,100+dy*5,5,5);
+                     // yellow
+                     var cdid = [(dx-dx%rude),(dy-dy%rude)];
+                     if ( rimage.yellows.filter(x=>x[0]==cdid[0]&&x[1]==cdid[1]).length == 0 ) {
+                        rimage.yellows.push(cdid);
+                     }
                   }
                }
             }
-//            console.log(cntr);
+            console.log(rimage);
+            drawRImage(rimage,500,100,5);
 
             phase = (phase + 1)%8;
          }
