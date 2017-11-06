@@ -442,15 +442,9 @@
             var arrived = 0;
             var limit = 50;
             var err = 1e-6;
-            if ( debug ) {
-               console.log( [cy,cx], " -> ", [cy+y,cx+x] ); 
-            }
 
             while ( limit && getMapCell( celly, cellx, cellz ) != 0 && !( celly == cy + y && cellx == cx + x ) ) {
-               if ( debug ) {
-                  console.log( limit + " - " + celly + ", " + cellx + " [" + sy + ", " + sx + "] dir:" + dirY + ", " + dirX); 
-               }
-
+            
                --limit;
                var jump  = Math.min( Math.max( ( 1 - sx ) / dirX, -sx / dirX ),
                                      Math.max( ( 1 - sy ) / dirY, -sy / dirY ) );
@@ -477,9 +471,6 @@
                }
             }
 
-            if ( debug ) {
-               console.log( limit + " - " + celly + ", " + cellx + " [" + sy + ", " + sx + "] dir:" + dirY + ", " + dirX); 
-            }
             return ( celly == cy + y && cellx == cx + x );
          }
 
@@ -711,7 +702,6 @@
                   var sgn = Math.sign( ctar[i] + 0.5 - figurePosition[i] );
                   figurePosition[i] += 0.1 * sgn;
                   figureFaceDir = 2 * ( sgn < 0 ) + i;
-                  console.log(i, sgn, figureFaceDir);
                   if ( Math.abs(ctar[i] + 0.5 - figurePosition[i]) < 0.5 ) {
                      figurePosition[2] = ctar[2];
                   }
@@ -755,7 +745,6 @@
          }
 
          function keyHandlerDown(e) {
-           console.log(e.keyCode);
            switch( e.keyCode ) {
               case 37:
                  // left
