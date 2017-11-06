@@ -238,6 +238,7 @@
          var levelMap = [levelMapEven,levelMapOdd,levelMapEven,levelMapOdd,levelMapEven,levelMapOdd,levelMapEven,levelMapOdd,levelMapEven,levelMapOdd,levelMapLast];
 
          var figurePosition  = [15.5,15.5,6];
+         var figureFaceDir   = 0; // 0 is south, 1 is east, 2 is north, 3 is west
          var tileSize = 50;
 
          function drawBackground() {
@@ -287,7 +288,13 @@
             var radius = tileSize / 2;
             var px = (x + y) * Math.sqrt(3) * tileSize + screenWidth / 2;
             var py = (x - y) * tileSize + screenHeight / 2;
-            drawRImage2( figure_img_data[0], px, py, shifts, tileSize );
+            switch ( figureFaceDir ) {
+               case 0  : drawRImage2( figure_img_data[0], px, py, shifts, tileSize ); break;
+               case 1  : drawRImage2( figure_img_data[0], px, py, shifts, tileSize, 1 ); break;
+               case 2  : drawRImage2( figure_img_data[9], px, py, shifts, tileSize ); break;
+               default : drawRImage2( figure_img_data[9], px, py, shifts, tileSize, 1 ); break;
+            }
+            
          }
 
          function drawCursor(x,y) {
@@ -697,7 +704,10 @@
 
             for ( var i = 0; i < 2; ++i ) {
                if ( Math.abs(ctar[i] + 0.5 - figurePosition[i]) > 0.1 ) {
-                  figurePosition[i] += 0.1 * Math.sign( ctar[i] + 0.5 - figurePosition[i] );
+                  var sgn = Math.sign( ctar[i] + 0.5 - figurePosition[i] );
+                  figurePosition[i] += 0.1 * sgn;
+                  figureFaceDir = 2 * ( sgn < 0 ) + i;
+                  console.log(i, sgn, figureFaceDir);
                   if ( Math.abs(ctar[i] + 0.5 - figurePosition[i]) < 0.5 ) {
                      figurePosition[2] = ctar[2];
                   }
