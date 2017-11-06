@@ -107,12 +107,12 @@
          ];
 
          function drawRImage2(rimage, cx, cy, ylimitratio, tileSize) {
-            var percentage = tileSize / 100;
+            var percentage = tileSize / 50;
             var ds = 1;
             var ymax = 100 * percentage;
             var xmax = 54  * percentage;
             var ux = cx - xmax/2;
-            var uy = cy - (ymax/2 + tileSize) * ylimitratio * percentage;
+            var uy = cy - ymax * (1- (1-ylimitratio)/percentage); // without ylimitratio: uy = cy - ymax;
             var ylim = ymax * (1- (1-ylimitratio)/percentage);
             for ( var i = 0; i < rimage.yellows.length/3; ++i ) {
                 var dx  = rimage.yellows[i*3+0] * percentage;
