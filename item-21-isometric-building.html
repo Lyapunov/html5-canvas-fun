@@ -239,6 +239,7 @@
 
          var figurePosition  = [15.5,15.5,6];
          var figureFaceDir   = 0; // 0 is south, 1 is east, 2 is north, 3 is west
+         var figurePhase     = 0;
          var tileSize = 50;
 
          function drawBackground() {
@@ -289,10 +290,10 @@
             var px = (x + y) * Math.sqrt(3) * tileSize + screenWidth / 2;
             var py = (x - y) * tileSize + screenHeight / 2;
             switch ( figureFaceDir ) {
-               case 0  : drawRImage2( figure_img_data[0], px, py, shifts, tileSize ); break;
-               case 1  : drawRImage2( figure_img_data[0], px, py, shifts, tileSize, 1 ); break;
-               case 2  : drawRImage2( figure_img_data[9], px, py, shifts, tileSize ); break;
-               default : drawRImage2( figure_img_data[9], px, py, shifts, tileSize, 1 ); break;
+               case 0  : drawRImage2( figure_img_data[figurePhase], px, py, shifts, tileSize ); break;
+               case 1  : drawRImage2( figure_img_data[figurePhase], px, py, shifts, tileSize, 1 ); break;
+               case 2  : drawRImage2( figure_img_data[9+figurePhase], px, py, shifts, tileSize ); break;
+               default : drawRImage2( figure_img_data[9+figurePhase], px, py, shifts, tileSize, 1 ); break;
             }
             
          }
@@ -693,8 +694,11 @@
 
          function moveFigure() {
             if ( figureWay.length == 0 ) {
+               figurePhase = 0;
                return; 
             }
+
+            figurePhase = ( (figurePhase) % 8 + 1 );
 
             var ctar = figureWay[0];
            
