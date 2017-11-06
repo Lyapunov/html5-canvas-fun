@@ -20,6 +20,10 @@
          var screenWidth  = mainItem.width  = window.innerWidth  - 20;
          var screenHeight = mainItem.height = window.innerHeight - 20;
          var screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+         var tileSize = 50;
+         var mapRadiusX = screenWidth/2/tileSize/Math.sqrt(3);
+         var mapRadiusY = screenHeight/2/tileSize;
+         var mapRadius = Math.ceil(2 * Math.max(mapRadiusX,mapRadiusY));
 
          var fps = 25;
          var ANIMATION;
@@ -111,8 +115,8 @@
             var ds = 1;
             var ymax = 100 * percentage;
             var xmax = 54  * percentage;
-            var ux = cx - xmax/2;
-            var uy = cy - ymax * Math.max(1- (1-ylimitratio)/percentage,0) + ymax * percentage * 0.1; // without ylimitratio: uy = cy - ymax;
+            var ux = Math.floor(cx - xmax/2);
+            var uy = Math.floor(cy - ymax * Math.max(1- (1-ylimitratio)/percentage,0) + ymax * percentage * 0.1); // without ylimitratio: uy = cy - ymax;
             var ylim = ymax * Math.max(1- (1-ylimitratio)/percentage,0);
             var mx = ux+ux+xmax*ds;
             for ( var i = 0; i < rimage.yellows.length/3; ++i ) {
@@ -296,7 +300,6 @@
          var figurePosition  = [15.5,15.5,6];
          var figureFaceDir   = 0; // 0 is south, 1 is east, 2 is north, 3 is west
          var figurePhase     = 0;
-         var tileSize = 50;
 
          function drawBackground() {
             context.fillStyle = "black";
@@ -621,8 +624,8 @@
             var nextly = [];
             var nextlx = [];
 
-            for ( var y = -10; y < 10; ++y ) {
-               for ( var x = -10; x < 10; ++x ) {
+            for ( var y = -mapRadius; y < mapRadius; ++y ) {
+               for ( var x = -mapRadius; x < mapRadius; ++x ) {
                   if ( isMapCellVisible(y,x,cy,cx,cz,oy,ox) 
                        || isMapCellVisible(y,x,cy,cx,cz,oy,ox,0,0) 
                        || isMapCellVisible(y,x,cy,cx,cz,oy,ox,0,1) 
@@ -793,6 +796,9 @@
             screenWidth  = mainItem.width  = window.innerWidth  - 20;
             screenHeight = mainItem.height = window.innerHeight - 20;
             screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+            mapRadiusX = screenWidth/4/tileSize/Math.sqrt(3);
+            mapRadiusY = screenHeight/4/tileSize;
+            mapRadius = Math.ceil(2 * Math.max(mapRadiusX,mapRadiusY));
 
             // starting the engine only if it is not running
             if ( !ANIMATION ) {
