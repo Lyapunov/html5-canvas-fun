@@ -27,23 +27,46 @@
          var phase = 0;
          var ix = 0;
          var iy = 1;
+         var boxanimdata = [];
+         function initboxanimdata() {
+            for ( var i = 0; i < 72; ++i ) {
+               var onedata = [];
+               for ( var x = 0; x < 3; ++x ) {
+                  onedata.push([x*50,0,30]);
+               }
+               for ( var y = 0; y < 4; ++y ) {
+                  for ( var x = 0; x < 5; ++x ) {
+                     onedata.push([x*30,(y+1)*30+50,10]);
+                  }
+               }
+               boxanimdata.push(onedata);
+            }
+         }
+
+         function getKey() {
+            return ix*9 + iy*(phase+1);
+         }
 
          function canvasclick(evnt) {
             console.log('--->canvasclick',evnt);
             if ( isInBox(evnt.clientX,evnt.clientY,10,300,30,30) ) {
                console.log("Btn1");
                phase = (phase + 1)%8;
+               console.log('phase:',phase,'ix:',ix,"iy:",iy,'key:',getKey());
             }
             if ( isInBox(evnt.clientX,evnt.clientY,50,300,30,30) ) {
                console.log("Btn2");
                ix = (ix + 1)%8;
+               console.log('phase:',phase,'ix:',ix,"iy:",iy,'key:',getKey());
             }
             if ( isInBox(evnt.clientX,evnt.clientY,90,300,30,30) ) {
                console.log("Btn3");
                iy = 1-iy;
+               console.log('phase:',phase,'ix:',ix,"iy:",iy,'key:',getKey());
             }
             if ( isInBox(evnt.clientX,evnt.clientY,130,300,30,30) ) {
                console.log("Btn4");
+               console.log(boxanimdata);
             }
          }
          var mainItem     = document.getElementById('canvas');
@@ -176,6 +199,7 @@
             // starting the engine only if it is not running
             if ( !ANIMATION ) {
                drawScene();
+               initboxanimdata();
             }
          }
 
