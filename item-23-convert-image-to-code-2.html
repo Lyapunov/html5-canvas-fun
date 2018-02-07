@@ -38,9 +38,12 @@
                console.log("Btn2");
                ix = (ix + 1)%8;
             }
-            if ( isInBox(evnt.clientX,evnt.clientY,110,300,30,30) ) {
+            if ( isInBox(evnt.clientX,evnt.clientY,90,300,30,30) ) {
                console.log("Btn3");
                iy = 1-iy;
+            }
+            if ( isInBox(evnt.clientX,evnt.clientY,130,300,30,30) ) {
+               console.log("Btn4");
             }
          }
          var mainItem     = document.getElementById('canvas');
@@ -149,9 +152,10 @@
                console.log('reds:[',rimage.reds.toString(),']}');
             }
 
-            drawBox(10,300,30,30,'black');
-            drawBox(50,300,30,30,'black');
-            drawBox(110,300,30,30,'black');
+            drawBox(10,300,30,'orange');
+            drawBox(50,300,30,'orange');
+            drawBox(90,300,30,'orange');
+            drawBox(130,300,30,'blue');
 
             //phase = (phase + 1)%8;
          }
