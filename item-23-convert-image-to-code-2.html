@@ -20,7 +20,7 @@
             context.fill();
          }
 
-         function isInBox(x,y,boxX,boxY,boxSize,boxColor) {
+         function isInBox(x,y,boxX,boxY,boxSize) {
             return x >= boxX && x <= boxX + boxSize && y >= boxY && y <= boxY + boxSize;
          }
 
@@ -28,15 +28,26 @@
          var ix = 0;
          var iy = 1;
          var boxanimdata = [];
+         var bcolors=['lightred','lightred','lightred','lightred','lightred',
+                      'magenta','magenta','magenta','magenta','magenta',
+                      'blue','blue','blue',
+                      'orange','orange','orange','orange','orange',
+                      'cyan','cyan','cyan','cyan','cyan'];
+         var selected = -1;
          function initboxanimdata() {
             for ( var i = 0; i < 72; ++i ) {
                var onedata = [];
-               for ( var x = 0; x < 3; ++x ) {
-                  onedata.push([x*50,0,30]);
+               for ( var x = 0; x < 2; ++x ) {
+                  for ( var y = 0; y < 5; ++y ) {
+                     onedata.push([x*10,(y+1)*10+20,5]);
+                  }
                }
-               for ( var y = 0; y < 4; ++y ) {
-                  for ( var x = 0; x < 5; ++x ) {
-                     onedata.push([x*30,(y+1)*30+50,10]);
+               onedata.push([20,0,15]);
+               onedata.push([40,0,12]);
+               onedata.push([60,0,12]);
+               for ( var x = 0; x < 2; ++x ) {
+                  for ( var y = 0; y < 5; ++y ) {
+                     onedata.push([(x+2)*10,(y+1)*10+20,5]);
                   }
                }
                boxanimdata.push(onedata);
@@ -49,24 +60,41 @@
 
          function canvasclick(evnt) {
             console.log('--->canvasclick',evnt);
-            if ( isInBox(evnt.clientX,evnt.clientY,10,300,30,30) ) {
+            if ( isInBox(evnt.clientX,evnt.clientY,10,300,30) ) {
                console.log("Btn1");
                phase = (phase + 1)%8;
                console.log('phase:',phase,'ix:',ix,"iy:",iy,'key:',getKey());
+               return;
             }
-            if ( isInBox(evnt.clientX,evnt.clientY,50,300,30,30) ) {
+            if ( isInBox(evnt.clientX,evnt.clientY,50,300,30) ) {
                console.log("Btn2");
                ix = (ix + 1)%8;
                console.log('phase:',phase,'ix:',ix,"iy:",iy,'key:',getKey());
+               return;
             }
-            if ( isInBox(evnt.clientX,evnt.clientY,90,300,30,30) ) {
+            if ( isInBox(evnt.clientX,evnt.clientY,90,300,30) ) {
                console.log("Btn3");
                iy = 1-iy;
                console.log('phase:',phase,'ix:',ix,"iy:",iy,'key:',getKey());
+               return;
             }
-            if ( isInBox(evnt.clientX,evnt.clientY,130,300,30,30) ) {
+            if ( isInBox(evnt.clientX,evnt.clientY,130,300,30) ) {
                console.log("Btn4");
                console.log(boxanimdata);
+               return;
+            }
+            var bdata = boxanimdata[getKey()];
+            if ( selected == -1 ) {
+               for ( var i = 0; i < bdata.length; ++i ) {
+                  if ( isInBox(evnt.clientX,evnt.clientY,500+bdata[i][0]*5,100+bdata[i][1]*5,bdata[i][2]*5) ) {
+                     selected = i;
+                     return;
+                  }
+               }
+            } else {
+               bdata[selected][0] = (evnt.clientX-500)/5;
+               bdata[selected][1] = (evnt.clientY-100)/5;
+               selected = -1;
             }
          }
          var mainItem     = document.getElementById('canvas');
@@ -180,7 +208,7 @@
             drawBox(90,300,30,'orange');
             drawBox(130,300,30,'blue');
 
-            //phase = (phase + 1)%8;
+            boxanimdata[getKey()].map((box,i)=>drawBox(500+box[0]*5,100+box[1]*5,box[2]*5,bcolors[i]));
          }
 
          // common functions 
