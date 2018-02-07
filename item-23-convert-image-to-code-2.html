@@ -9,10 +9,40 @@
       </style>
    </head>
    <body>
-   	<canvas id="canvas" width="500" height="500">
+   	<canvas id="canvas" width="500" height="500" onclick="canvasclick(event);">
       Your browser doesn't support html5 canvas.
       </canvas>
       <script>
+         function drawBox(boxX,boxY,boxSize,boxColor) {
+            context.beginPath();
+            context.rect(boxX, boxY, boxSize, boxSize);
+            context.fillStyle = boxColor;
+            context.fill();
+         }
+
+         function isInBox(x,y,boxX,boxY,boxSize,boxColor) {
+            return x >= boxX && x <= boxX + boxSize && y >= boxY && y <= boxY + boxSize;
+         }
+
+         var phase = 0;
+         var ix = 0;
+         var iy = 1;
+
+         function canvasclick(evnt) {
+            console.log('--->canvasclick',evnt);
+            if ( isInBox(evnt.clientX,evnt.clientY,10,300,30,30) ) {
+               console.log("Btn1");
+               phase = (phase + 1)%8;
+            }
+            if ( isInBox(evnt.clientX,evnt.clientY,50,300,30,30) ) {
+               console.log("Btn2");
+               ix = (ix + 1)%8;
+            }
+            if ( isInBox(evnt.clientX,evnt.clientY,110,300,30,30) ) {
+               console.log("Btn3");
+               iy = 1-iy;
+            }
+         }
          var mainItem     = document.getElementById('canvas');
          var context      = mainItem.getContext('2d');
 
@@ -30,7 +60,6 @@
             animImage.src = "avatars/avatar-"+i+".png";
             animImages.push(animImage);
          }
-         var phase = 0;
 
          function drawRImage(rimage, ux, uy, ds) {
             for ( var i = 0; i < rimage.yellows.length; ++i ) {
@@ -79,8 +108,6 @@
                }
             }
             context.stroke();
-            var ix = 5;
-            var iy = 1;
             var cntr = 0;
             var rude = 1;
             var rimage = { blacks:[], reds:[], yellows:[] };
@@ -115,13 +142,16 @@
             }
 
             drawRImage(rimage,500,100,5);
-            console.log(imgdata.length, imgdata2.length);
             if ( !printed ) {
                printed = 1;
                console.log('{blacks:[',rimage.blacks.toString(),'],');
                console.log('yellows:[',rimage.yellows.toString(),'],');
                console.log('reds:[',rimage.reds.toString(),']}');
             }
+
+            drawBox(10,300,30,30,'black');
+            drawBox(50,300,30,30,'black');
+            drawBox(110,300,30,30,'black');
 
             //phase = (phase + 1)%8;
          }
