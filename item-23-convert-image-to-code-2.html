@@ -80,7 +80,12 @@
             }
             if ( isInBox(evnt.clientX,evnt.clientY,130,300,30) ) {
                console.log("Btn4");
-               console.log(boxanimdata);
+               console.log("# START");
+               for ( var i = 0; i < boxanimdata.length;++i ) {
+                  console.log("#" + i);
+                  console.log(JSON.stringify(boxanimdata[i]));
+               }
+               console.log("# END");
                return;
             }
             var bdata = boxanimdata[getKey()];
