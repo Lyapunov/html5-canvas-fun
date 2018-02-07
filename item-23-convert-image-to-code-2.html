@@ -1,0 +1,155 @@
+<!DOCTYPE HTML>
+<html>
+   <head>
+      <style>
+         body {
+            margin : 0px;
+            padding: 0px;
+         }
+      </style>
+   </head>
+   <body>
+   	<canvas id="canvas" width="500" height="500">
+      Your browser doesn't support html5 canvas.
+      </canvas>
+      <script>
+         var mainItem     = document.getElementById('canvas');
+         var context      = mainItem.getContext('2d');
+
+         var screenWidth  = mainItem.width  = window.innerWidth  - 20;
+         var screenHeight = mainItem.height = window.innerHeight - 20;
+         var screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+
+         var fps = 25;
+         var ANIMATION;
+
+         // http://www.williammalone.com/articles/create-html5-canvas-javascript-sprite-animation/
+         var animImages = [];
+         for ( var i = 0; i < 8; ++i ) {
+            var animImage = new Image();
+            animImage.src = "avatars/avatar-"+i+".png";
+            animImages.push(animImage);
+         }
+         var phase = 0;
+
+         function drawRImage(rimage, ux, uy, ds) {
+            for ( var i = 0; i < rimage.yellows.length; ++i ) {
+                var item = rimage.yellows[i];
+                var dx = item[0];
+                var dy = item[1];
+                var len = item[2];
+                context.fillStyle = "yellow";
+                context.fillRect(ux+(dx-len+1)*ds,uy+dy*ds,ds*len,ds);
+            }
+            for ( var i = 0; i < rimage.reds.length; ++i ) {
+                var item = rimage.reds[i];
+                var dx = item[0];
+                var dy = item[1];
+                var len = item[2];
+                context.fillStyle = "red";
+                context.fillRect(ux+(dx-len+1)*ds,uy+dy*ds,ds*len,ds);
+            }
+            for ( var i = 0; i < rimage.blacks.length; ++i ) {
+                var item = rimage.blacks[i];
+                var dx = item[0];
+                var dy = item[1];
+                context.fillStyle = "black";
+                context.fillRect(ux+dx*ds,uy+dy*ds,ds,ds);
+            }
+         }
+
+         var printed = 0;
+         function drawBackground() {
+            context.fillStyle = "green";
+            context.fillRect(0,0,screenWidth,screenHeight);
+            context.drawImage(animImages[phase],0,0,500,280);
+
+            context.beginPath();
+            context.lineWidth = "1";
+            context.strokeStyle = "darkgreen";
+            var gridx = 54.5;
+            var gridy = 122;
+            var shx = 29;
+            var shy = 25;
+            var areax = 54;
+            var areay = 100;
+            for ( var x = 0; x < 8; ++x ) {
+               for ( var y = 0; y < 2; ++y ) {
+                  context.rect(shx+Math.floor(gridx*x),shy+gridy*y,areax,areay);
+               }
+            }
+            context.stroke();
+            var ix = 5;
+            var iy = 1;
+            var cntr = 0;
+            var rude = 1;
+            var rimage = { blacks:[], reds:[], yellows:[] };
+            for ( var dy = 0; dy < areay; ++dy ) {
+                for ( var dx = 0; dx < areax; ++dx ) {
+                  var dat = context.getImageData(shx+dx+Math.floor(ix*gridx),shy+iy*gridy+dy,1,1);
+                  if ( !dat.data[0] && !dat.data[1] && !dat.data[2] ) {
+                     // black
+                     rimage.blacks.push([dx,dy]);
+                     ++cntr;
+                  } else if ( dat.data[0] && !dat.data[1] && !dat.data[2] ) {
+                     // red
+                     var cdid = [dx,dy,1];
+                     if ( rimage.reds.length && rimage.reds[rimage.reds.length-1][0] == dx-1 && rimage.reds[rimage.reds.length-1][1] == dy ) {
+                        var lst = rimage.reds[rimage.reds.length-1];
+                        rimage.reds[rimage.reds.length-1] = [dx,dy,lst[2]+1];
+                     } else {
+                        rimage.reds.push(cdid);
+                     }
+                  } else if ( !(!dat.data[0] && dat.data[1] && !dat.data[2]) ) {
+                     // yellow
+                     var cdid = [dx,dy,1];
+                     if ( rimage.yellows.length && rimage.yellows[rimage.yellows.length-1][0] == dx-1 && rimage.yellows[rimage.yellows.length-1][1] == dy ) {
+                        var lst = rimage.yellows[rimage.yellows.length-1];
+                        rimage.yellows[rimage.yellows.length-1] = [dx,dy,lst[2]+1];
+                     } else {
+                        rimage.yellows.push(cdid);
+                     }
+
+                  }
+               }
+            }
+
+            drawRImage(rimage,500,100,5);
+            console.log(imgdata.length, imgdata2.length);
+            if ( !printed ) {
+               printed = 1;
+               console.log('{blacks:[',rimage.blacks.toString(),'],');
+               console.log('yellows:[',rimage.yellows.toString(),'],');
+               console.log('reds:[',rimage.reds.toString(),']}');
+            }
+
+            //phase = (phase + 1)%8;
+         }
+
+         // common functions 
+         function drawScene() {
+            setTimeout( function() {
+               drawBackground();
+               ANIMATION = requestAnimationFrame(drawScene);
+            }, 1000 / fps );
+         }
+
+         function initCanvas() {
+            screenWidth  = mainItem.width  = window.innerWidth  - 20;
+            screenHeight = mainItem.height = window.innerHeight - 20;
+            screenScale  = Math.min( screenWidth, screenHeight ) / 2;
+
+            // starting the engine only if it is not running
+            if ( !ANIMATION ) {
+               drawScene();
+            }
+         }
+
+         //init
+         (function() {
+            initCanvas();
+            addEventListener('resize', initCanvas, false);
+         })();
+      </script>
+   </body>
+</html>
