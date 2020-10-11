@@ -92,9 +92,9 @@
                   xx -= dx;
                   var t1 = getSegmentTriplet(i-1, xx, yy);
                   if ( t1 && t2 ) {
-                     drawQuad( (i%2?'forestgreen':'darkgreen'), [0,t1[1],screenWidth/2], [0,t2[1],screenWidth/2], 1.0 );
-                     drawQuad( i%2?'white':'black'     , t1, t2, 1.2 );
-                     drawQuad( i%2?'grey':'dimgrey'   , t1, t2, 1.0 );
+                     drawQuad( Math.floor(i/3)%2?'forestgreen':'darkgreen', [0,t1[1],screenWidth/2], [0,t2[1],screenWidth/2], 1.0 );
+                     drawQuad( Math.floor(i/3)%2?'white':'black'     , t1, t2, 1.2 );
+                     drawQuad( Math.floor(i/3)%2?'grey':'dimgrey'   , t1, t2, 1.0 );
                   }
                }
             };
