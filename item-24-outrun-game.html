@@ -23,6 +23,7 @@
          var segmentLength = 800;
          var numberOfQuads = 200;
          var pos = 0;
+         var angx = 0;
          var angy = 0;
          var camHeight = 1500;
 
@@ -3391,18 +3392,23 @@ var carColors = [
             }
             return sum/num;
          }
+         function rotX(trip,cang, sang) {
+            return [trip[0],trip[1]*cang+trip[2]*sang,-trip[1]*sang+trip[2]*cang];
+         }
          function rotY(trip,cang, sang) {
             return [trip[0]*cang-trip[2]*sang,trip[1],trip[0]*sang+trip[2]*cang];
          }
  
-         function drawCar( cam, ang ) {
+         function drawCar( cam, angx, angy ) {
             var scale = 20;
             var modifiedCarVertices = [];
             var projectedVerticles = [];
-            var cangy = Math.cos(ang);
-            var sangy = Math.sin(ang);
+            var cangy = Math.cos(angy);
+            var sangy = Math.sin(angy);
+            var cangx = Math.cos(angx);
+            var sangx = Math.sin(angx);
             for ( var i = 0; i < carVertices.length; i++ ) {
-               modified = rotY( [ carVertices[i][0] * scale, carVertices[i][1] * scale, carVertices[i][2] * scale ], cangy, sangy);
+               modified = rotY(rotX([ carVertices[i][0] * scale, carVertices[i][1] * scale, carVertices[i][2] * scale ],cangx,sangx), cangy, sangy);
                modifiedCarVertices.push( modified );
                projectedVerticles.push( pointProjection( modified, cam ) );
             }
@@ -3478,6 +3484,7 @@ var carColors = [
          function moving() {
             pos+=300;
             angy += 0.1;
+            angx = 0;
          }
 
          // common functions 
@@ -3485,7 +3492,7 @@ var carColors = [
             setTimeout( function() {
                drawBackground();
                plane.draw();
-               drawCar( [0, 0, -200 ], angy );
+               drawCar( [0, 0, -200 ], angx, angy );
                moving();
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / 50);
