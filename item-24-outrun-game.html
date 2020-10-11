@@ -61,9 +61,16 @@
             }
             return 0;
          }
+
+         function getSegmentY(i) {
+            if ( i > 200 ) {
+               return Math.sin(Math.PI*i/50.0)*1500;
+            }
+            return 0;
+         }
          
-         function getSegmentTriplet( i, xx ) {
-            return roadProjection( [xx,0,segmentLength*i], [0, camHeight, pos] );
+         function getSegmentTriplet( i, xx, yy ) {
+            return roadProjection( [xx,getSegmentY(i),segmentLength*i], [0, camHeight+yy, pos] );
          }
 
          function Plane(color1, color2) {
@@ -73,16 +80,17 @@
 
                var startPos = Math.floor(pos / segmentLength);
                var xx = 0;
+               var yy = getSegmentY(startPos);
                var dx = 0;
                for ( var i = startPos; i <= startPos + numberOfQuads; i++ ) {
                   xx += dx;
                   dx += getSegmentCurve(i);
                }
                for ( var i = startPos + numberOfQuads; i > startPos; i-- ) {
-                  var t2 = getSegmentTriplet(i, xx);
+                  var t2 = getSegmentTriplet(i, xx, yy);
                   dx -= getSegmentCurve(i);
                   xx -= dx;
-                  var t1 = getSegmentTriplet(i-1, xx);
+                  var t1 = getSegmentTriplet(i-1, xx, yy);
                   if ( t1 && t2 ) {
                      drawQuad( (i%2?'forestgreen':'darkgreen'), [0,t1[1],screenWidth/2], [0,t2[1],screenWidth/2], 1.0 );
                      drawQuad( i%2?'white':'black'     , t1, t2, 1.2 );
