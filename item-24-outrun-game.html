@@ -21,7 +21,7 @@
          var eyedist = 2.5;
          var roadWidth = 2000;
          var segmentLength = 800;
-         var numberOfQuads = 300;
+         var numberOfQuads = 200;
          var pos = 0;
          var camHeight = 1500;
 
@@ -31,7 +31,7 @@
                return;
             }
             scale = eyedist / ( vertex[2] - cam[2] );
-            sx = (cam[0]+vertex[0]) * scale; 
+            sx = (cam[0]-vertex[0]) * scale; 
             sy = (cam[1]-vertex[1]) * scale; 
             sr = roadWidth * scale;
             return [ sx * screenHeight / 2, sy * screenHeight / 2, sr * screenHeight / 2 ];
@@ -49,9 +49,21 @@
             context.lineTo( Math.floor(triplet2[0]+triplet2[2]*roadScale+screenWidth/2), Math.floor(triplet2[1]+screenHeight/2) );
             context.lineTo( Math.floor(triplet1[0]+triplet1[2]*roadScale+screenWidth/2), Math.floor(triplet1[1]+screenHeight/2) );
             context.closePath();
-            console.log(triplet1[1], triplet2[1]);
             context.fill();
+         }
 
+         function getSegmentCurve( i ) {
+            if ( i < 100 ) {
+               return 5;
+            }
+            if ( i < 200 ) {
+               return -5;
+            }
+            return 0;
+         }
+         
+         function getSegmentTriplet( i, xx ) {
+            return roadProjection( [xx,0,segmentLength*i], [0, camHeight, pos] );
          }
 
          function Plane(color1, color2) {
@@ -60,10 +72,17 @@
             this.draw  = function() {
 
                var startPos = Math.floor(pos / segmentLength);
-               for ( var i = startPos + numberOfQuads; i > 1; i-- ) {
-                  var t1 = roadProjection( [0,0,segmentLength*(i-1)], [0, camHeight, pos] );
-                  var t2 = roadProjection( [0,0,segmentLength*(i)], [0, camHeight, pos] );
-
+               var xx = 0;
+               var dx = 0;
+               for ( var i = startPos; i <= startPos + numberOfQuads; i++ ) {
+                  xx += dx;
+                  dx += getSegmentCurve(i);
+               }
+               for ( var i = startPos + numberOfQuads; i > startPos; i-- ) {
+                  var t2 = getSegmentTriplet(i, xx);
+                  dx -= getSegmentCurve(i);
+                  xx -= dx;
+                  var t1 = getSegmentTriplet(i-1, xx);
                   if ( t1 && t2 ) {
                      drawQuad( (i%2?'forestgreen':'darkgreen'), [0,t1[1],screenWidth/2], [0,t2[1],screenWidth/2], 1.0 );
                      drawQuad( i%2?'white':'black'     , t1, t2, 1.2 );
