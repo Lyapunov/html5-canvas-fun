@@ -18,47 +18,56 @@
          var screenHeight = mainItem.height = window.innerHeight - 20;
          var ANIMATION;  // ??
 
-         var eyedist = 1.5;
-         posz = 4;
+         var eyedist = 2.5;
+         var roadWidth = 2000;
+         var segmentLength = 800;
+         var numberOfQuads = 300;
+         var pos = 0;
+         var camHeight = 1500;
 
-         function to2D( vertex ) {
-            var dist = ( vertex[2] - posz );
-            if ( dist > -0.5 ) { 
-               dist = -0.5;
+
+         function roadProjection( vertex, cam ) {
+            if ( cam[2] > vertex[2] ) {
+               return;
             }
-            ratio = ( eyedist / dist );
-            sx = vertex[0] * ratio; 
-            sy = vertex[1] * ratio; 
-            return [ screenWidth / 2 + screenHeight / 2 * sx , screenHeight / 2 * ( 1 + sy )];
+            scale = eyedist / ( vertex[2] - cam[2] );
+            sx = (cam[0]+vertex[0]) * scale; 
+            sy = (cam[1]-vertex[1]) * scale; 
+            sr = roadWidth * scale;
+            return [ sx * screenHeight / 2, sy * screenHeight / 2, sr * screenHeight / 2 ];
          }
 
          function create3D( ax, az ) {
             return [ ax, -2 + Math.cos(ax / 2) / 2 + Math.cos(az / 2) / 2, az  ];
          }
 
+         function drawQuad( color, triplet1, triplet2, roadScale ) { // triplet is [x,w,y]
+            context.fillStyle = color;
+            context.beginPath();
+            context.moveTo( Math.floor(triplet1[0]-triplet1[2]*roadScale+screenWidth/2), Math.floor(triplet1[1]+screenHeight/2) );
+            context.lineTo( Math.floor(triplet2[0]-triplet2[2]*roadScale+screenWidth/2), Math.floor(triplet2[1]+screenHeight/2) );
+            context.lineTo( Math.floor(triplet2[0]+triplet2[2]*roadScale+screenWidth/2), Math.floor(triplet2[1]+screenHeight/2) );
+            context.lineTo( Math.floor(triplet1[0]+triplet1[2]*roadScale+screenWidth/2), Math.floor(triplet1[1]+screenHeight/2) );
+            context.closePath();
+            console.log(triplet1[1], triplet2[1]);
+            context.fill();
+
+         }
+
          function Plane(color1, color2) {
             this.color1 = color1;
             this.color2 = color2;
             this.draw  = function() {
-               for (var vz = Math.floor(posz) - 25; vz < Math.floor(posz); ++vz ) {
-                  for (var vx = -25; vx < 25; ++vx ) {
-                     var myPoints = [ to2D( create3D( vx  , vz   ) ),
-                                      to2D( create3D( vx+1, vz   ) ),
-                                      to2D( create3D( vx+1, vz+1 ) ),
-                                      to2D( create3D( vx  , vz+1 ) ) ];
-                                      
-                     context.fillStyle = ( ( vx + vz ) % 2 ) ? color1 : color2;
-                     context.beginPath();
-                     for (var j = 0; j < myPoints.length; ++j ) {
-                        myPoint = myPoints[j];
-                        if ( j == 0 ) {
-                           context.moveTo( myPoint[0], myPoint[1] );
-                        } else {
-                           context.lineTo( myPoint[0], myPoint[1] );
-                        }
-                     }
-                     context.closePath();
-                     context.fill();
+
+               var startPos = Math.floor(pos / segmentLength);
+               for ( var i = startPos + numberOfQuads; i > 1; i-- ) {
+                  var t1 = roadProjection( [0,0,segmentLength*(i-1)], [0, camHeight, pos] );
+                  var t2 = roadProjection( [0,0,segmentLength*(i)], [0, camHeight, pos] );
+
+                  if ( t1 && t2 ) {
+                     drawQuad( (i%2?'forestgreen':'darkgreen'), [0,t1[1],screenWidth/2], [0,t2[1],screenWidth/2], 1.0 );
+                     drawQuad( i%2?'white':'black'     , t1, t2, 1.2 );
+                     drawQuad( i%2?'grey':'dimgrey'   , t1, t2, 1.0 );
                   }
                }
             };
@@ -72,7 +81,7 @@
          }
 
          function moving() {
-            posz = posz - 0.01; 
+            pos+=300;
          }
 
          // common functions 
