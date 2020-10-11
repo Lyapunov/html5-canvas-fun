@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<html>
+   <head>
+      <style>
+         body {
+            margin : 0px;
+            padding: 0px;
+         }
+      </style>
+   </head>
+   <body>
+   	<canvas id="canvas" width="500" height="500"></canvas>
+
+      <script>
+         var mainItem     = document.getElementById('canvas');
+         var context      = mainItem.getContext('2d');
+         var screenWidth  = mainItem.width  = window.innerWidth  - 20;
+         var screenHeight = mainItem.height = window.innerHeight - 20;
+         var ANIMATION;  // ??
+
+         var eyedist = 1.5;
+         posz = 4;
+
+         function to2D( vertex ) {
+            var dist = ( vertex[2] - posz );
+            if ( dist > -0.5 ) { 
+               dist = -0.5;
+            }
+            ratio = ( eyedist / dist );
+            sx = vertex[0] * ratio; 
+            sy = vertex[1] * ratio; 
+            return [ screenWidth / 2 + screenHeight / 2 * sx , screenHeight / 2 * ( 1 + sy )];
+         }
+
+         function create3D( ax, az ) {
+            return [ ax, -2 + Math.cos(ax / 2) / 2 + Math.cos(az / 2) / 2, az  ];
+         }
+
+         function Plane(color1, color2) {
+            this.color1 = color1;
+            this.color2 = color2;
+            this.draw  = function() {
+               for (var vz = Math.floor(posz) - 25; vz < Math.floor(posz); ++vz ) {
+                  for (var vx = -25; vx < 25; ++vx ) {
+                     var myPoints = [ to2D( create3D( vx  , vz   ) ),
+                                      to2D( create3D( vx+1, vz   ) ),
+                                      to2D( create3D( vx+1, vz+1 ) ),
+                                      to2D( create3D( vx  , vz+1 ) ) ];
+                                      
+                     context.fillStyle = ( ( vx + vz ) % 2 ) ? color1 : color2;
+                     context.beginPath();
+                     for (var j = 0; j < myPoints.length; ++j ) {
+                        myPoint = myPoints[j];
+                        if ( j == 0 ) {
+                           context.moveTo( myPoint[0], myPoint[1] );
+                        } else {
+                           context.lineTo( myPoint[0], myPoint[1] );
+                        }
+                     }
+                     context.closePath();
+                     context.fill();
+                  }
+               }
+            };
+         }
+
+         var plane = new Plane('green', 'lightgreen');
+
+         function drawBackground() {
+            context.fillStyle = "lightblue";
+            context.fillRect(0,0,screenWidth,screenHeight);
+         }
+
+         function moving() {
+            posz = posz - 0.01; 
+         }
+
+         // common functions 
+         function drawScene() {
+            setTimeout( function() {
+               drawBackground();
+               plane.draw();
+               moving();
+               ANIMATION = requestAnimationFrame(drawScene);
+            }, 1000 / 50);
+         }
+
+         function initCanvas() {
+            var style = getComputedStyle(mainItem);
+            screenWidth  = mainItem.width  = window.innerWidth  - 20;
+            screenHeight = mainItem.height = window.innerHeight - 20;
+
+            // starting the engine only if it is not running
+            if ( !ANIMATION ) {
+               drawScene();
+            }
+         }
+
+         //init
+         (function() {
+            initCanvas();
+            addEventListener('resize', initCanvas, false);
+         })();
+      </script>
+   </body>
+</html>
