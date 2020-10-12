@@ -23,9 +23,15 @@
          var segmentLength = 800;
          var numberOfQuads = 200;
          var pos = 0;
-         var angx = 0;
          var angy = 0;
+         var angx = 0;
+         var wangx = 0.9;
+         var wangy = 0.9;
          var camHeight = 1500;
+         var carDistBeforeCamera = 4000;
+         var carScale = 400;
+         var carLength = 2.39019+2.27481;
+         var carRotRatio = 40;
 
 // zmin: -2.27481 zmax: 2.39019 ymin: 0
 var carVertices = [
@@ -3399,8 +3405,7 @@ var carColors = [
             return [trip[0]*cang-trip[2]*sang,trip[1],trip[0]*sang+trip[2]*cang];
          }
  
-         function drawCar( cam, angx, angy ) {
-            var scale = 20;
+         function drawCar( cam, angx, angy, scale, shiftZ ) {
             var modifiedCarVertices = [];
             var projectedVerticles = [];
             var cangy = Math.cos(angy);
@@ -3408,7 +3413,8 @@ var carColors = [
             var cangx = Math.cos(angx);
             var sangx = Math.sin(angx);
             for ( var i = 0; i < carVertices.length; i++ ) {
-               modified = rotY(rotX([ carVertices[i][0] * scale, carVertices[i][1] * scale, carVertices[i][2] * scale ],cangx,sangx), cangy, sangy);
+               modified = rotY(rotX([ carVertices[i][0] * scale, carVertices[i][1] * scale, (carVertices[i][2]) * scale ],cangx,sangx), cangy, sangy);
+               modified[2] += shiftZ*scale;
                modifiedCarVertices.push( modified );
                projectedVerticles.push( pointProjection( modified, cam ) );
             }
@@ -3426,18 +3432,30 @@ var carColors = [
             }
          }
 
+         function shuffle(x)
+         {
+           return (x + 2*x*x + 5*x*x*x + 17*x*x*x*x) % 31;
+         }
+
+         function shuffle2(x)
+         {
+           return (11*x + 7*x*x + 3*x*x*x + 71*x*x*x*x) % 31;
+         }
+
+
          function getSegmentCurve( i ) {
-            if ( i < 100 ) {
-               return 5;
-            }
-            if ( i < 200 ) {
-               return -5;
+            var dek = Math.floor(i/100);
+            var val = shuffle(dek)-16;
+            if ( val >= -10 && val < 10 ) {
+               return val;
             }
             return 0;
          }
 
          function getSegmentY(i) {
-            if ( i > 200 ) {
+            var dek = Math.floor(i/100);
+            var val = shuffle2(dek);
+            if ( val < 10 ) {
                return Math.sin(Math.PI*i/50.0)*1500;
             }
             return 0;
@@ -3451,7 +3469,6 @@ var carColors = [
             this.color1 = color1;
             this.color2 = color2;
             this.draw  = function() {
-
                var startPos = Math.floor(pos / segmentLength);
                var xx = 0;
                var yy = getSegmentY(startPos);
@@ -3471,6 +3488,18 @@ var carColors = [
                      drawQuad( Math.floor(i/3)%2?'grey':'dimgrey'   , t1, t2, 1.0 );
                   }
                }
+
+               var carBackPos = Math.floor((pos+carDistBeforeCamera) / segmentLength);
+               var carFrontPos = Math.floor((pos+carDistBeforeCamera+carLength*carScale) / segmentLength);
+               var yyc = getSegmentY(carBackPos);
+               var yycf = getSegmentY(carFrontPos);
+               var dy = yycf - yyc;
+               var dx = carLength*carScale;
+               var cangx = Math.atan2(dy,dx);
+               angx = wangx*angx + (1-wangx)*cangx;
+               var cangy = -getSegmentCurve(carBackPos)/carRotRatio;
+               angy = wangy*angy + (1-wangy)*cangy;
+               drawCar( [0, camHeight+yy-yyc, -carDistBeforeCamera], angx, angy, carScale, 2.5 );
             };
          }
 
@@ -3483,8 +3512,7 @@ var carColors = [
 
          function moving() {
             pos+=300;
-            angy += 0.1;
-            angx = 0;
+            angy += 0;
          }
 
          // common functions 
@@ -3492,7 +3520,6 @@ var carColors = [
             setTimeout( function() {
                drawBackground();
                plane.draw();
-               drawCar( [0, 0, -200 ], angx, angy );
                moving();
                ANIMATION = requestAnimationFrame(drawScene);
             }, 1000 / 50);
